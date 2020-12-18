@@ -23,14 +23,16 @@
         img: {
           src: null,
           alt: null
-        },
-        rendition: null
+        }
       }
     },
     computed: {},
     methods: {
       ...mapMutations(['updateBook', 'refreshLocation']),
       getWidth() {
+        // 根据文档，在使用显示比例缩放的系统上，scrollLeft可能会为您提供一个十进制值。
+        // 这导致了可能错误的移动位置
+        // 这里将显示的宽度限定为8的倍数来解决问题
         const screenWidth = Math.round(document.documentElement.clientWidth)
         const remainder = screenWidth % 8
         return screenWidth - remainder + 'px'
@@ -76,8 +78,18 @@
           // snap: true,
           // method: 'default'
         })
-        this.rendition.display(0)
         this.initEvent()
+        this.rendition.display().then(()=>{
+          // 渲染后第一次翻页一定失败，疑似bug
+          // 这里自动翻一次解决问题
+          this.nextPage()
+        })
+        book.ready.then(() => {
+          // 修改网页title
+          document.title = book.package.metadata.title
+          // return this.book.locations.generate(750 * (window.innerWidth / 375) * bookState.defaultFontSize / 16)
+          return book.locations.generate()
+        })
       },
       initEvent() {
         let vueInstance = this
@@ -157,4 +169,8 @@
   }
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+  .ebook-reader {
+    margin: 0 auto;
+  }
+</style>
