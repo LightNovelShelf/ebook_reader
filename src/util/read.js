@@ -14,6 +14,7 @@ export function throttle(fn, ms = 160) {
     }
   }
 }
+
 export function throttle2 (fn, ms = 160) {
   let timeout
   let start = new Date()
@@ -29,4 +30,8 @@ export function throttle2 (fn, ms = 160) {
       timeout = setTimeout(() => fn.apply(context, args), ms)
     }
   }
+}
+
+export function flatten(array) {
+  return [].concat(...array.map(item => [].concat(item, ...flatten(item.subitems))))
 }
