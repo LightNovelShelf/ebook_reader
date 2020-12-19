@@ -1,8 +1,6 @@
 <template>
   <div v-resize="onResize">
-    <div class="ebook-reader fill-height" :style="{ width: width + 'px' }">
-      <div id="read"></div>
-    </div>
+    <div id="read" :style="{ width: width + 'px' }"></div>
     <div ref="viewer" v-viewer v-show="false">
       <img :src="img.src" :alt="img.alt" />
     </div>
@@ -105,7 +103,7 @@
         this.updateBook(book)
         // 指定渲染的位置和方式
         this.rendition = book.renderTo('read', {
-          width: '100%',
+          width: this.width,
           height: window.innerHeight,
           // flow: 'auto',
           manager: 'continuous'
@@ -226,7 +224,7 @@
 </script>
 
 <style scoped lang="scss">
-  .ebook-reader {
-    //margin: 0 auto;
+  #read {
+    margin: 0 auto;
   }
 </style>
