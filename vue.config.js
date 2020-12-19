@@ -1,7 +1,7 @@
 module.exports = {
   transpileDependencies: ['vuetify'],
   chainWebpack: (config) => {
-    // 特殊处理edit.scss
+    // 特殊处理read.scss
     {
       config.module
         .rule('scss')

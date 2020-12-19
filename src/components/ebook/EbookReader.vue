@@ -1,6 +1,6 @@
 <template>
   <div v-resize="onResize">
-    <div class="ebook-reader" :style="{ width: width + 'px' }">
+    <div class="ebook-reader fill-height" :style="{ width: width + 'px' }">
       <div id="read"></div>
     </div>
     <div ref="viewer" v-viewer v-show="false">
@@ -12,7 +12,7 @@
 
 <script>
   import Epub, { EpubCFI } from 'epubjs'
-  import { mapMutations } from 'vuex'
+  import { mapActions, mapMutations } from 'vuex'
   import { flatten, throttle } from '@/util/read'
   import styleURL from '@/assets/styles/read.scss'
   import EbookMenu from '@/components/ebook/EbookMenu'
@@ -40,27 +40,22 @@
         // 根据文档，在使用显示比例缩放的系统上，scrollLeft可能会为您提供一个十进制值。
         // 这导致了可能错误的移动位置
         // 这里将显示的宽度限定为8的倍数来解决问题
-        const screenWidth = Math.round(document.documentElement.clientWidth)
+        const screenWidth = Math.round(window.innerWidth)
         const remainder = screenWidth % 8
         return screenWidth - remainder
+        // return window.innerWidth
       }
     },
     methods: {
-      ...mapMutations([
-        'updateBook',
-        'updateCover',
-        'updateNavigation',
-        'updateMetadata',
-        'refreshLocation',
-        'updateBookAvailable'
-      ]),
+      ...mapMutations(['updateBook', 'updateCover', 'updateNavigation', 'updateMetadata', 'updateBookAvailable']),
+      ...mapActions(['refreshLocation']),
       hide() {},
       show() {},
       prevPage() {
         console.log('上一页')
         if (this.rendition) {
           this.rendition.prev().then(() => {
-            // this.refreshLocation()
+            this.refreshLocation([true, true])
           })
           this.hide()
         }
@@ -69,7 +64,7 @@
         console.log('下一页')
         if (this.rendition) {
           this.rendition.next().then(() => {
-            // this.refreshLocation()
+            this.refreshLocation([true, true])
           })
           this.hide()
         }
@@ -103,7 +98,7 @@
         this.updateBook(book)
         // 指定渲染的位置和方式
         this.rendition = book.renderTo('read', {
-          width: this.width,
+          width: '100%',
           height: window.innerHeight,
           // flow: 'auto',
           manager: 'continuous'
@@ -128,6 +123,7 @@
           .then(() => {
             // 书籍加载完毕
             this.updateBookAvailable(true)
+            this.refreshLocation([true, true])
           })
       },
       initEvent() {
@@ -224,6 +220,6 @@
 
 <style scoped lang="scss">
   .ebook-reader {
-    margin: 0 auto;
+    //margin: 0 auto;
   }
 </style>

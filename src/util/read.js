@@ -15,7 +15,7 @@ export function throttle(fn, ms = 160) {
   }
 }
 
-export function throttle2 (fn, ms = 160) {
+export function throttle2(fn, ms = 160) {
   let timeout
   let start = new Date()
   return function () {
@@ -33,5 +33,18 @@ export function throttle2 (fn, ms = 160) {
 }
 
 export function flatten(array) {
-  return [].concat(...array.map(item => [].concat(item, ...flatten(item.subitems))))
+  return [].concat(...array.map((item) => [].concat(item, ...flatten(item.subitems))))
+}
+
+export function saveReadProgress(fileName, cfi) {
+  let record = JSON.parse(localStorage.getItem(`Reading_Record`) || '{}')
+  if (!record[fileName]) record[fileName] = {}
+  record[fileName].cfi = cfi
+  localStorage.setItem(`Reading_Record`, JSON.stringify(record))
+}
+
+export function GetReadProgress(fileName)
+{
+  let record = JSON.parse(localStorage.getItem(`Reading_Record`) || '{}')
+  return  record.fileName?.cfi
 }
