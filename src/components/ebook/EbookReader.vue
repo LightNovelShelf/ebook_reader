@@ -12,7 +12,7 @@
 
 <script>
   import Epub, { EpubCFI } from 'epubjs'
-  import { mapActions, mapMutations } from 'vuex'
+  import { mapActions, mapGetters, mapMutations } from 'vuex'
   import { flatten, throttle } from '@/util/read'
   import styleURL from '@/assets/styles/read.scss'
   import EbookMenu from '@/components/ebook/EbookMenu'
@@ -26,13 +26,11 @@
           src: null,
           alt: null
         },
-        rendition: null
+        rendition: null,
       }
     },
     computed: {
-      book() {
-        return this.$store.state.read.book
-      },
+      ...mapGetters(['book']),
       navigation() {
         return this.$store.state.read.navigation
       },
@@ -47,10 +45,19 @@
       }
     },
     methods: {
-      ...mapMutations(['updateBook', 'updateCover', 'updateNavigation', 'updateMetadata', 'updateBookAvailable']),
+      ...mapMutations([
+        'updateBook',
+        'updateCover',
+        'updateNavigation',
+        'updateMetadata',
+        'updateBookAvailable',
+        'updateMenuShow'
+      ]),
       ...mapActions(['refreshLocation']),
       hide() {},
-      show() {},
+      show() {
+        this.updateMenuShow(true)
+      },
       prevPage() {
         console.log('上一页')
         if (this.rendition) {
@@ -212,7 +219,7 @@
       window.removeEventListener('keydown', this.handleKeyDown)
     },
     mounted() {
-      const fileName = 'Test1.epub'
+      const fileName = 'Test2.epub'
       this.initEpub(new Epub(fileName))
     }
   }

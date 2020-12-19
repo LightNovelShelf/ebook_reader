@@ -9,12 +9,19 @@ export default {
     metadata: null,
     bookAvailable: false,
     readProgress: 0,
-    section: 1
+    section: 1,
+    menuShow: false
   },
   getters: {
     readSection(state) {
       if (state.navigation) return state.navigation[state.section - 1]?.label
       else return state.metadata?.title
+    },
+    book(state) {
+      return state.book
+    },
+    menuShow(state) {
+      return state.menuShow
     }
   },
   mutations: {
@@ -38,11 +45,15 @@ export default {
     },
     updateSection(state, payload) {
       state.section = payload
+    },
+    updateMenuShow(state, payload) {
+      state.menuShow = payload
     }
   },
   actions: {
-    refreshLocation({ commit, state },[isSection,isProgress]) {
+    refreshLocation({ commit, state }, [isSection, isProgress]) {
       const currentLocation = state.book.rendition.currentLocation()
+      // console.log(currentLocation)
       if (currentLocation && currentLocation.start) {
         const startCfi = currentLocation.start.cfi
         // if (isSave) saveReadProgress(this.fileName, startCfi)
@@ -85,7 +96,7 @@ export default {
             }
           }
           if (isProgress) {
-            commit('updateReadProgress',Math.floor(currentLocation.start.percentage * 1000))
+            commit('updateReadProgress', Math.floor(currentLocation.start.percentage * 1000))
           }
         }
       }
