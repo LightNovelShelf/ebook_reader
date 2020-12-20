@@ -11,7 +11,8 @@
 </template>
 
 <script>
-  import Epub from '@/assets/js/epub.fix'
+  // import Epub from '@/assets/js/epub.fix'
+  import Epub from '@/assets/js/epub.min'
   import EpubCFI from 'epubjs/src/epubcfi'
   // import { EpubCFI } from 'epubjs' //这样导不进来，奇怪
   import { mapActions, mapGetters, mapMutations } from 'vuex'
@@ -122,7 +123,7 @@
           width: this.width,
           height: window.innerHeight,
           // flow: 'auto',
-          // manager: 'continuous',
+          manager: 'continuous',
           stylesheet: styleURL
           // snap: true,
         })
@@ -225,7 +226,7 @@
       window.removeEventListener('keydown', this.handleKeyDown)
     },
     mounted() {
-      const fileName = 'Test3.epub'
+      const fileName = 'Test1.epub'
       this.initEpub(new Epub(fileName))
     }
   }
