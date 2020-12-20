@@ -1,6 +1,5 @@
 <template>
   <div>
-    <div v-show="menuShow" class="cover" @click="hide"></div>
     <v-slide-y-transition>
       <div v-show="menuShow" class="toolbar justify-center align-center">
         <v-btn icon class="ml-6">
@@ -32,8 +31,8 @@
         </div>
         <div class="d-flex flex-row menu-item">
           <v-spacer end="change" v-for="(menuIcon, i) in menuIcons" :key="i" class="d-flex justify-center align-center">
-            <v-btn icon>
-              <v-icon size="28">{{ menuIcon }}</v-icon>
+            <v-btn @click="menuIcon.handle()" icon>
+              <v-icon size="28">{{ menuIcon.icon }}</v-icon>
             </v-btn>
           </v-spacer>
         </div>
@@ -51,9 +50,25 @@
     data() {
       return {
         icon: icon,
-        menuIcons: [icon.mdiFormatListBulleted, icon.mdiWhiteBalanceSunny, icon.mdiFormatSize],
+        menuIcons: [
+          {
+            icon: icon.mdiFormatListBulleted,
+            handle: () => {
+              this.updateSidebarShow(true)
+              this.updateMenuShow(false)
+            }
+          },
+          {
+            icon: icon.mdiWhiteBalanceSunny,
+            handle: () => {}
+          },
+          {
+            icon: icon.mdiFormatSize,
+            handle: () => {}
+          }
+        ],
         isChange: false,
-        promise: null,
+        promise: null
       }
     },
     computed: {
@@ -90,7 +105,7 @@
       }
     },
     methods: {
-      ...mapMutations(['updateReadProgress', 'updateSection', 'updateMenuShow']),
+      ...mapMutations(['updateReadProgress', 'updateSection', 'updateMenuShow', 'updateSidebarShow']),
       ...mapActions(['display', 'refreshLocation']),
       change(value) {
         this.isChange = value
@@ -133,9 +148,6 @@
           })
         })
         return this.promise
-      },
-      hide() {
-        this.updateMenuShow(false)
       }
     }
   }
@@ -169,13 +181,5 @@
       height: 64px;
       width: 100%;
     }
-  }
-
-  .cover {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
   }
 </style>

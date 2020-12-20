@@ -4,31 +4,36 @@
     <div ref="viewer" v-viewer v-show="false">
       <img :src="img.src" :alt="img.alt" />
     </div>
-    <ebook-menu></ebook-menu>
+    <div v-show="menuShow || sidebarShow" class="cover" @click="hide"></div>
+    <ebook-menu />
+    <ebook-sidebar />
   </div>
 </template>
 
 <script>
-  import Epub, { EpubCFI } from 'epubjs'
+  import Epub from '@/assets/js/epub.fix'
+  import EpubCFI from 'epubjs/src/epubcfi'
+  // import { EpubCFI } from 'epubjs' //这样导不进来，奇怪
   import { mapActions, mapGetters, mapMutations } from 'vuex'
   import { flatten, throttle } from '@/util/read'
   import styleURL from '@/assets/styles/read.scss'
   import EbookMenu from '@/components/ebook/EbookMenu'
+  import EbookSidebar from '@/components/ebook/EbookSidebar'
 
   export default {
     name: 'EbookReader',
-    components: { EbookMenu },
+    components: { EbookSidebar, EbookMenu },
     data() {
       return {
         img: {
           src: null,
           alt: null
         },
-        rendition: null,
+        rendition: null
       }
     },
     computed: {
-      ...mapGetters(['book']),
+      ...mapGetters(['book', 'menuShow', 'sidebarShow']),
       navigation() {
         return this.$store.state.read.navigation
       },
@@ -49,10 +54,14 @@
         'updateNavigation',
         'updateMetadata',
         'updateBookAvailable',
-        'updateMenuShow'
+        'updateMenuShow',
+        'updateSidebarShow'
       ]),
       ...mapActions(['refreshLocation']),
-      hide() {},
+      hide() {
+        this.updateMenuShow(false)
+        this.updateSidebarShow(false)
+      },
       show() {
         this.updateMenuShow(true)
       },
@@ -99,6 +108,13 @@
           else if (e.y < window.innerHeight * 0.75 && e.y > window.innerHeight * 0.25) this.show()
         }
       },
+      handleMouseWheel(e) {
+        if (e.detail) {
+          e.detail > 0 ? this.nextPage() : this.prevPage()
+        } else {
+          e.deltaY > 0 ? this.nextPage() : this.prevPage()
+        }
+      },
       initEpub(book) {
         this.updateBook(book)
         // 指定渲染的位置和方式
@@ -106,7 +122,8 @@
           width: this.width,
           height: window.innerHeight,
           // flow: 'auto',
-          manager: 'continuous'
+          // manager: 'continuous',
+          stylesheet: styleURL
           // snap: true,
         })
         this.rendition.display().then(() => {
@@ -150,19 +167,9 @@
               }
             }
           })
-          contents.addStylesheet(styleURL)
+          // contents.addStylesheet(styleURL)
           const mousewheel = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'mousewheel'
-          contents.document.addEventListener(
-            mousewheel,
-            (e) => {
-              if (e.detail) {
-                e.detail > 0 ? vueInstance.nextPage() : vueInstance.prevPage()
-              } else {
-                e.deltaY > 0 ? vueInstance.nextPage() : vueInstance.prevPage()
-              }
-            },
-            true
-          )
+          contents.window.addEventListener(mousewheel, vueInstance.handleMouseWheel, true)
           contents.document.querySelectorAll('.duokan-image-single img').forEach((node) => {
             node.style.boxShadow = 'black 0 0 3px'
             node.style.cursor = 'pointer'
@@ -196,6 +203,7 @@
           }
           navItem.forEach((item) => {
             item.level = find(item)
+            item.label = item.label.trim()
           })
           this.updateNavigation(navItem)
         })
@@ -217,7 +225,7 @@
       window.removeEventListener('keydown', this.handleKeyDown)
     },
     mounted() {
-      const fileName = 'Test2.epub'
+      const fileName = 'Test3.epub'
       this.initEpub(new Epub(fileName))
     }
   }
@@ -226,5 +234,13 @@
 <style scoped lang="scss">
   #read {
     margin: 0 auto;
+  }
+
+  .cover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
   }
 </style>

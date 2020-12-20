@@ -1,5 +1,5 @@
 import { saveReadProgress } from '@/util/read'
-import { EpubCFI } from 'epubjs'
+import EpubCFI from 'epubjs/src/epubcfi'
 
 export default {
   state: {
@@ -10,7 +10,8 @@ export default {
     bookAvailable: false,
     readProgress: 0,
     section: 1,
-    menuShow: false
+    menuShow: false,
+    sidebarShow: false
   },
   getters: {
     readSection(state) {
@@ -22,6 +23,15 @@ export default {
     },
     menuShow(state) {
       return state.menuShow
+    },
+    sidebarShow(state) {
+      return state.sidebarShow
+    },
+    bookAvailable(state) {
+      return state.bookAvailable
+    },
+    navigation(state) {
+      return state.navigation
     }
   },
   mutations: {
@@ -48,6 +58,9 @@ export default {
     },
     updateMenuShow(state, payload) {
       state.menuShow = payload
+    },
+    updateSidebarShow(state, payload) {
+      state.sidebarShow = payload
     }
   },
   actions: {
@@ -69,7 +82,7 @@ export default {
               let href = navItem.href
               if (href.indexOf('#') !== -1) href = href.split('#')[0]
               if (navItem.cfi) {
-                temp = EpubCFI.compare(navItem.cfi, endCfi)
+                temp = endCfi.compare(navItem.cfi, endCfi)
               } else {
                 const index = state.book.spine.spineItems.findIndex((item) => item.href === href)
                 if (index > endCfi.spinePos) {
