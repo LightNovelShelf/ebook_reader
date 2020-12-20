@@ -4,4 +4,9 @@
 
 <style lang="scss">
 @import "assets/styles/default";
+.epub-view {
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;  
+}
 </style>
