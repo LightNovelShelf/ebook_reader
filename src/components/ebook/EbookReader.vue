@@ -11,14 +11,15 @@
 </template>
 
 <script>
+  // import { EpubCFI } from 'epubjs' //这样导不进来，奇怪
   import Epub from 'epubjs'
   import EpubCFI from 'epubjs/src/epubcfi'
-  // import { EpubCFI } from 'epubjs' //这样导不进来，奇怪
   import { mapActions, mapGetters, mapMutations } from 'vuex'
   import { flatten, throttle } from '@/util/read'
-  import styleURL from '@/assets/styles/read.scss'
+  import READ_STYLE from '@/assets/styles/read.scss'
   import EbookMenu from '@/components/ebook/EbookMenu'
   import EbookSidebar from '@/components/ebook/EbookSidebar'
+  import axios from 'axios'
 
   export default {
     name: 'EbookReader',
@@ -29,7 +30,9 @@
           src: null,
           alt: null
         },
-        rendition: null
+        rendition: null,
+        readStyles: null,
+        promise: null
       }
     },
     computed: {
@@ -66,19 +69,25 @@
         this.updateMenuShow(true)
       },
       prevPage() {
-        console.log('上一页')
-        if (this.rendition) {
-          this.rendition.prev().then(() => {
+        if (this.rendition && !this.promise) {
+          console.log('上一页')
+          this.promise = this.rendition.prev().then(() => {
             this.refreshLocation([true, true])
+            setTimeout(() => {
+              this.promise = null
+            }, 30)
           })
           this.hide()
         }
       },
       nextPage() {
-        console.log('下一页')
-        if (this.rendition) {
-          this.rendition.next().then(() => {
+        if (this.rendition && !this.promise) {
+          console.log('下一页')
+          this.promise = this.rendition.next().then(() => {
             this.refreshLocation([true, true])
+            setTimeout(() => {
+              this.promise = null
+            }, 30)
           })
           this.hide()
         }
@@ -123,7 +132,7 @@
           height: window.innerHeight,
           // flow: 'auto',
           manager: 'continuous',
-          stylesheet: styleURL
+          stylesheet: window.URL.createObjectURL(new Blob([this.readStyles], { type: 'text/css' }))
           // snap: true,
         })
         this.rendition.display().then(() => {
@@ -223,7 +232,8 @@
     destroyed() {
       window.removeEventListener('keydown', this.handleKeyDown)
     },
-    mounted() {
+    async mounted() {
+      this.readStyles = (await axios.get(READ_STYLE)).data
       const fileName = 'Test1.epub'
       this.initEpub(new Epub(fileName))
     }
