@@ -11,7 +11,7 @@
 </template>
 
 <script>
-  import Epub from '@/assets/js/epub.fix'
+  import Epub from 'epubjs'
   import EpubCFI from 'epubjs/src/epubcfi'
   // import { EpubCFI } from 'epubjs' //这样导不进来，奇怪
   import { mapActions, mapGetters, mapMutations } from 'vuex'
@@ -122,7 +122,7 @@
           width: this.width,
           height: window.innerHeight,
           // flow: 'auto',
-          // manager: 'continuous',
+          manager: 'continuous',
           stylesheet: styleURL
           // snap: true,
         })
@@ -150,6 +150,7 @@
       },
       initEvent() {
         let vueInstance = this
+        const mousewheel = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'mousewheel'
         this.rendition.hooks.content.register(function (contents) {
           const baseName = contents.cfiBase.match(/\[(.*?)\]/)[1]
           vueInstance.navigation.forEach((navItem) => {
@@ -167,8 +168,6 @@
               }
             }
           })
-          // contents.addStylesheet(styleURL)
-          const mousewheel = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'mousewheel'
           contents.window.addEventListener(mousewheel, vueInstance.handleMouseWheel, true)
           contents.document.querySelectorAll('.duokan-image-single img').forEach((node) => {
             node.style.boxShadow = 'black 0 0 3px'
@@ -179,8 +178,8 @@
           contents.window.addEventListener('keydown', this.handleKeyDown)
         })
         //单击事件
-        this.rendition.on('mousedown', (event) => {
-          this.timeStart = event.timeStamp
+        this.rendition.on('mousedown', (e) => {
+          this.timeStart = e.timeStamp
         })
         this.rendition.on('mouseup', this.handleMouseDown)
         window.addEventListener('keydown', this.handleKeyDown)
@@ -225,7 +224,7 @@
       window.removeEventListener('keydown', this.handleKeyDown)
     },
     mounted() {
-      const fileName = 'Test3.epub'
+      const fileName = 'Test1.epub'
       this.initEpub(new Epub(fileName))
     }
   }
