@@ -11,7 +11,9 @@
 </template>
 
 <script>
-  import Epub, { EpubCFI } from '@/assets/js/epub.fix'
+  import Epub from '@/assets/js/epub.fix'
+  import EpubCFI from 'epubjs/src/epubcfi'
+  // import { EpubCFI } from 'epubjs' //这样导不进来，奇怪
   import { mapActions, mapGetters, mapMutations } from 'vuex'
   import { flatten, throttle } from '@/util/read'
   import styleURL from '@/assets/styles/read.scss'
@@ -106,6 +108,13 @@
           else if (e.y < window.innerHeight * 0.75 && e.y > window.innerHeight * 0.25) this.show()
         }
       },
+      handleMouseWheel(e) {
+        if (e.detail) {
+          e.detail > 0 ? this.nextPage() : this.prevPage()
+        } else {
+          e.deltaY > 0 ? this.nextPage() : this.prevPage()
+        }
+      },
       initEpub(book) {
         this.updateBook(book)
         // 指定渲染的位置和方式
@@ -160,17 +169,7 @@
           })
           // contents.addStylesheet(styleURL)
           const mousewheel = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'mousewheel'
-          contents.document.addEventListener(
-            mousewheel,
-            (e) => {
-              if (e.detail) {
-                e.detail > 0 ? vueInstance.nextPage() : vueInstance.prevPage()
-              } else {
-                e.deltaY > 0 ? vueInstance.nextPage() : vueInstance.prevPage()
-              }
-            },
-            true
-          )
+          contents.window.addEventListener(mousewheel, vueInstance.handleMouseWheel, true)
           contents.document.querySelectorAll('.duokan-image-single img').forEach((node) => {
             node.style.boxShadow = 'black 0 0 3px'
             node.style.cursor = 'pointer'
@@ -226,7 +225,7 @@
       window.removeEventListener('keydown', this.handleKeyDown)
     },
     mounted() {
-      const fileName = 'Test2.epub'
+      const fileName = 'Test3.epub'
       this.initEpub(new Epub(fileName))
     }
   }

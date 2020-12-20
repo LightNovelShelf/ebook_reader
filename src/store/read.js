@@ -1,5 +1,5 @@
 import { saveReadProgress } from '@/util/read'
-import { EpubCFI } from 'epubjs'
+import EpubCFI from 'epubjs/src/epubcfi'
 
 export default {
   state: {
@@ -30,7 +30,7 @@ export default {
     bookAvailable(state) {
       return state.bookAvailable
     },
-    navigation(state){
+    navigation(state) {
       return state.navigation
     }
   },
@@ -82,7 +82,7 @@ export default {
               let href = navItem.href
               if (href.indexOf('#') !== -1) href = href.split('#')[0]
               if (navItem.cfi) {
-                temp = EpubCFI.compare(navItem.cfi, endCfi)
+                temp = endCfi.compare(navItem.cfi, endCfi)
               } else {
                 const index = state.book.spine.spineItems.findIndex((item) => item.href === href)
                 if (index > endCfi.spinePos) {

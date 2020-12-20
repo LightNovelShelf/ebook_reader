@@ -1,24 +1,22 @@
 <template>
   <v-slide-x-transition>
     <div class="slide-content" v-show="sidebarShow" v-if="bookAvailable">
-      <div>
-        <v-tabs grow slider-size="1" v-model="tab">
-          <v-tab>目录</v-tab>
-          <v-tab>书签</v-tab>
-        </v-tabs>
-        <v-tabs-items v-model="tab">
-          <v-tab-item>
-            <v-list class="overflow-auto">
-              <template v-for="(item, index) in navigation">
-                <v-list-item link :key="item.id" @click="selectSection(item.href, index)">
-                  <div class="pl-3">{{ item.label }}</div>
-                </v-list-item>
-                <v-divider :key="index" />
-              </template>
-            </v-list>
-          </v-tab-item>
-        </v-tabs-items>
-      </div>
+      <v-tabs grow slider-size="1" v-model="tab">
+        <v-tab>目录</v-tab>
+        <v-tab>书签</v-tab>
+      </v-tabs>
+      <v-tabs-items v-model="tab">
+        <v-tab-item>
+          <v-list class="overflow-auto">
+            <template v-for="(item, index) in navigation">
+              <v-list-item link :key="item.label" @click="selectSection(item.href, index)">
+                <div class="pl-3">{{ item.label }}</div>
+              </v-list-item>
+              <v-divider :key="index" />
+            </template>
+          </v-list>
+        </v-tab-item>
+      </v-tabs-items>
     </div>
   </v-slide-x-transition>
 </template>
@@ -40,7 +38,6 @@
       ...mapMutations(['updateSidebarShow', 'updateSection']),
       ...mapActions(['display', 'refreshLocation']),
       selectSection(href, index) {
-        console.log(href)
         this.updateSidebarShow(false)
         this.updateSection(index + 1)
         this.display(href).then(() => {
