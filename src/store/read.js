@@ -10,7 +10,8 @@ export default {
     bookAvailable: false,
     readProgress: 0,
     section: 1,
-    menuShow: false
+    menuShow: false,
+    sidebarShow: false
   },
   getters: {
     readSection(state) {
@@ -22,6 +23,15 @@ export default {
     },
     menuShow(state) {
       return state.menuShow
+    },
+    sidebarShow(state) {
+      return state.sidebarShow
+    },
+    bookAvailable(state) {
+      return state.bookAvailable
+    },
+    navigation(state){
+      return state.navigation
     }
   },
   mutations: {
@@ -48,6 +58,9 @@ export default {
     },
     updateMenuShow(state, payload) {
       state.menuShow = payload
+    },
+    updateSidebarShow(state, payload) {
+      state.sidebarShow = payload
     }
   },
   actions: {

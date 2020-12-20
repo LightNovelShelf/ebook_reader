@@ -4,31 +4,34 @@
     <div ref="viewer" v-viewer v-show="false">
       <img :src="img.src" :alt="img.alt" />
     </div>
-    <ebook-menu></ebook-menu>
+    <div v-show="menuShow || sidebarShow" class="cover" @click="hide"></div>
+    <ebook-menu />
+    <ebook-sidebar />
   </div>
 </template>
 
 <script>
-  import Epub, { EpubCFI } from 'epubjs'
+  import Epub, { EpubCFI } from '@/assets/js/epub.fix'
   import { mapActions, mapGetters, mapMutations } from 'vuex'
   import { flatten, throttle } from '@/util/read'
   import styleURL from '@/assets/styles/read.scss'
   import EbookMenu from '@/components/ebook/EbookMenu'
+  import EbookSidebar from '@/components/ebook/EbookSidebar'
 
   export default {
     name: 'EbookReader',
-    components: { EbookMenu },
+    components: { EbookSidebar, EbookMenu },
     data() {
       return {
         img: {
           src: null,
           alt: null
         },
-        rendition: null,
+        rendition: null
       }
     },
     computed: {
-      ...mapGetters(['book']),
+      ...mapGetters(['book', 'menuShow', 'sidebarShow']),
       navigation() {
         return this.$store.state.read.navigation
       },
@@ -49,10 +52,14 @@
         'updateNavigation',
         'updateMetadata',
         'updateBookAvailable',
-        'updateMenuShow'
+        'updateMenuShow',
+        'updateSidebarShow'
       ]),
       ...mapActions(['refreshLocation']),
-      hide() {},
+      hide() {
+        this.updateMenuShow(false)
+        this.updateSidebarShow(false)
+      },
       show() {
         this.updateMenuShow(true)
       },
@@ -106,7 +113,8 @@
           width: this.width,
           height: window.innerHeight,
           // flow: 'auto',
-          manager: 'continuous'
+          // manager: 'continuous',
+          stylesheet: styleURL
           // snap: true,
         })
         this.rendition.display().then(() => {
@@ -150,7 +158,7 @@
               }
             }
           })
-          contents.addStylesheet(styleURL)
+          // contents.addStylesheet(styleURL)
           const mousewheel = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'mousewheel'
           contents.document.addEventListener(
             mousewheel,
@@ -196,6 +204,7 @@
           }
           navItem.forEach((item) => {
             item.level = find(item)
+            item.label = item.label.trim()
           })
           this.updateNavigation(navItem)
         })
@@ -226,5 +235,13 @@
 <style scoped lang="scss">
   #read {
     margin: 0 auto;
+  }
+
+  .cover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
   }
 </style>
