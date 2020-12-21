@@ -8,6 +8,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "axios": "^0.21.0",
     "core-js": "^3.8.1",
     "epubjs": "^0.3.87",
     "epubjs-myh": "^0.3.111",
@@ -47,7 +48,8 @@
       "parser": "babel-eslint"
     },
     "rules": {
-      "no-unused-vars": "off"
+      "no-unused-vars": "off",
+      "no-debugger": "off"
     }
   },
   "browserslist": [

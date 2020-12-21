@@ -1,4 +1,5 @@
 module.exports = {
+  publicPath: './',
   transpileDependencies: ['vuetify'],
   chainWebpack: (config) => {
     // 特殊处理read.scss

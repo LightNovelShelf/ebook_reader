@@ -1,9 +1,10 @@
-import { saveReadProgress } from '@/util/read'
+import { saveFontSize, saveReadProgress } from '@/util/read'
 import EpubCFI from 'epubjs/src/epubcfi'
 
 export default {
   state: {
     book: null,
+    bookName: null,
     cover: null,
     navigation: null,
     metadata: null,
@@ -11,12 +12,23 @@ export default {
     readProgress: 0,
     section: 1,
     menuShow: false,
-    sidebarShow: false
+    fontSettingShow: false,
+    sidebarShow: false,
+    fontSize: 16
   },
   getters: {
     readSection(state) {
       if (state.navigation) return state.navigation[state.section - 1]?.label
       else return state.metadata?.title
+    },
+    section(state) {
+      return state.section
+    },
+    fontSize(state) {
+      return state.fontSize
+    },
+    fontSettingShow(state) {
+      return state.fontSettingShow
     },
     book(state) {
       return state.book
@@ -35,6 +47,15 @@ export default {
     }
   },
   mutations: {
+    updateBookName(state, payload) {
+      state.bookName = payload
+    },
+    updateFontSize(state, payload) {
+      state.fontSize = payload
+    },
+    updateFontSettingShow(state, payload) {
+      state.fontSettingShow = payload
+    },
     updateBook(state, payload) {
       state.book = payload
     },
@@ -64,15 +85,13 @@ export default {
     }
   },
   actions: {
-    refreshLocation({ commit, state }, [isSection, isProgress]) {
+    refreshLocation({ commit, state }, [isSection, isProgress, isSave = true]) {
       const currentLocation = state.book.rendition.currentLocation()
       // console.log(currentLocation)
       if (currentLocation && currentLocation.start) {
         const startCfi = currentLocation.start.cfi
-        // if (isSave) saveReadProgress(this.fileName, startCfi)
-        saveReadProgress(state.metadata.title, startCfi)
+        if (isSave) saveReadProgress(state.bookName, startCfi)
         if (state.bookAvailable) {
-          // eslint-disable-next-line no-constant-condition
           if (isSection) {
             const endCfi = new EpubCFI(currentLocation.end.cfi)
             let temp = 0
@@ -116,6 +135,11 @@ export default {
     },
     display({ commit, state }, target) {
       return state.book.rendition.display(target)
+    },
+    setFontSize({ commit, state }, size) {
+      state.book.rendition.themes.fontSize(size + 'px')
+      commit('updateFontSize', size)
+      saveFontSize(size)
     }
   },
   modules: {}
