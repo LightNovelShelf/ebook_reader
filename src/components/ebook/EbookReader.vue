@@ -7,23 +7,25 @@
     <div v-show="menuShow || sidebarShow" class="cover" @click="hide"></div>
     <ebook-menu />
     <ebook-sidebar />
+    <font-setting />
   </div>
 </template>
 
 <script>
   // import { EpubCFI } from 'epubjs' //这样导不进来，奇怪
-  import Epub from '@/assets/js/epub.min'
+  import Epub from '@/assets/js/epub.85.fix'
   import EpubCFI from 'epubjs/src/epubcfi'
   import { mapActions, mapGetters, mapMutations } from 'vuex'
-  import { flatten, throttle } from '@/util/read'
+  import { flatten, getFontSize, GetReadProgress, throttle } from '@/util/read'
   import READ_STYLE from '@/assets/styles/read.scss'
   import EbookMenu from '@/components/ebook/EbookMenu'
   import EbookSidebar from '@/components/ebook/EbookSidebar'
   import axios from 'axios'
+  import FontSetting from '@/components/ebook/Menu/FontSetting'
 
   export default {
     name: 'EbookReader',
-    components: { EbookSidebar, EbookMenu },
+    components: { FontSetting, EbookSidebar, EbookMenu },
     data() {
       return {
         img: {
@@ -37,7 +39,7 @@
       }
     },
     computed: {
-      ...mapGetters(['book', 'menuShow', 'sidebarShow']),
+      ...mapGetters(['book', 'menuShow', 'sidebarShow', 'fontSize']),
       navigation() {
         return this.$store.state.read.navigation
       }
@@ -50,7 +52,9 @@
         'updateMetadata',
         'updateBookAvailable',
         'updateMenuShow',
-        'updateSidebarShow'
+        'updateSidebarShow',
+        'updateBookName',
+        'updateFontSize'
       ]),
       ...mapActions(['refreshLocation']),
       hide() {
@@ -116,7 +120,7 @@
           e.deltaY > 0 ? this.nextPage() : this.prevPage()
         }
       },
-      initEpub(book) {
+      initEpub(book, cfi) {
         this.updateBook(book)
         // 指定渲染的位置和方式
         this.rendition = book.renderTo('read', {
@@ -127,7 +131,8 @@
           stylesheet: window.URL.createObjectURL(new Blob([this.readStyles], { type: 'text/css' }))
           // snap: true,
         })
-        this.rendition.display().then(() => {
+        this.loadFontSize()
+        this.rendition.display(cfi).then(() => {
           // 只显示一列并且初始渲染第一页的情况下，渲染后第一次翻页一定失败
           // Ubuntu Chrome出现，Firefox正常，需要更多测试
           if (this.rendition._layout.divisor === 1) {
@@ -227,6 +232,11 @@
         const screenWidth = Math.round(window.innerWidth)
         const remainder = screenWidth % 8
         this.width = screenWidth - remainder
+      },
+      loadFontSize() {
+        let size = getFontSize()
+        this.rendition.themes.fontSize(size + 'px')
+        this.updateFontSize(size)
       }
     },
     destroyed() {
@@ -236,7 +246,8 @@
       this.getWidth()
       this.readStyles = (await axios.get(READ_STYLE)).data
       const fileName = 'Test1.epub'
-      this.initEpub(new Epub(fileName))
+      this.updateBookName(fileName)
+      this.initEpub(new Epub(fileName), GetReadProgress(fileName))
     }
   }
 </script>

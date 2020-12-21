@@ -64,7 +64,10 @@
           },
           {
             icon: icon.mdiFormatSize,
-            handle: () => {}
+            handle: () => {
+              this.updateFontSettingShow(true)
+              this.updateMenuShow(false)
+            }
           }
         ],
         isChange: false,
@@ -105,7 +108,13 @@
       }
     },
     methods: {
-      ...mapMutations(['updateReadProgress', 'updateSection', 'updateMenuShow', 'updateSidebarShow']),
+      ...mapMutations([
+        'updateReadProgress',
+        'updateSection',
+        'updateMenuShow',
+        'updateSidebarShow',
+        'updateFontSettingShow'
+      ]),
       ...mapActions(['display', 'refreshLocation']),
       change(value) {
         this.isChange = value
