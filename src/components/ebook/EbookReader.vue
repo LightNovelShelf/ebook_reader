@@ -12,7 +12,7 @@
 
 <script>
   // import { EpubCFI } from 'epubjs' //这样导不进来，奇怪
-  import Epub from 'epubjs'
+  import Epub from '@/assets/js/epub.min'
   import EpubCFI from 'epubjs/src/epubcfi'
   import { mapActions, mapGetters, mapMutations } from 'vuex'
   import { flatten, throttle } from '@/util/read'
@@ -32,22 +32,14 @@
         },
         rendition: null,
         readStyles: null,
-        promise: null
+        promise: null,
+        width: null
       }
     },
     computed: {
       ...mapGetters(['book', 'menuShow', 'sidebarShow']),
       navigation() {
         return this.$store.state.read.navigation
-      },
-      width() {
-        // 根据文档，在使用显示比例缩放的系统上，scrollLeft可能会为您提供一个十进制值。
-        // 这导致了可能错误的移动位置
-        // 这里将显示的宽度限定为8的倍数来解决问题
-        const screenWidth = Math.round(window.innerWidth)
-        const remainder = screenWidth % 8
-        return screenWidth - remainder
-        // return window.innerWidth
       }
     },
     methods: {
@@ -223,16 +215,25 @@
       },
       onResize() {
         if (this.rendition) {
-          // 无效，不明原因，疑似bug
+          this.getWidth()
           this.rendition.settings.width = this.width
           this.rendition.resize(this.width, window.innerHeight)
         }
+      },
+      getWidth() {
+        // 根据文档，在使用显示比例缩放的系统上，scrollLeft可能会为您提供一个十进制值。
+        // 这导致了可能错误的移动位置
+        // 这里将显示的宽度限定为8的倍数来解决问题
+        const screenWidth = Math.round(window.innerWidth)
+        const remainder = screenWidth % 8
+        this.width = screenWidth - remainder
       }
     },
     destroyed() {
       window.removeEventListener('keydown', this.handleKeyDown)
     },
     async mounted() {
+      this.getWidth()
       this.readStyles = (await axios.get(READ_STYLE)).data
       const fileName = 'Test1.epub'
       this.initEpub(new Epub(fileName))
