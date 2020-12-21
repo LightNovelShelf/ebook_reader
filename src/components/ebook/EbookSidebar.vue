@@ -9,7 +9,13 @@
         <v-tab-item>
           <v-list class="overflow-auto">
             <template v-for="(item, index) in navigation">
-              <v-list-item link :key="item.label" @click="selectSection(item.href, index)">
+              <v-list-item
+                color="primary"
+                :input-value="section === index + 1"
+                link
+                :key="item.label"
+                @click="selectSection(item.href, index)"
+              >
                 <div class="pl-3">{{ item.label }}</div>
               </v-list-item>
               <v-divider :key="index" />
@@ -32,7 +38,7 @@
       }
     },
     computed: {
-      ...mapGetters(['sidebarShow', 'bookAvailable', 'navigation'])
+      ...mapGetters(['sidebarShow', 'bookAvailable', 'navigation', 'section'])
     },
     methods: {
       ...mapMutations(['updateSidebarShow', 'updateSection']),

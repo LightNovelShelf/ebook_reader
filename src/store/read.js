@@ -18,6 +18,9 @@ export default {
       if (state.navigation) return state.navigation[state.section - 1]?.label
       else return state.metadata?.title
     },
+    section(state) {
+      return state.section
+    },
     book(state) {
       return state.book
     },
