@@ -13,7 +13,7 @@
 
 <script>
   // import { EpubCFI } from 'epubjs' //这样导不进来，奇怪
-  import Epub from 'epubjs'
+  import Epub from '@/assets/js/epub.85.fix'
   import EpubCFI from 'epubjs/src/epubcfi'
   import { mapActions, mapGetters, mapMutations } from 'vuex'
   import { flatten, getFontSize, GetReadProgress, throttle } from '@/util/read'
@@ -132,6 +132,7 @@
           stylesheet: window.URL.createObjectURL(new Blob([this.readStyles], { type: 'text/css' }))
           // snap: true,
         })
+
         this.loadFontSize()
         this.rendition.display(cfi).then(() => {
           // 只显示一列并且初始渲染第一页的情况下，渲染后第一次翻页一定失败
@@ -247,21 +248,21 @@
       /*global drive*/
       this.getWidth()
       this.readStyles = (await axios.get(READ_STYLE)).data
-      // const fileName = 'Test1.epub'
-      // this.updateBookName(fileName)
-      // this.initEpub(new Epub(fileName), GetReadProgress(fileName))
+      const fileName = 'Test1.epub'
+      this.updateBookName(fileName)
+      this.initEpub(new Epub(fileName), GetReadProgress(fileName))
 
       // 连接App调试
-      const fileName = '报告！哥哥和我要结婚了！ 02.epub'
-      this.updateBookName(fileName)
-      let data = toByteArray(
-        // 本地文件的路径
-        drive.readFile('/storage/emulated/0/轻小说/报告！哥哥和我要结婚了！/报告！哥哥和我要结婚了！ 02.epub')
-      )
-      console.log(data.length)
-      let book = new Epub()
-      await book.open(data.buffer)
-      this.initEpub(book, GetReadProgress(fileName))
+      // const fileName = '报告！哥哥和我要结婚了！ 02.epub'
+      // this.updateBookName(fileName)
+      // let data = toByteArray(
+      //   // 本地文件的路径
+      //   drive.readFile('/storage/emulated/0/轻小说/报告！哥哥和我要结婚了！/报告！哥哥和我要结婚了！ 02.epub')
+      // )
+      // console.log(data.length)
+      // let book = new Epub()
+      // await book.open(data.buffer)
+      // this.initEpub(book, GetReadProgress(fileName))
     }
   }
 </script>
