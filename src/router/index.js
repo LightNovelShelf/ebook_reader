@@ -5,9 +5,10 @@ Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/read',
+    path: '/read/:path?',
     name: 'Read',
     component: () => import('../views/ebook/index'),
+    props: true
   }
 ]
 

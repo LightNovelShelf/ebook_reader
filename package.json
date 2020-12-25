@@ -8,7 +8,6 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "axios": "^0.21.0",
     "base64-js": "^1.5.1",
     "core-js": "^3.8.1",
     "epubjs": "^0.3.87",
@@ -40,6 +39,9 @@
     "root": true,
     "env": {
       "node": true
+    },
+    "globals": {
+      "drive": true
     },
     "extends": [
       "plugin:vue/essential",

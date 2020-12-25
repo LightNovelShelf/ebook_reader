@@ -20,7 +20,6 @@
   import READ_STYLE from '@/assets/styles/read.scss'
   import EbookMenu from '@/components/ebook/EbookMenu'
   import EbookSidebar from '@/components/ebook/EbookSidebar'
-  import axios from 'axios'
   import FontSetting from '@/components/ebook/Menu/FontSetting'
   import { toByteArray } from 'base64-js'
 
@@ -34,10 +33,12 @@
           alt: null
         },
         rendition: null,
-        readStyles: null,
         promise: null,
         width: null
       }
+    },
+    props: {
+      path: String
     },
     computed: {
       ...mapGetters(['book', 'menuShow', 'sidebarShow', 'fontSize']),
@@ -128,19 +129,18 @@
           width: this.width,
           height: window.innerHeight,
           // flow: 'auto',
-          manager: 'continuous',
-          stylesheet: window.URL.createObjectURL(new Blob([this.readStyles], { type: 'text/css' }))
+          // manager: 'continuous',
+          stylesheet: this.getStyleUrl()
           // snap: true,
         })
 
         this.loadFontSize()
-        this.rendition.display(cfi).then(() => {
-          // 只显示一列并且初始渲染第一页的情况下，渲染后第一次翻页一定失败
-          // Ubuntu Chrome出现，Firefox正常，需要更多测试
-          if (this.rendition._layout.divisor === 1) {
-            // this.nextPage()
-          }
-        })
+        if (window.drive) {
+          drive.toast(cfi)
+        }
+        console.log(cfi)
+        this.rendition.display(cfi)
+
         this.initEvent()
         this.parseBook()
         book.ready
@@ -239,30 +239,41 @@
         let size = getFontSize()
         this.rendition.themes.fontSize(size + 'px')
         this.updateFontSize(size)
+      },
+      getStyleUrl() {
+        let url = window.location.href.split('#')[0].split('/')
+        url[url.length - 1] = READ_STYLE
+        return url.join('/')
       }
     },
     destroyed() {
       window.removeEventListener('keydown', this.handleKeyDown)
     },
     async mounted() {
-      /*global drive*/
       this.getWidth()
-      this.readStyles = (await axios.get(READ_STYLE)).data
-      const fileName = 'Test1.epub'
-      this.updateBookName(fileName)
-      this.initEpub(new Epub(fileName), GetReadProgress(fileName))
-
-      // 连接App调试
-      // const fileName = '报告！哥哥和我要结婚了！ 02.epub'
-      // this.updateBookName(fileName)
-      // let data = toByteArray(
-      //   // 本地文件的路径
-      //   drive.readFile('/storage/emulated/0/轻小说/报告！哥哥和我要结婚了！/报告！哥哥和我要结婚了！ 02.epub')
-      // )
-      // console.log(data.length)
-      // let book = new Epub()
-      // await book.open(data.buffer)
-      // this.initEpub(book, GetReadProgress(fileName))
+      console.log(this.path)
+      if (this.path) {
+        // 连接App调试
+        if (window.drive) {
+          // 本地文件的路径
+          const filePath = decodeURI(this.path)
+          const temp = filePath.split('/')
+          const fileName = temp[temp.length - 1]
+          console.log(filePath)
+          this.updateBookName(fileName)
+          let data = toByteArray(drive.readFile(filePath))
+          console.log(data.length)
+          let book = new Epub()
+          await book.open(data.buffer)
+          this.initEpub(book, GetReadProgress(fileName))
+        } else {
+          console.log('没有找到drive对象')
+        }
+      } else {
+        const fileName = 'Test2.epub'
+        this.updateBookName(fileName)
+        this.initEpub(new Epub(fileName), GetReadProgress(fileName))
+      }
     }
   }
 </script>

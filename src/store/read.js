@@ -87,7 +87,7 @@ export default {
   actions: {
     refreshLocation({ commit, state }, [isSection, isProgress, isSave = true]) {
       const currentLocation = state.book.rendition.currentLocation()
-      // console.log(currentLocation)
+      console.log(currentLocation)
       if (currentLocation && currentLocation.start) {
         const startCfi = currentLocation.start.cfi
         if (isSave) saveReadProgress(state.bookName, startCfi)
