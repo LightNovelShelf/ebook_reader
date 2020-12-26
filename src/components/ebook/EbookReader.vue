@@ -159,7 +159,7 @@
       initEvent() {
         let vueInstance = this
         const mousewheel = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'mousewheel'
-        this.rendition.hooks.content.register(function (contents) {
+        this.rendition.hooks.content.register(function(contents) {
           const baseName = contents.cfiBase.match(/\[(.*?)\]/)[1]
           vueInstance.navigation.forEach((navItem) => {
             if (navItem.href.indexOf(baseName) !== -1) {
@@ -203,11 +203,13 @@
         })
         this.book.loaded.navigation.then((nav) => {
           const navItem = flatten(nav.toc)
+
           function find(item, levle = 0) {
             return !item.parent
               ? levle
               : find(navItem.filter((parentItem) => parentItem.id === item.parent)[0], ++levle)
           }
+
           navItem.forEach((item) => {
             item.level = find(item)
             item.label = item.label.trim()
@@ -256,7 +258,7 @@
         // 连接App调试
         if (window.drive) {
           // 本地文件的路径
-          const filePath = decodeURI(this.path)
+          const filePath = unescape(decodeURI(this.path))
           const temp = filePath.split('/')
           const fileName = temp[temp.length - 1]
           console.log(filePath)

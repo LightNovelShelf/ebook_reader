@@ -15,7 +15,7 @@
       <div v-show="menuShow" class="menu">
         <div class="text-center pt-3">{{ readSection }}({{ progress / 10 }}%)</div>
         <div class="d-flex progress-wrapper pb-3">
-          <v-btn :disabled="!navigation" @click="prevSection">上一章</v-btn>
+          <v-btn small :disabled="!navigation" @click="prevSection">上一章</v-btn>
           <v-slider
             @end="change2"
             @mouseup="change(true)"
@@ -25,9 +25,9 @@
             min="0"
             hide-details
             v-model="progress"
-            class="px-3"
+            class="px-1"
           />
-          <v-btn :disabled="!navigation" @click="nextSection">下一章</v-btn>
+          <v-btn small :disabled="!navigation" @click="nextSection">下一章</v-btn>
         </div>
         <div class="d-flex flex-row menu-item">
           <v-spacer end="change" v-for="(menuIcon, i) in menuIcons" :key="i" class="d-flex justify-center align-center">
@@ -183,7 +183,7 @@
     box-shadow: 0 -8px 8px rgba(#000000, 0.15) !important;
 
     .progress-wrapper {
-      padding: 5px 4vw;
+      padding: 5px 3vw;
     }
 
     .menu-item {
