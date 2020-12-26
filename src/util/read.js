@@ -43,8 +43,15 @@ export function saveReadProgress(fileName, cfi) {
   localStorage.setItem(`Reading_Record`, JSON.stringify(record))
 }
 
-export function GetReadProgress(fileName)
-{
+export function GetReadProgress(fileName) {
   let record = JSON.parse(localStorage.getItem(`Reading_Record`) || '{}')
-  return  record.fileName?.cfi
+  return record[fileName]?.cfi
+}
+
+export function getFontSize() {
+  return localStorage.getItem('Reading_FontSize') || 16
+}
+
+export function saveFontSize(size) {
+  localStorage.setItem('Reading_FontSize', size)
 }

@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import readModule from './read'
-
+import favoriteModule from './favorite'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -12,6 +12,7 @@ export default new Vuex.Store({
   actions: {
   },
   modules: {
-    read: readModule
+    read: readModule,
+    favorite: favoriteModule
   }
 })

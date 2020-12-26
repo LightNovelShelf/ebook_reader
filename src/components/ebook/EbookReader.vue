@@ -7,46 +7,41 @@
     <div v-show="menuShow || sidebarShow" class="cover" @click="hide"></div>
     <ebook-menu />
     <ebook-sidebar />
+    <font-setting />
   </div>
 </template>
 
 <script>
-  // import Epub from '@/assets/js/epub.fix'
-  // import Epub from '@/assets/js/epub.min'
-  import Epub from 'epubjs'
-  import EpubCFI from 'epubjs/src/epubcfi'
   // import { EpubCFI } from 'epubjs' //这样导不进来，奇怪
+  import Epub from '@/assets/js/epub.85.fix'
+  import EpubCFI from 'epubjs/src/epubcfi'
   import { mapActions, mapGetters, mapMutations } from 'vuex'
-  import { flatten, throttle } from '@/util/read'
-  import styleURL from '@/assets/styles/read.scss'
+  import { flatten, getFontSize, GetReadProgress, throttle } from '@/util/read'
+  import READ_STYLE from '@/assets/styles/read.scss'
   import EbookMenu from '@/components/ebook/EbookMenu'
   import EbookSidebar from '@/components/ebook/EbookSidebar'
+  import axios from 'axios'
+  import FontSetting from '@/components/ebook/Menu/FontSetting'
 
   export default {
     name: 'EbookReader',
-    components: { EbookSidebar, EbookMenu },
+    components: { FontSetting, EbookSidebar, EbookMenu },
     data() {
       return {
         img: {
           src: null,
           alt: null
         },
-        rendition: null
+        rendition: null,
+        readStyles: null,
+        promise: null,
+        width: null
       }
     },
     computed: {
-      ...mapGetters(['book', 'menuShow', 'sidebarShow']),
+      ...mapGetters(['book', 'menuShow', 'sidebarShow', 'fontSize']),
       navigation() {
         return this.$store.state.read.navigation
-      },
-      width() {
-        // 根据文档，在使用显示比例缩放的系统上，scrollLeft可能会为您提供一个十进制值。
-        // 这导致了可能错误的移动位置
-        // 这里将显示的宽度限定为8的倍数来解决问题
-        const screenWidth = Math.round(window.innerWidth)
-        const remainder = screenWidth % 8
-        return screenWidth - remainder
-        // return window.innerWidth
       }
     },
     methods: {
@@ -57,7 +52,9 @@
         'updateMetadata',
         'updateBookAvailable',
         'updateMenuShow',
-        'updateSidebarShow'
+        'updateSidebarShow',
+        'updateBookName',
+        'updateFontSize'
       ]),
       ...mapActions(['refreshLocation']),
       hide() {
@@ -68,19 +65,25 @@
         this.updateMenuShow(true)
       },
       prevPage() {
-        console.log('上一页')
-        if (this.rendition) {
-          this.rendition.prev().then(() => {
+        if (this.rendition && !this.promise) {
+          console.log('上一页')
+          this.promise = this.rendition.prev().then(() => {
             this.refreshLocation([true, true])
+            setTimeout(() => {
+              this.promise = null
+            }, 30)
           })
           this.hide()
         }
       },
       nextPage() {
-        console.log('下一页')
-        if (this.rendition) {
-          this.rendition.next().then(() => {
+        if (this.rendition && !this.promise) {
+          console.log('下一页')
+          this.promise = this.rendition.next().then(() => {
             this.refreshLocation([true, true])
+            setTimeout(() => {
+              this.promise = null
+            }, 30)
           })
           this.hide()
         }
@@ -117,7 +120,7 @@
           e.deltaY > 0 ? this.nextPage() : this.prevPage()
         }
       },
-      initEpub(book) {
+      initEpub(book, cfi) {
         this.updateBook(book)
         // 指定渲染的位置和方式
         this.rendition = book.renderTo('read', {
@@ -125,10 +128,11 @@
           height: window.innerHeight,
           // flow: 'auto',
           manager: 'continuous',
-          stylesheet: styleURL
+          stylesheet: window.URL.createObjectURL(new Blob([this.readStyles], { type: 'text/css' }))
           // snap: true,
         })
-        this.rendition.display().then(() => {
+        this.loadFontSize()
+        this.rendition.display(cfi).then(() => {
           // 只显示一列并且初始渲染第一页的情况下，渲染后第一次翻页一定失败
           // Ubuntu Chrome出现，Firefox正常，需要更多测试
           if (this.rendition._layout.divisor === 1) {
@@ -216,18 +220,34 @@
       },
       onResize() {
         if (this.rendition) {
-          // 无效，不明原因，疑似bug
+          this.getWidth()
           this.rendition.settings.width = this.width
           this.rendition.resize(this.width, window.innerHeight)
         }
+      },
+      getWidth() {
+        // 根据文档，在使用显示比例缩放的系统上，scrollLeft可能会为您提供一个十进制值。
+        // 这导致了可能错误的移动位置
+        // 这里将显示的宽度限定为8的倍数来解决问题
+        const screenWidth = Math.round(window.innerWidth)
+        const remainder = screenWidth % 8
+        this.width = screenWidth - remainder
+      },
+      loadFontSize() {
+        let size = getFontSize()
+        this.rendition.themes.fontSize(size + 'px')
+        this.updateFontSize(size)
       }
     },
     destroyed() {
       window.removeEventListener('keydown', this.handleKeyDown)
     },
-    mounted() {
+    async mounted() {
+      this.getWidth()
+      this.readStyles = (await axios.get(READ_STYLE)).data
       const fileName = 'Test1.epub'
-      this.initEpub(new Epub(fileName))
+      this.updateBookName(fileName)
+      this.initEpub(new Epub(fileName), GetReadProgress(fileName))
     }
   }
 </script>
