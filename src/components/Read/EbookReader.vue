@@ -18,9 +18,9 @@
   import { mapActions, mapGetters, mapMutations } from 'vuex'
   import { flatten, getFontSize, GetReadProgress, throttle } from '@/util/read'
   import READ_STYLE from '@/assets/styles/read.scss'
-  import EbookMenu from '@/components/ebook/EbookMenu'
-  import EbookSidebar from '@/components/ebook/EbookSidebar'
-  import FontSetting from '@/components/ebook/Menu/FontSetting'
+  import EbookMenu from '@/components/Read/EbookMenu'
+  import EbookSidebar from '@/components/Read/EbookSidebar'
+  import FontSetting from '@/components/Read/Menu/FontSetting'
   import { toByteArray } from 'base64-js'
 
   export default {
@@ -38,7 +38,8 @@
       }
     },
     props: {
-      path: String
+      uri: String,
+      name:String
     },
     computed: {
       ...mapGetters(['book', 'menuShow', 'sidebarShow', 'fontSize']),
@@ -159,7 +160,7 @@
       initEvent() {
         let vueInstance = this
         const mousewheel = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'mousewheel'
-        this.rendition.hooks.content.register(function(contents) {
+        this.rendition.hooks.content.register(function (contents) {
           const baseName = contents.cfiBase.match(/\[(.*?)\]/)[1]
           vueInstance.navigation.forEach((navItem) => {
             if (navItem.href.indexOf(baseName) !== -1) {
@@ -194,6 +195,9 @@
       },
       parseBook() {
         this.book.loaded.cover.then((cover) => {
+          this.book.archive.getBase64(cover).then((data) =>{
+            window.drive?.saveFile(this.name,'Pictures',data)
+          })
           this.book.archive.createUrl(cover).then((url) => {
             this.updateCover(url)
           })
@@ -246,7 +250,7 @@
         let url = window.location.href.split('#')[0].split('/')
         url[url.length - 1] = READ_STYLE
         return url.join('/')
-      }
+      },
     },
     destroyed() {
       window.removeEventListener('keydown', this.handleKeyDown)
@@ -254,20 +258,20 @@
     async mounted() {
       this.getWidth()
       console.log(this.path)
-      if (this.path) {
+      if (this.uri) {
         // 连接App调试
         if (window.drive) {
           // 本地文件的路径
-          const filePath = unescape(decodeURI(this.path))
-          const temp = filePath.split('/')
-          const fileName = temp[temp.length - 1]
-          console.log(filePath)
-          this.updateBookName(fileName)
-          let data = toByteArray(drive.readFile(filePath))
+          // const filePath = this.path.startsWith('content://') ? this.path : decodeURI(this.path)
+          // const temp = filePath.split('/')
+          // const fileName = temp[temp.length - 1]
+          console.log(this.name)
+          this.updateBookName(this.name)
+          let data = toByteArray(drive.readFile(this.uri))
           console.log(data.length)
           let book = new Epub()
           await book.open(data.buffer)
-          this.initEpub(book, GetReadProgress(fileName))
+          this.initEpub(book, GetReadProgress(this.name))
         } else {
           console.log('没有找到drive对象')
         }

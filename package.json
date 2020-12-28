@@ -32,6 +32,7 @@
     "sass-loader": "^10.1.0",
     "vue-cli-plugin-vuetify": "~2.0.8",
     "vue-template-compiler": "^2.6.12",
+    "vuedraggable": "^2.24.3",
     "vuetify-loader": "^1.6.0"
   },
   "eslintConfig": {

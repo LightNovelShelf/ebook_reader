@@ -5,15 +5,39 @@ Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/read/:path?',
+    path: '/read/:uri?/:name?',
     name: 'Read',
-    component: () => import('../views/ebook/index'),
+    component: () => import('../views/Read'),
     props: true
+  },
+  {
+    path: '/',
+    name: 'Home',
+    redirect: '/bookshelf',
+    component: () => import('../views/Home'),
+    children: [
+      {
+        path: 'bookshelf/:gid?',
+        name: 'Bookshelf',
+        component: () => import('../views/Home/BookShelf.vue'),
+        props: true,
+        meta: {
+          keepAlive: true
+        }
+      }
+    ]
   }
 ]
 
 const router = new VueRouter({
-  routes
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      return { x: 0, y: 0 }
+    }
+  }
 })
 
 export default router

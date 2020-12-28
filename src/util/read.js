@@ -55,3 +55,5 @@ export function getFontSize() {
 export function saveFontSize(size) {
   localStorage.setItem('Reading_FontSize', size)
 }
+
+export const ImagePath = window.drive?.getExternalFilesDir('Pictures')

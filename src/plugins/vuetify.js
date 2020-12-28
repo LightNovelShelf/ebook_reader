@@ -1,8 +1,18 @@
 import Vue from 'vue'
 import Vuetify from 'vuetify/lib/framework'
-import { mdiMagnify, mdiFormatSize, mdiFormatListBulleted, mdiWhiteBalanceSunny, mdiArrowLeft } from '@mdi/js'
+import { VRow } from 'vuetify/lib'
+import {
+  mdiMagnify,
+  mdiFormatSize,
+  mdiFormatListBulleted,
+  mdiWhiteBalanceSunny,
+  mdiArrowLeft,
+  mdiDotsVertical
+} from '@mdi/js'
 
-Vue.use(Vuetify)
+Vue.use(Vuetify, {
+  components: { VRow }
+})
 
 export default new Vuetify({})
 
@@ -11,5 +21,6 @@ export const icon = {
   mdiMagnify,
   mdiFormatSize,
   mdiFormatListBulleted,
-  mdiWhiteBalanceSunny
+  mdiWhiteBalanceSunny,
+  mdiDotsVertical
 }
