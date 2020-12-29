@@ -1,7 +1,7 @@
 <template>
-  <component :is="'router-link'" :to="{ name: 'Read', params: { path: book['book_path'] } }" tag="div">
+  <div @click="loadBook(book)">
     <v-card ripple>
-      <v-img :aspect-ratio="2 / 3" :src="getPath(book['book_cover'])">
+      <v-img :aspect-ratio="2 / 3" :src="getImagePath(book['book_cover'])">
         <template v-slot:placeholder>
           <v-row class="fill-height ma-0" align="center" justify="center">
             <v-progress-circular indeterminate color="blue-grey lighten-3"></v-progress-circular>
@@ -19,11 +19,11 @@
       </div>
       <div class="book-info">已读0%</div>
     </div>
-  </component>
+  </div>
 </template>
 
 <script>
-  import { ImagePath } from '@/util/read'
+  import { getImagePath,loadBook } from '@/util/read'
 
   export default {
     name: 'BookCard',
@@ -31,10 +31,8 @@
       book: Object
     },
     methods: {
-      getPath(name) {
-        if (name.startsWith('http')) return name
-        return 'file://' + ImagePath + '/' + name
-      }
+      getImagePath,
+      loadBook
     }
   }
 </script>

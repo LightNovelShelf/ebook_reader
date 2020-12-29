@@ -7,7 +7,7 @@
             <div class="d-flex flex-wrap fill-height">
               <div class="image" v-for="book in books.data.slice(0, 4)" :key="book['book_path']">
                 <v-card flat>
-                    <v-img :aspect-ratio="2 / 3" :src="book['book_cover']">
+                    <v-img :aspect-ratio="2 / 3" :src="getImagePath(book['book_cover'])">
                       <template v-slot:placeholder>
                         <v-row class="fill-height ma-0" align="center" justify="center">
                           <v-progress-circular indeterminate color="blue-grey lighten-3"></v-progress-circular>
@@ -35,10 +35,15 @@
 </template>
 
 <script>
+  import { getImagePath,loadBook } from '@/util/read'
+
   export default {
     name: 'BookGroupCard',
     props: {
       books: Object
+    },
+    methods: {
+      getImagePath,loadBook
     }
   }
 </script>

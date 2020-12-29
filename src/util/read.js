@@ -57,3 +57,16 @@ export function saveFontSize(size) {
 }
 
 export const ImagePath = window.drive?.getExternalFilesDir('Pictures')
+
+export function getImagePath(name) {
+  if (name.startsWith('http')) return name
+  let path = 'file://' + ImagePath + '/' + name
+  if (window.location.origin !== 'file://' && window.drive) {
+    return 'data:image/jpeg;base64,' + drive.readFile(path)
+  }
+  return path
+}
+
+export function loadBook(book) {
+  window.drive?.loadBook(book['book_title'],book['book_path'])
+}

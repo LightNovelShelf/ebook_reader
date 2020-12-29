@@ -22,6 +22,7 @@
   import EbookSidebar from '@/components/Read/EbookSidebar'
   import FontSetting from '@/components/Read/Menu/FontSetting'
   import { toByteArray } from 'base64-js'
+  import md5 from 'md5'
 
   export default {
     name: 'EbookReader',
@@ -39,7 +40,7 @@
     },
     props: {
       uri: String,
-      name:String
+      name: String
     },
     computed: {
       ...mapGetters(['book', 'menuShow', 'sidebarShow', 'fontSize']),
@@ -195,9 +196,11 @@
       },
       parseBook() {
         this.book.loaded.cover.then((cover) => {
-          this.book.archive.getBase64(cover).then((data) =>{
-            window.drive?.saveFile(this.name,'Pictures',data)
-          })
+          if (window.drive) {
+            this.book.archive.getBase64(cover).then((data) => {
+              window.drive.saveFile(md5(this.name), 'Pictures', data)
+            })
+          }
           this.book.archive.createUrl(cover).then((url) => {
             this.updateCover(url)
           })
@@ -250,7 +253,7 @@
         let url = window.location.href.split('#')[0].split('/')
         url[url.length - 1] = READ_STYLE
         return url.join('/')
-      },
+      }
     },
     destroyed() {
       window.removeEventListener('keydown', this.handleKeyDown)

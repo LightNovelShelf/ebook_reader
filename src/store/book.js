@@ -2,12 +2,13 @@ import { Storage } from '@/util/storage'
 import { trimStr, formatDate, guid } from '../util/index'
 import { BookList } from './mockData'
 import store from './index'
+import md5 from 'md5'
 
 const LOCAL_BOOK_LIST_KEY = 'EBookReader_BOOK'
 
 export default {
   state: {
-    list: Storage.read(LOCAL_BOOK_LIST_KEY) || BookList
+    list: Storage.read(LOCAL_BOOK_LIST_KEY)
   },
   getters: {
     localBookExist: (state, getters) => {
@@ -41,8 +42,13 @@ export default {
       }
     },
     hasBook: (state, getters) => {
-      return (bid) => {
-        return !!getters.allList.find((item) => item.bid === bid)
+      return (book_path) => {
+        return !!getters.BookList.find((item) => {
+          if (item.gid) {
+            return !!item.data.find((subItem) => subItem.book_path === book_path)
+          }
+          return item.book_path === book_path
+        })
       }
     },
     findBook: (state, getters) => {
@@ -108,24 +114,21 @@ export default {
         let find = payload.find((p) => p.gid === item.gid)
         return find && !getters.groupTitleExist(find.data.title, find.gid)
           ? {
-            ...item,
-            ...find,
-            last_update_time: formatDate(new Date(), 'yyyy-MM-dd hh:mm:sss'),
-            data: {
-              ...item.data,
-              ...find.data
+              ...item,
+              ...find,
+              last_update_time: formatDate(new Date(), 'yyyy-MM-dd hh:mm:sss'),
+              data: {
+                ...item.data,
+                ...find.data
+              }
             }
-          }
           : item
       })
       commit('updateBookGroup', newList)
       return true
     },
     addToBook({ commit, getters, dispatch }, payload) {
-      let newList = [
-        payload,
-        ...getters.BookList
-      ]
+      let newList = [payload, ...getters.BookList]
 
       commit('updateBookList', newList)
       return true
@@ -146,14 +149,14 @@ export default {
         let find = payload.find((p) => p.bid === item.bid)
         return find && getters.hasGroup(find.gid)
           ? {
-            ...item,
-            last_update_time: formatDate(new Date(), 'yyyy-MM-dd hh:mm:sss'),
-            ...find,
-            data: {
-              ...item.data,
-              ...find.data
+              ...item,
+              last_update_time: formatDate(new Date(), 'yyyy-MM-dd hh:mm:sss'),
+              ...find,
+              data: {
+                ...item.data,
+                ...find.data
+              }
             }
-          }
           : item
       })
       commit('updateBookList', newList)
@@ -174,13 +177,20 @@ function sortBook(a, b) {
   }
 }
 
-window.addToBook = function(path, name) {
+window.addToBook = function (path, name) {
+  if (store.getters.BookList && store.getters.hasBook(path)) return
+
   const time = new Date()
   const temp = {
     book_title: name,
     book_path: path,
     add_time: `${time.getFullYear()}-${time.getMonth() + 1}-${time.getDate()}`,
-    book_cover: name
+    book_cover: md5(name)
   }
-  store.dispatch('addToBook', temp)
+
+  if (store.getters.BookList) {
+    store.dispatch('addToBook', temp)
+  } else {
+    store.commit('updateBookList', [temp])
+  }
 }
