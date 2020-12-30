@@ -16,13 +16,14 @@
 
         <v-list dense>
           <v-list-item dense @click="openBook">打开书籍</v-list-item>
+          <v-list-item dense @click="openDir">打开文件夹</v-list-item>
         </v-list>
       </v-menu>
     </v-app-bar>
     <v-main>
       <v-row>
         <template v-if="!gid">
-          <v-col cols="4" sm="4" md="3" lg="2" v-for="(book, index) in BookList" :key="index">
+          <v-col cols="4" sm="4" md="3" lg="2" v-for="book in BookList" :key="book.gid || book.book_path">
             <book-card v-if="!book.gid" :book="book"></book-card>
             <book-group-card v-else :books="book"></book-group-card>
           </v-col>
@@ -69,6 +70,10 @@
       openBook() {
         console.log('从文件管理器选择一本书并打开书籍')
         window.drive?.openBook()
+      },
+      openDir() {
+        console.log('从文件管理器导入一个文件夹')
+        window.drive?.openDir()
       }
     }
   }

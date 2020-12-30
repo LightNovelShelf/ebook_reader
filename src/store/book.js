@@ -8,7 +8,7 @@ const LOCAL_BOOK_LIST_KEY = 'EBookReader_BOOK'
 
 export default {
   state: {
-    list: Storage.read(LOCAL_BOOK_LIST_KEY) || BookList
+    list: Storage.read(LOCAL_BOOK_LIST_KEY) || []
   },
   getters: {
     localBookExist: (state, getters) => {
@@ -19,16 +19,15 @@ export default {
     },
     hasGroup: (state, getters) => {
       return (gid) => {
-        // ignroe null group
         if (gid === null) return true
-        return !!getters.allGroup.find((item) => item.gid === gid)
+        return !!getters.BookList.find((item) => item.gid === gid)
       }
     },
     groupTitleExist: (state, getters) => {
       return (title, gid) => {
         let str = trimStr(title)
         if (str.length === 0) return true
-        return !!getters.allGroup.find((item) => item.gid !== gid && item.data.title === str)
+        return !!getters.BookList.find((item) => item.gid !== gid && item.book_title === str)
       }
     },
     cacheTitleExist: (state, getters) => {
@@ -80,20 +79,10 @@ export default {
   },
   actions: {
     addBookGroup({ commit, getters, dispatch }, payload) {
-      let { title, idx = null } = payload || {}
-      title = trimStr(title)
-      if (!getters.groupTitleExist(title)) {
-        let newGroup = {
-          gid: guid(),
-          last_update_time: formatDate(new Date(), 'yyyy-MM-dd hh:mm:sss'),
-          idx,
-          data: {
-            title
-          }
-        }
-        let newList = [...getters.allGroup, newGroup]
-        commit('updateBookGroup', newList)
-        return newGroup
+      if (!getters.groupTitleExist(payload.group_name)) {
+        let newList = [payload, ...getters.BookList]
+        commit('updateBookList', newList)
+        return true
       } else {
         return false
       }
@@ -187,4 +176,12 @@ window.addToBook = function (path, name) {
     book_cover: md5(name)
   }
   store.dispatch('addToBook', temp)
+}
+
+window.addToBooks = function (name, data) {
+  let payload = {}
+  payload.gid = guid()
+  payload.group_name = name
+  payload.data = JSON.parse(data)
+  store.dispatch('addBookGroup',payload)
 }

@@ -5,15 +5,15 @@
         <div class="image-wrapper">
           <div class="image-content">
             <div class="d-flex flex-wrap fill-height">
-              <div class="image" v-for="book in books.data.slice(0, 4)" :key="book['book_path']">
+              <div class="image" v-for="(book, index) in books.data.slice(0, 4)" :key="book['book_cover']">
                 <v-card flat>
-                    <v-img :aspect-ratio="2 / 3" :src="getImagePath(book['book_cover'])">
-                      <template v-slot:placeholder>
-                        <v-row class="fill-height ma-0" align="center" justify="center">
-                          <v-progress-circular indeterminate color="blue-grey lighten-3"></v-progress-circular>
-                        </v-row>
-                      </template>
-                    </v-img>
+                  <v-img :aspect-ratio="2 / 3" :src="src[index]">
+                    <template v-slot:placeholder>
+                      <v-row class="fill-height ma-0" align="center" justify="center">
+                        <v-progress-circular indeterminate color="blue-grey lighten-3"></v-progress-circular>
+                      </v-row>
+                    </template>
+                  </v-img>
                 </v-card>
               </div>
             </div>
@@ -29,21 +29,34 @@
           </div>
         </div>
       </div>
-      <div class="book-info">共{{books.data.length}}本</div>
+      <div class="book-info">共{{ books.data.length }}本</div>
     </div>
   </component>
 </template>
 
 <script>
-  import { getImagePath,loadBook } from '@/util/read'
+  import { getImagePath, loadBook } from '@/util/read'
 
   export default {
     name: 'BookGroupCard',
+    data() {
+      return {
+        src: ['', '', '', '']
+      }
+    },
     props: {
       books: Object
     },
     methods: {
-      getImagePath,loadBook
+      getImagePath,
+      loadBook
+    },
+    mounted() {
+      this.books.data.slice(0, 4).forEach((book, index) => {
+        getImagePath(book['book_cover'], book['book_path']).then((src) => {
+          this.$set(this.src, index, src)
+        })
+      })
     }
   }
 </script>
@@ -51,13 +64,13 @@
 <style scoped lang="scss">
   @import '../../assets/styles/mixin';
 
-  .image-wrapper{
+  .image-wrapper {
     padding: 3px;
     height: 100%;
     width: 100%;
 
-    .image-content{
-      background-color: #E9E5E5;
+    .image-content {
+      background-color: #e9e5e5;
       height: 100%;
       width: 100%;
 

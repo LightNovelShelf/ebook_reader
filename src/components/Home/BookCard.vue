@@ -1,7 +1,7 @@
 <template>
   <div @click="loadBook(book)">
     <v-card ripple>
-      <v-img :aspect-ratio="2 / 3" :src="getImagePath(book['book_cover'])">
+      <v-img :aspect-ratio="2 / 3" :src="src">
         <template v-slot:placeholder>
           <v-row class="fill-height ma-0" align="center" justify="center">
             <v-progress-circular indeterminate color="blue-grey lighten-3"></v-progress-circular>
@@ -23,16 +23,24 @@
 </template>
 
 <script>
-  import { getImagePath,loadBook } from '@/util/read'
+  import { getImagePath, loadBook } from '@/util/read'
 
   export default {
     name: 'BookCard',
+    data() {
+      return {
+        src: null
+      }
+    },
     props: {
       book: Object
     },
     methods: {
       getImagePath,
       loadBook
+    },
+    created() {
+      getImagePath(this.book['book_cover'], this.book['book_path']).then((src) => (this.src = src))
     }
   }
 </script>

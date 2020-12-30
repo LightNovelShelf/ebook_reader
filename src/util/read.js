@@ -1,3 +1,7 @@
+import { toByteArray } from 'base64-js'
+import Epub from '@/assets/js/epub.85.fix'
+import md5 from 'md5'
+
 export function throttle(fn, ms = 160) {
   // let timeout
   let start = new Date()
@@ -58,15 +62,29 @@ export function saveFontSize(size) {
 
 export const ImagePath = window.drive?.getExternalFilesDir('Pictures')
 
-export function getImagePath(name) {
+export async function getImagePath(name, uri) {
   if (name.startsWith('http')) return name
-  let path = 'file://' + ImagePath + '/' + name
-  if (window.location.origin !== 'file://' && window.drive) {
-    return 'data:image/jpeg;base64,' + drive.readFile(path)
+  let path = ImagePath + '/' + name
+  if (window.drive) {
+    if (!drive.fileExits(path)) {
+      let data = toByteArray(drive.readFile(uri))
+      let book = new Epub()
+      await book.open(data.buffer)
+      let cover = await book.loaded.cover
+      let coverData = await book.archive.getBase64(cover)
+      new Promise(function() {
+        drive.saveFile(name, 'Pictures', coverData)
+      })
+      return coverData
+    } else {
+      if (window.location.origin !== 'file://') {
+        return 'data:image/jpeg;base64,' + drive.readFile(path)
+      }
+    }
   }
-  return path
+  return 'file://' + path
 }
 
 export function loadBook(book) {
-  window.drive?.loadBook(book['book_title'],book['book_path'])
+  window.drive?.loadBook(book['book_title'], book['book_path'])
 }
