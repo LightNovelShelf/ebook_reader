@@ -2,7 +2,7 @@
   <div>
     <v-slide-y-transition>
       <div v-show="menuShow" class="toolbar justify-center align-center">
-        <v-btn icon class="ml-6">
+        <v-btn @click="finish" icon class="ml-6">
           <v-icon size="32">{{ icon.mdiArrowLeft }}</v-icon>
         </v-btn>
         <v-spacer />
@@ -157,6 +157,9 @@
           })
         })
         return this.promise
+      },
+      finish(){
+        window.drive?.finish()
       }
     }
   }

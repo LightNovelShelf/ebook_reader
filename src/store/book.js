@@ -8,7 +8,7 @@ const LOCAL_BOOK_LIST_KEY = 'EBookReader_BOOK'
 
 export default {
   state: {
-    list: Storage.read(LOCAL_BOOK_LIST_KEY)
+    list: Storage.read(LOCAL_BOOK_LIST_KEY) || BookList
   },
   getters: {
     localBookExist: (state, getters) => {
@@ -129,7 +129,6 @@ export default {
     },
     addToBook({ commit, getters, dispatch }, payload) {
       let newList = [payload, ...getters.BookList]
-
       commit('updateBookList', newList)
       return true
     },
@@ -177,9 +176,9 @@ function sortBook(a, b) {
   }
 }
 
+//暴露出函数给原生调用
 window.addToBook = function (path, name) {
-  if (store.getters.BookList && store.getters.hasBook(path)) return
-
+  if (store.getters.hasBook(path)) return
   const time = new Date()
   const temp = {
     book_title: name,
@@ -187,10 +186,5 @@ window.addToBook = function (path, name) {
     add_time: `${time.getFullYear()}-${time.getMonth() + 1}-${time.getDate()}`,
     book_cover: md5(name)
   }
-
-  if (store.getters.BookList) {
-    store.dispatch('addToBook', temp)
-  } else {
-    store.commit('updateBookList', [temp])
-  }
+  store.dispatch('addToBook', temp)
 }
