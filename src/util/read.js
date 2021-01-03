@@ -1,5 +1,5 @@
 import { toByteArray } from 'base64-js'
-import Epub from '@/assets/js/epub.85.fix'
+import Epub from 'epubjs'
 import md5 from 'md5'
 
 export function throttle(fn, ms = 160) {

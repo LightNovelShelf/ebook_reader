@@ -39,7 +39,7 @@
       getImagePath,
       loadBook
     },
-    created() {
+    mounted() {
       getImagePath(this.book['book_cover'], this.book['book_path']).then((src) => (this.src = src))
     }
   }
