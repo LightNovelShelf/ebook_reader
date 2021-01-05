@@ -1,6 +1,7 @@
 import { toByteArray } from 'base64-js'
 import Epub from 'epubjs'
 import md5 from 'md5'
+import store from '../store'
 
 export function throttle(fn, ms = 160) {
   // let timeout
@@ -60,31 +61,82 @@ export function saveFontSize(size) {
   localStorage.setItem('Reading_FontSize', size)
 }
 
-export const ImagePath = window.drive?.getExternalFilesDir('Pictures')
+export const ImagePath = window.device?.getExternalFilesDir('Pictures')
 
-export async function getImagePath(name, uri) {
-  if (name.startsWith('http')) return name
-  let path = ImagePath + '/' + name
-  if (window.drive) {
-    if (!drive.fileExits(path)) {
-      let data = toByteArray(drive.readFile(uri))
-      let book = new Epub()
-      await book.open(data.buffer)
-      let cover = await book.loaded.cover
-      let coverData = await book.archive.getBase64(cover)
-      new Promise(function() {
-        drive.saveFile(name, 'Pictures', coverData)
-      })
-      return coverData
-    } else {
-      if (window.location.origin !== 'file://') {
-        return 'data:image/jpeg;base64,' + drive.readFile(path)
+const readFilePromise = {}
+
+export function getImagePath(name, uri) {
+  if (readFilePromise[uri]) return readFilePromise[uri]
+  return new Promise(function (resolve, reject) {
+    if (store.getters.coverCache[name]) resolve(store.getters.coverCache[name])
+    if (name.startsWith('http')) resolve(name)
+    let path = ImagePath + '/' + name
+    if (window.device) {
+      if (!device.fileExits(path)) {
+        readFilePromise[uri] = this
+        let data = toByteArray(device.readFile(uri))
+        let book = new Epub()
+        book.open(data.buffer).then(async () => {
+          let cover = await book.loaded.cover
+          let coverData = await book.archive.getBase64(cover || '/OEBPS/Images/cover.jpg')
+          // let coverData = await book.archive.getBase64(cover)
+          new Promise(function () {
+            device.saveFile(name, 'Pictures', coverData)
+          })
+          store.commit('updateCoverCache', { name: name, data: coverData })
+          resolve(coverData)
+        })
+      } else {
+        if (window.location.origin !== 'file://') {
+          const result = 'data:image/jpeg;base64,' + device.readFile(path)
+          store.commit('updateCoverCache', { name: name, data: result })
+          resolve(result)
+        }else {
+          const result = 'file://' + path
+          store.commit('updateCoverCache', { name: name, data: result })
+          resolve(result)
+        }
       }
+    } else {
+      const result = 'file://' + path
+      store.commit('updateCoverCache', { name: name, data: result })
+      resolve(result)
     }
-  }
-  return 'file://' + path
+  })
+}
+
+export function getImagePath2(name, uri) {
+  if (readFilePromise[uri]) return readFilePromise[uri]
+  return new Promise(function (resolve, reject) {
+    if (store.getters.coverCache[name]) resolve()
+    if (name.startsWith('http')) {
+      store.commit('updateCoverCache', { name: name, data: name })
+      resolve()
+    }
+    let path = ImagePath + '/' + name
+    if (window.device) {
+      if (!device.fileExits(path)) {
+        readFilePromise[uri] = this
+        device.readFileAsync(0, name, uri)
+        resolve()
+      } else {
+        if (window.location.origin !== 'file://') {
+          device.readFileAsync(1, name, path)
+          resolve()
+        }else {
+          const result = 'file://' + path
+          store.commit('updateCoverCache', { name: name, data: result })
+          resolve(result)
+        }
+      }
+    }else {
+      const result = 'file://' + path
+      store.commit('updateCoverCache', { name: name, data: result })
+      resolve()
+    }
+  })
 }
 
 export function loadBook(book) {
-  window.drive?.loadBook(book['book_title'], book['book_path'])
+  window.device?.loadBook(book['book_title'], book['book_path'])
 }

@@ -5,9 +5,9 @@
         <div class="image-wrapper">
           <div class="image-content">
             <div class="d-flex flex-wrap fill-height">
-              <div class="image" v-for="(book, index) in books.data.slice(0, 4)" :key="book['book_cover']">
+              <div class="image" v-for="book in books.data.slice(0, 4)" :key="book['book_cover']">
                 <v-card flat>
-                  <v-img :aspect-ratio="2 / 3" :src="src[index]">
+                  <v-img :aspect-ratio="2 / 3" :src="coverCache[book['book_cover']]">
                     <template v-slot:placeholder>
                       <v-row class="fill-height ma-0" align="center" justify="center">
                         <v-progress-circular indeterminate color="blue-grey lighten-3"></v-progress-circular>
@@ -35,27 +35,23 @@
 </template>
 
 <script>
-  import { getImagePath, loadBook } from '@/util/read'
+  import { getImagePath2, loadBook } from '@/util/read'
+  import { mapGetters } from 'vuex'
 
   export default {
     name: 'BookGroupCard',
-    data() {
-      return {
-        src: ['', '', '', '']
-      }
-    },
     props: {
       books: Object
     },
     methods: {
-      getImagePath,
       loadBook
     },
-    mounted() {
+    computed: {
+      ...mapGetters(['coverCache'])
+    },
+    created() {
       this.books.data.slice(0, 4).forEach((book, index) => {
-        getImagePath(book['book_cover'], book['book_path']).then((src) => {
-          this.$set(this.src, index, src)
-        })
+        getImagePath2(book['book_cover'], book['book_path'])
       })
     }
   }

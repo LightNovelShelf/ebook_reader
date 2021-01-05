@@ -1,7 +1,7 @@
 <template>
   <div @click="loadBook(book)">
     <v-card ripple>
-      <v-img :aspect-ratio="2 / 3" :src="src">
+      <v-img :aspect-ratio="2 / 3" :src="coverCache[book['book_cover']]">
         <template v-slot:placeholder>
           <v-row class="fill-height ma-0" align="center" justify="center">
             <v-progress-circular indeterminate color="blue-grey lighten-3"></v-progress-circular>
@@ -23,24 +23,22 @@
 </template>
 
 <script>
-  import { getImagePath, loadBook } from '@/util/read'
+  import { getImagePath, getImagePath2, loadBook } from '@/util/read'
+  import { mapGetters } from 'vuex'
 
   export default {
     name: 'BookCard',
-    data() {
-      return {
-        src: null
-      }
-    },
     props: {
       book: Object
     },
+    computed: {
+      ...mapGetters(['coverCache'])
+    },
     methods: {
-      getImagePath,
       loadBook
     },
-    mounted() {
-      getImagePath(this.book['book_cover'], this.book['book_path']).then((src) => (this.src = src))
+    created() {
+      getImagePath2(this.book['book_cover'], this.book['book_path'])
     }
   }
 </script>

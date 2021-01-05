@@ -15,6 +15,7 @@
     "prettier": "^2.2.1",
     "v-viewer": "^1.5.1",
     "vue": "^2.6.12",
+    "vue-navigation": "^1.1.4",
     "vue-router": "^3.2.0",
     "vuetify": "^2.4.0",
     "vuex": "^3.4.0"
@@ -42,7 +43,7 @@
       "node": true
     },
     "globals": {
-      "drive": true
+      "device": true
     },
     "extends": [
       "plugin:vue/essential",

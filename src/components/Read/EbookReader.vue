@@ -137,9 +137,6 @@
         })
 
         this.loadFontSize()
-        if (window.drive) {
-          drive.toast(cfi)
-        }
         console.log(cfi)
         this.rendition.display(cfi)
 
@@ -196,9 +193,9 @@
       },
       parseBook() {
         this.book.loaded.cover.then((cover) => {
-          if (window.drive) {
+          if (window.device) {
             this.book.archive.getBase64(cover).then((data) => {
-              window.drive.saveFile(md5(this.name), 'Pictures', data)
+              window.device.saveFile(md5(this.name), 'Pictures', data)
             })
           }
           this.book.archive.createUrl(cover).then((url) => {
@@ -263,20 +260,20 @@
       console.log(this.path)
       if (this.uri) {
         // 连接App调试
-        if (window.drive) {
+        if (window.device) {
           // 本地文件的路径
           // const filePath = this.path.startsWith('content://') ? this.path : decodeURI(this.path)
           // const temp = filePath.split('/')
           // const fileName = temp[temp.length - 1]
           console.log(this.name)
           this.updateBookName(this.name)
-          let data = toByteArray(drive.readFile(this.uri))
+          let data = toByteArray(device.readFile(this.uri))
           console.log(data.length)
           let book = new Epub()
           await book.open(data.buffer)
           this.initEpub(book, GetReadProgress(this.name))
         } else {
-          console.log('没有找到drive对象')
+          console.log('没有找到device对象')
         }
       } else {
         const fileName = 'Test2.epub'

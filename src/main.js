@@ -5,6 +5,8 @@ import router from './router'
 import store from './store'
 import Viewer from 'v-viewer'
 import 'viewerjs/dist/viewer.css'
+import Navigation from 'vue-navigation'
+
 
 Vue.config.productionTip = false
 Vue.use(Viewer, {
@@ -12,6 +14,8 @@ Vue.use(Viewer, {
     navbar: false
   }
 })
+
+Vue.use(Navigation, {router})
 
 new Vue({
   vuetify,

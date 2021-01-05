@@ -159,7 +159,7 @@
         return this.promise
       },
       finish(){
-        window.drive?.finish()
+        window.device?.finish()
       }
     }
   }

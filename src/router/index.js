@@ -21,9 +21,6 @@ const routes = [
         name: 'Bookshelf',
         component: () => import('../views/Home/BookShelf.vue'),
         props: true,
-        meta: {
-          keepAlive: true
-        }
       }
     ]
   }

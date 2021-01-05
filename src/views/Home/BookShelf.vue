@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-app-bar dense flat color="white" app>
-      <v-app-bar-title class="text-caption">阅读时长<span class="text-h6">800</span>小时</v-app-bar-title>
+      <v-app-bar-title class="text-caption">阅读时长<span class="text-h6">0</span>小时</v-app-bar-title>
       <v-spacer></v-spacer>
       <v-btn text icon small class="mr-3">
         <v-icon>{{ icon.mdiMagnify }}</v-icon>
@@ -69,12 +69,15 @@
     methods: {
       openBook() {
         console.log('从文件管理器选择一本书并打开书籍')
-        window.drive?.openBook()
+        window.device?.openBook()
       },
       openDir() {
         console.log('从文件管理器导入一个文件夹')
-        window.drive?.openDir()
+        window.device?.openDir()
       }
+    },
+    activated() {
+      console.log('activated')
     }
   }
 </script>
@@ -99,5 +102,30 @@
     .category-text {
       @include ellipsis2(2);
     }
+  }
+</style>
+
+<style lang='scss'>
+  .move {
+  &.flip-list-move {
+     transition: all 0.5s;
+   }
+
+  &.flip-list-enter-active,
+  &.flip-list-leave-active {
+     transition: all 0.5s;
+   }
+
+  &.flip-list-leave-active {
+     position: absolute;
+   }
+
+  &.flip-list-enter,
+  &.flip-list-leave-to {
+     opacity: 0;
+     transform: scale(0);
+     max-width: 0;
+     flex-basis: 0;
+   }
   }
 </style>

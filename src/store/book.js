@@ -3,12 +3,16 @@ import { trimStr, formatDate, guid } from '../util/index'
 import { BookList } from './mockData'
 import store from './index'
 import md5 from 'md5'
+import { toByteArray } from 'base64-js'
+import Epub from 'epubjs'
+import Vue from 'vue'
 
 const LOCAL_BOOK_LIST_KEY = 'EBookReader_BOOK'
 
 export default {
   state: {
-    list: Storage.read(LOCAL_BOOK_LIST_KEY) || []
+    list: Storage.read(LOCAL_BOOK_LIST_KEY) || [],
+    coverCache: {}
   },
   getters: {
     localBookExist: (state, getters) => {
@@ -69,12 +73,18 @@ export default {
           group: getters.allGroup.filter((item) => !!list.find(({ bid, gid }) => !bid && item.gid === gid))
         }
       }
+    },
+    coverCache: (state) => {
+      return state.coverCache
     }
   },
   mutations: {
     updateBookList(state, payload) {
       state.list = payload || []
       Storage.write(LOCAL_BOOK_LIST_KEY, state.list)
+    },
+    updateCoverCache(state, payload) {
+      Vue.set(state.coverCache,payload.name,payload.data)
     }
   },
   actions: {
@@ -149,7 +159,7 @@ export default {
       })
       commit('updateBookList', newList)
       return true
-    }
+    },
   }
 }
 
@@ -183,5 +193,30 @@ window.addToBooks = function (name, data) {
   payload.gid = guid()
   payload.group_name = name
   payload.data = JSON.parse(data)
-  store.dispatch('addBookGroup',payload)
+  store.dispatch('addBookGroup', payload)
+}
+
+window.readFileResult = function (resultCode, name, data) {
+  switch (resultCode) {
+    // getImagePath2中读取EPUB
+    case 0: {
+      data = toByteArray(data)
+      let book = new Epub()
+      book.open(data.buffer).then(async () => {
+        let cover = await book.loaded.cover
+        let coverData = await book.archive.getBase64(cover || '/OEBPS/Images/cover.jpg')
+        // let coverData = await book.archive.getBase64(cover)
+        new Promise(function () {
+          device.saveFile(name, 'Pictures', coverData)
+        })
+        store.commit('updateCoverCache', { name: name, data: coverData })
+      })
+      break
+    }
+    // getImagePath2中读取封面
+    case 1: {
+      store.commit('updateCoverCache', { name: name, data: 'data:image/jpeg;base64,' + data })
+      break
+    }
+  }
 }

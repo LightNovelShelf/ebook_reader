@@ -24,5 +24,6 @@ module.exports = {
         .uses.set('postcss-loader', cssConfig.get('postcss-loader'))
         .set('sass-loader', cssConfig.get('sass-loader'))
     }
-  }
+  },
+  productionSourceMap: false
 }
