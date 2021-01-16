@@ -8,25 +8,29 @@
     <ebook-menu />
     <ebook-sidebar />
     <font-setting />
+    <bg-setting />
   </div>
 </template>
 
 <script>
   // import { EpubCFI } from 'epubjs' //这样导不进来，奇怪
+  // import Epub from 'epubjs'
   import Epub from '@/assets/js/epub.85.fix'
   import EpubCFI from 'epubjs/src/epubcfi'
   import { mapActions, mapGetters, mapMutations } from 'vuex'
   import { flatten, getFontSize, GetReadProgress, throttle } from '@/util/read'
+  import { getFullUrl } from '@/util'
   import READ_STYLE from '@/assets/styles/read.scss'
   import EbookMenu from '@/components/Read/EbookMenu'
   import EbookSidebar from '@/components/Read/EbookSidebar'
   import FontSetting from '@/components/Read/Menu/FontSetting'
+  import BgSetting from './Menu/BgSetting'
   import { toByteArray } from 'base64-js'
   import md5 from 'md5'
 
   export default {
     name: 'EbookReader',
-    components: { FontSetting, EbookSidebar, EbookMenu },
+    components: { BgSetting, FontSetting, EbookSidebar, EbookMenu },
     data() {
       return {
         img: {
@@ -60,7 +64,7 @@
         'updateBookName',
         'updateFontSize'
       ]),
-      ...mapActions(['refreshLocation']),
+      ...mapActions(['refreshLocation', 'getRendition']),
       hide() {
         this.updateMenuShow(false)
         this.updateSidebarShow(false)
@@ -124,20 +128,21 @@
           e.deltaY > 0 ? this.nextPage() : this.prevPage()
         }
       },
-      initEpub(book, cfi) {
+      async initEpub(book, cfi) {
         this.updateBook(book)
         // 指定渲染的位置和方式
-        this.rendition = book.renderTo('read', {
-          width: this.width,
-          height: window.innerHeight,
-          // flow: 'auto',
-          // manager: 'continuous',
-          stylesheet: this.getStyleUrl()
-          // snap: true,
+        this.rendition = await this.getRendition({
+          element: 'read',
+          option: {
+            width: this.width,
+            height: window.innerHeight,
+            // flow: 'auto',
+            // manager: 'continuous',
+            stylesheet: getFullUrl(READ_STYLE)
+            // snap: true,
+          }
         })
 
-        this.loadFontSize()
-        console.log(cfi)
         this.rendition.display(cfi)
 
         this.initEvent()
@@ -243,13 +248,7 @@
       },
       loadFontSize() {
         let size = getFontSize()
-        this.rendition.themes.fontSize(size + 'px')
         this.updateFontSize(size)
-      },
-      getStyleUrl() {
-        let url = window.location.href.split('#')[0].split('/')
-        url[url.length - 1] = READ_STYLE
-        return url.join('/')
       }
     },
     destroyed() {
@@ -276,7 +275,7 @@
           console.log('没有找到device对象')
         }
       } else {
-        const fileName = 'Test2.epub'
+        const fileName = 'Test1.epub'
         this.updateBookName(fileName)
         this.initEpub(new Epub(fileName), GetReadProgress(fileName))
       }

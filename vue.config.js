@@ -1,3 +1,8 @@
+const path = require('path')
+function resolve(dir) {
+  return path.join(__dirname, dir)
+}
+
 module.exports = {
   publicPath: './',
   transpileDependencies: ['vuetify'],
@@ -23,6 +28,13 @@ module.exports = {
         .oneOf('read.scss')
         .uses.set('postcss-loader', cssConfig.get('postcss-loader'))
         .set('sass-loader', cssConfig.get('sass-loader'))
+    }
+  },
+  configureWebpack: {
+    resolve: {
+      alias: {
+        '@': resolve('src')
+      }
     }
   },
   productionSourceMap: false

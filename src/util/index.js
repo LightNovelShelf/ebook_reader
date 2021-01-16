@@ -31,3 +31,9 @@ export function guid() {
     return v.toString(16)
   })
 }
+
+export function getFullUrl(uri){
+  let url = window.location.href.split('#')[0].split('/')
+  url[url.length - 1] = uri
+  return url.join('/')
+}

@@ -33,7 +33,7 @@
           return this.$store.state.read.fontSize
         },
         set(val) {
-          this.setFontSize(val)
+          this.updateFontSize(val)
         }
       },
       fontSettingShow: {
@@ -46,8 +46,7 @@
       }
     },
     methods: {
-      ...mapActions(['setFontSize']),
-      ...mapMutations(['updateFontSettingShow'])
+      ...mapMutations(['updateFontSettingShow', 'updateFontSize'])
     }
   }
 </script>

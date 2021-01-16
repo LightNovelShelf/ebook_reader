@@ -1,9 +1,19 @@
-import { saveFontSize, saveReadProgress } from '@/util/read'
+import { saveReadProgress, loadBg } from '@/util/read'
+import { getFullUrl } from '@/util'
+import vuetify from '../plugins/vuetify'
+import { Storage } from '@/util/storage'
 import EpubCFI from 'epubjs/src/epubcfi'
+import bg_paper from '@/assets/img/bg-paper.jpg'
+import bg_paper_dark from '@/assets/img/bg-paper-dark.jpg'
+
+const LightNovel_Reading_Bg_Setting = 'LightNovel_Reading_Bg_Setting'
+const LightNovel_Reading_Bg_Custom = 'LightNovel_Reading_Bg_Custom'
+const Reading_FontSize = 'Reading_FontSize'
 
 export default {
   state: {
     book: null,
+    rendition: null,
     bookName: null,
     cover: null,
     navigation: null,
@@ -13,8 +23,11 @@ export default {
     section: 1,
     menuShow: false,
     fontSettingShow: false,
+    bgSettingShow: false,
     sidebarShow: false,
-    fontSize: 16
+    fontSize: Storage.read(Reading_FontSize) || 16,
+    readingCustomBg: Storage.read(LightNovel_Reading_Bg_Custom) || null,
+    readingBgSetting: Storage.read(LightNovel_Reading_Bg_Setting) || 'none'
   },
   getters: {
     readSection(state) {
@@ -39,49 +52,77 @@ export default {
     sidebarShow(state) {
       return state.sidebarShow
     },
+    bgSettingShow(state) {
+      return state.bgSettingShow
+    },
     bookAvailable(state) {
       return state.bookAvailable
     },
     navigation(state) {
       return state.navigation
+    },
+    readingCustomBg(state) {
+      return state.readingCustomBg
+    },
+    readingBgSetting(state) {
+      return state.readingBgSetting
     }
   },
   mutations: {
-    updateBookName(state, payload) {
-      state.bookName = payload
+    updateBookName(state, value) {
+      state.bookName = value
     },
-    updateFontSize(state, payload) {
-      state.fontSize = payload
+    updateFontSize(state, value) {
+      state.fontSize = value
+      state.book.rendition.themes.fontSize(value + 'px')
+      Storage.write(Reading_FontSize, value)
     },
-    updateFontSettingShow(state, payload) {
-      state.fontSettingShow = payload
+    updateFontSettingShow(state, value) {
+      state.fontSettingShow = value
     },
-    updateBook(state, payload) {
-      state.book = payload
+    updateBook(state, value) {
+      state.book = value
     },
-    updateCover(state, payload) {
-      state.cover = payload
+    updateRendition(state, value) {
+      state.rendition = value
     },
-    updateNavigation(state, payload) {
-      state.navigation = payload
+    updateCover(state, value) {
+      state.cover = value
     },
-    updateMetadata(state, payload) {
-      state.metadata = payload
+    updateNavigation(state, value) {
+      state.navigation = value
     },
-    updateBookAvailable(state, payload) {
-      state.bookAvailable = payload
+    updateMetadata(state, value) {
+      state.metadata = value
     },
-    updateReadProgress(state, payload) {
-      state.readProgress = payload
+    updateBookAvailable(state, value) {
+      state.bookAvailable = value
     },
-    updateSection(state, payload) {
-      state.section = payload
+    updateReadProgress(state, value) {
+      state.readProgress = value
     },
-    updateMenuShow(state, payload) {
-      state.menuShow = payload
+    updateSection(state, value) {
+      state.section = value
     },
-    updateSidebarShow(state, payload) {
-      state.sidebarShow = payload
+    updateMenuShow(state, value) {
+      state.menuShow = value
+    },
+    updateBgSettingShow(state, value) {
+      state.bgSettingShow = value
+    },
+    updateSidebarShow(state, value) {
+      state.sidebarShow = value
+    },
+    updateReadingCustomBg(state, { value = null }) {
+      state.readingCustomBg = value
+      setBg(state)
+      Storage.write(LightNovel_Reading_Bg_Custom, value)
+    },
+    updateReadingBgSetting(state, { setting = 'none' }) {
+      state.readingBgSetting = setting
+      setBg(state)
+      Storage.write(LightNovel_Reading_Bg_Setting, setting)
+      // loadBg(state.book.rendition.themes)
     }
   },
   actions: {
@@ -136,11 +177,43 @@ export default {
     display({ commit, state }, target) {
       return state.book.rendition.display(target)
     },
-    setFontSize({ commit, state }, size) {
-      state.book.rendition.themes.fontSize(size + 'px')
-      commit('updateFontSize', size)
-      saveFontSize(size)
+    getRendition({ commit, state }, { element, option }) {
+      let rendition = state.book.renderTo(element, option)
+      commit('updateRendition', rendition)
+      rendition.themes.fontSize(state.fontSize + 'px')
+      setBg(state)
+      return rendition
     }
   },
   modules: {}
+}
+
+function computeFontColor(r, g, b) {
+  let contrast = (r * 299 + g * 587 + b * 114) / 1000
+  if (contrast >= 125) {
+    return 'dark'
+  }
+  return 'light'
+}
+
+function setBg(state) {
+  switch (state.readingBgSetting) {
+    case 'custom': {
+      let { r, g, b, a } = state.readingCustomBg
+      const color = computeFontColor(r, g, b) === 'light' ? 'rgba(255,255,255,0.7)' : ''
+      state.rendition.themes.override('--color', color)
+      document.documentElement.style.setProperty('--bg-img', `rgba(${r},${g},${b},${a})`)
+      break
+    }
+    case 'paper':
+      document.documentElement.style.setProperty(
+        '--bg-img',
+        `url(${vuetify.framework.theme.dark ? bg_paper_dark : getFullUrl(bg_paper)}) repeat`
+      )
+      state.rendition.themes.override('--color', vuetify.framework.theme.dark ? 'rgba(255,255,255,0.7)' : '')
+      break
+    default:
+      state.rendition.themes.override('--color', '')
+      document.documentElement.style.setProperty('--bg-img', '')
+  }
 }

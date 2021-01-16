@@ -16,7 +16,7 @@
                 :key="item.label"
                 @click="selectSection(item.href, index)"
               >
-                <div class="pl-3">{{ item.label }}</div>
+                <div class="pl-3" :style='contentItemStyle(item)'>{{ item.label }}</div>
               </v-list-item>
               <v-divider :key="index" />
             </template>
@@ -49,6 +49,11 @@
         this.display(href).then(() => {
           this.refreshLocation([false, true])
         })
+      },
+      contentItemStyle(item) {
+        return {
+          marginLeft: `${item.level * 1.5}em`
+        }
       }
     }
   }

@@ -14,7 +14,11 @@ Vue.use(Vuetify, {
   components: { VRow }
 })
 
-export default new Vuetify({})
+export default new Vuetify({
+  icons: {
+    iconfont: 'mdiSvg'
+  }
+})
 
 export const icon = {
   mdiArrowLeft,

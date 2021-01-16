@@ -1,5 +1,5 @@
 <template>
-  <ebook-reader :uri="uri" :name="name"></ebook-reader>
+  <ebook-reader class='read' :uri="uri" :name="name"></ebook-reader>
 </template>
 
 <script>
@@ -14,4 +14,8 @@
   }
 </script>
 
-<style scoped></style>
+<style scoped lang='scss'>
+  .read{
+    background: var(--bg-img);
+  }
+</style>

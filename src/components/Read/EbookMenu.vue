@@ -60,7 +60,10 @@
           },
           {
             icon: icon.mdiWhiteBalanceSunny,
-            handle: () => {}
+            handle: () => {
+              this.updateBgSettingShow(true)
+              this.updateMenuShow(false)
+            }
           },
           {
             icon: icon.mdiFormatSize,
@@ -113,7 +116,8 @@
         'updateSection',
         'updateMenuShow',
         'updateSidebarShow',
-        'updateFontSettingShow'
+        'updateFontSettingShow',
+        'updateBgSettingShow'
       ]),
       ...mapActions(['display', 'refreshLocation']),
       change(value) {
@@ -158,7 +162,7 @@
         })
         return this.promise
       },
-      finish(){
+      finish() {
         window.device?.finish()
       }
     }

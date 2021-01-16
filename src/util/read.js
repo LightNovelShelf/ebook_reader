@@ -2,6 +2,9 @@ import { toByteArray } from 'base64-js'
 import Epub from 'epubjs'
 import md5 from 'md5'
 import store from '../store'
+import vuetify from '../plugins/vuetify'
+import bg_paper_dark from '../assets/img/bg-paper-dark.jpg'
+import bg_paper from '../assets/img/bg-paper.jpg'
 
 export function throttle(fn, ms = 160) {
   // let timeout
@@ -51,14 +54,6 @@ export function saveReadProgress(fileName, cfi) {
 export function GetReadProgress(fileName) {
   let record = JSON.parse(localStorage.getItem(`Reading_Record`) || '{}')
   return record[fileName]?.cfi
-}
-
-export function getFontSize() {
-  return localStorage.getItem('Reading_FontSize') || 16
-}
-
-export function saveFontSize(size) {
-  localStorage.setItem('Reading_FontSize', size)
 }
 
 export const ImagePath = window.device?.getExternalFilesDir('Pictures')
@@ -139,4 +134,21 @@ export function getImagePath2(name, uri) {
 
 export function loadBook(book) {
   window.device?.loadBook(book['book_title'], book['book_path'])
+}
+
+export function loadBg(themes){
+  switch (store.state.read.readingBgSetting) {
+    case 'custom': {
+      break
+    }
+    case 'paper': {
+      themes.override(
+        'background',
+        `url(${vuetify.theme?.dark ? bg_paper_dark : bg_paper}) repeat`
+      )
+      break
+    }
+    default:
+      themes.override('--color', '')
+  }
 }
