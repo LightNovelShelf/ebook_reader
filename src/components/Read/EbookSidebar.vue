@@ -73,7 +73,7 @@
 
     .overflow-auto {
       scrollbar-width: none;
-      height: calc(100vh - 48px);
+      height: calc(100vh - 48px - var(--status-bar-height));
 
       &::-webkit-scrollbar {
         display: none;

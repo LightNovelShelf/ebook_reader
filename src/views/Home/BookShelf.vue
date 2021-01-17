@@ -81,11 +81,16 @@
         let vue = this
         function moveToFirst() {
           if (vue.gid) {
-            const index = vue.books.data.findIndex((item) => item['book_path'] === book['book_path'])
-            let temp = [book, ...vue.books.data]
+            let index = vue.BookList.findIndex((item) => item.gid === vue.gid)
+            let temp = [vue.books, ...vue.BookList]
             temp.splice(index + 1, 1)
-            vue.books.data = temp
-            vue.saveBookList()
+
+            index = temp[0].data.findIndex((item) => item['book_path'] === book['book_path'])
+            let temp2 = [book,...temp[0].data]
+            temp2.splice(index + 1, 1)
+            temp[0].data = temp2
+
+            vue.updateBookList(temp)
           } else {
             const index = vue.BookList.findIndex((item) => item['book_path'] === book['book_path'])
             let temp = [book, ...vue.BookList]

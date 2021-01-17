@@ -21,7 +21,7 @@
   import Epub from '@/assets/js/epub.85.fix'
   import EpubCFI from 'epubjs/src/epubcfi'
   import { mapActions, mapGetters, mapMutations } from 'vuex'
-  import { flatten, getFontSize, GetReadProgress, throttle } from '@/util/read'
+  import { flatten, GetReadProgress, throttle,ImagePath } from '@/util/read'
   import { getFullUrl } from '@/util'
   import READ_STYLE from '@/assets/styles/read.scss'
   import EbookMenu from '@/components/Read/EbookMenu'
@@ -152,6 +152,7 @@
         this.parseBook()
         book.ready
           .then(() => {
+            window.device?.setResultOK()
             // 修改网页title
             document.title = book.package.metadata.title
             // return this.book.locations.generate(750 * (window.innerWidth / 375) * bookState.defaultFontSize / 16)
@@ -201,14 +202,18 @@
       },
       parseBook() {
         this.book.loaded.cover.then((cover) => {
-          if (window.device) {
-            this.book.archive.getBase64(cover).then((data) => {
-              window.device.saveFile(md5(this.name), 'Pictures', data)
+          if (cover){
+            let coverName = md5(this.name)
+            if (window.device && !window.device.fileExits(ImagePath + '/' + coverName )) {
+              this.book.archive.getBase64(cover).then((data) => {
+                console.log('saveFile')
+                window.device.saveFile(coverName, 'Pictures', data)
+              })
+            }
+            this.book.archive.createUrl(cover).then((url) => {
+              this.updateCover(url)
             })
           }
-          this.book.archive.createUrl(cover).then((url) => {
-            this.updateCover(url)
-          })
         })
         this.book.loaded.metadata.then((metadata) => {
           this.updateMetadata(metadata)
@@ -249,10 +254,6 @@
         const remainder = screenWidth % 8
         this.width = screenWidth - remainder
       },
-      loadFontSize() {
-        let size = getFontSize()
-        this.updateFontSize(size)
-      }
     },
     destroyed() {
       window.removeEventListener('keydown', this.handleKeyDown)
