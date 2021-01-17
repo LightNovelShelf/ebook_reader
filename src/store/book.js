@@ -139,27 +139,9 @@ export default {
       commit('updateBookList', newList)
       return true
     },
-    updateBook({ commit, getters, dispatch }, payload) {
-      if (!Array.isArray(payload)) {
-        payload = [payload]
-      }
-      let newList = getters.allList.map((item) => {
-        let find = payload.find((p) => p.bid === item.bid)
-        return find && getters.hasGroup(find.gid)
-          ? {
-              ...item,
-              last_update_time: formatDate(new Date(), 'yyyy-MM-dd hh:mm:sss'),
-              ...find,
-              data: {
-                ...item.data,
-                ...find.data
-              }
-            }
-          : item
-      })
-      commit('updateBookList', newList)
-      return true
-    },
+    saveBookList({state}){
+      Storage.write(LOCAL_BOOK_LIST_KEY, state.list)
+    }
   }
 }
 

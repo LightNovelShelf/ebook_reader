@@ -21,19 +21,19 @@
       </v-menu>
     </v-app-bar>
     <v-main>
-      <v-row>
+      <transition-group tag="VRow" type="transition" name="flip-list" class="move">
         <template v-if="!gid">
           <v-col cols="4" sm="4" md="3" lg="2" v-for="book in BookList" :key="book.gid || book.book_path">
-            <book-card v-if="!book.gid" :book="book"></book-card>
+            <book-card v-on:load-book="loadBook" v-if="!book.gid" :book="book"></book-card>
             <book-group-card v-else :books="book"></book-group-card>
           </v-col>
         </template>
         <template v-else>
-          <v-col cols="4" sm="4" md="3" lg="2" v-for="book in findGroup(gid).data" :key="book['book_path']">
-            <book-card :book="book"></book-card>
+          <v-col cols="4" sm="4" md="3" lg="2" v-for="book in books.data" :key="book['book_path']">
+            <book-card v-on:load-book="loadBook" :book="book"></book-card>
           </v-col>
         </template>
-      </v-row>
+      </transition-group>
     </v-main>
   </v-container>
 </template>
@@ -61,12 +61,14 @@
       }
     },
     computed: {
-      ...mapGetters(['BookList', 'findGroup']),
+      ...mapGetters(['BookList']),
       books() {
         return this.BookList.find((item) => item.gid === this.gid)
       }
     },
     methods: {
+      ...mapActions(['saveBookList']),
+      ...mapMutations(['updateBookList']),
       openBook() {
         console.log('从文件管理器选择一本书并打开书籍')
         window.device?.openBook()
@@ -74,10 +76,25 @@
       openDir() {
         console.log('从文件管理器导入一个文件夹')
         window.device?.openDir()
+      },
+      loadBook(book) {
+        let vue = this
+        function moveToFirst() {
+          if (vue.gid) {
+            const index = vue.books.data.findIndex((item) => item['book_path'] === book['book_path'])
+            let temp = [book, ...vue.books.data]
+            temp.splice(index + 1, 1)
+            vue.books.data = temp
+            vue.saveBookList()
+          } else {
+            const index = vue.BookList.findIndex((item) => item['book_path'] === book['book_path'])
+            let temp = [book, ...vue.BookList]
+            temp.splice(index + 1, 1)
+            vue.updateBookList(temp)
+          }
+        }
+        window.device ? (window.moveToFirst = moveToFirst) : moveToFirst()
       }
-    },
-    activated() {
-      console.log('activated')
     }
   }
 </script>
@@ -103,29 +120,27 @@
       @include ellipsis2(2);
     }
   }
-</style>
 
-<style lang='scss'>
   .move {
-  &.flip-list-move {
-     transition: all 0.5s;
-   }
+    .flip-list-move {
+      transition: all 0.5s;
+    }
 
-  &.flip-list-enter-active,
-  &.flip-list-leave-active {
-     transition: all 0.5s;
-   }
+    .flip-list-enter-active,
+    .flip-list-leave-active {
+      transition: all 0.5s;
+    }
 
-  &.flip-list-leave-active {
-     position: absolute;
-   }
+    .flip-list-leave-active {
+      position: absolute;
+    }
 
-  &.flip-list-enter,
-  &.flip-list-leave-to {
-     opacity: 0;
-     transform: scale(0);
-     max-width: 0;
-     flex-basis: 0;
-   }
+    .flip-list-enter,
+    .flip-list-leave-to {
+      opacity: 0;
+      transform: scale(0);
+      max-width: 0;
+      flex-basis: 0;
+    }
   }
 </style>

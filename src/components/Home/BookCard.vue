@@ -23,7 +23,7 @@
 </template>
 
 <script>
-  import { getImagePath, getImagePath2, loadBook } from '@/util/read'
+  import { getImagePath2 } from '@/util/read'
   import { mapGetters } from 'vuex'
 
   export default {
@@ -35,7 +35,10 @@
       ...mapGetters(['coverCache'])
     },
     methods: {
-      loadBook
+      loadBook(book) {
+        window.device?.loadBook(book['book_title'], book['book_path'])
+        this.$emit('load-book',book)
+      }
     },
     created() {
       getImagePath2(this.book['book_cover'], this.book['book_path'])

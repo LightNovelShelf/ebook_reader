@@ -35,16 +35,13 @@
 </template>
 
 <script>
-  import { getImagePath2, loadBook } from '@/util/read'
+  import { getImagePath2 } from '@/util/read'
   import { mapGetters } from 'vuex'
 
   export default {
     name: 'BookGroupCard',
     props: {
       books: Object
-    },
-    methods: {
-      loadBook
     },
     computed: {
       ...mapGetters(['coverCache'])

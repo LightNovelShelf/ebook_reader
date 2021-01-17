@@ -132,10 +132,6 @@ export function getImagePath2(name, uri) {
   })
 }
 
-export function loadBook(book) {
-  window.device?.loadBook(book['book_title'], book['book_path'])
-}
-
 export function loadBg(themes){
   switch (store.state.read.readingBgSetting) {
     case 'custom': {
