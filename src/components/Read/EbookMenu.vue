@@ -172,11 +172,12 @@
 <style scoped lang="scss">
   .toolbar {
     width: 100%;
-    height: 64px;
+    height: calc(64px + var(--status-bar-height));
     position: absolute;
     display: flex;
     top: 0;
     left: 0;
+    padding-top: var(--status-bar-height);
     background: white;
     box-shadow: 0 8px 8px rgba(#000000, 0.15) !important;
   }

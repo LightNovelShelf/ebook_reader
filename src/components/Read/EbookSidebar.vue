@@ -67,6 +67,7 @@
     height: 100%;
     width: 300px;
     max-width: 90%;
+    padding-top: var(--status-bar-height);
     background: white;
     box-shadow: 8px 0 8px rgba(#000000, 0.15);
 

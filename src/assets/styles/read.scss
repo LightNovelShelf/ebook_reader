@@ -1,12 +1,15 @@
-.duokan-image-single img{
+.duokan-image-single img {
   margin: 5px 0;
 }
-p, img {
+p,
+img {
   -moz-user-select: none;
   -webkit-user-select: none;
-  user-select: none;  
+  user-select: none;
 }
 
 body {
   color: var(--color);
+  --read-padding: 20px;
+  padding-top: var(--read-padding) !important;
 }

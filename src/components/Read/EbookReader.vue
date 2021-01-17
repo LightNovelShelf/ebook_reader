@@ -5,6 +5,9 @@
       <img :src="img.src" :alt="img.alt" />
     </div>
     <div v-show="menuShow || sidebarShow" class="cover" @click="hide"></div>
+<!--    <div class="cover" style="pointer-events: none;">-->
+<!--      -->
+<!--    </div>-->
     <ebook-menu />
     <ebook-sidebar />
     <font-setting />
@@ -137,7 +140,7 @@
             width: this.width,
             height: window.innerHeight,
             // flow: 'auto',
-            // manager: 'continuous',
+            manager: 'continuous',
             stylesheet: getFullUrl(READ_STYLE)
             // snap: true,
           }

@@ -57,6 +57,8 @@ export function GetReadProgress(fileName) {
 }
 
 export const ImagePath = window.device?.getExternalFilesDir('Pictures')
+export const StatusBarHeight = (window.device?.getStatusBarHeight() || 0) / window.devicePixelRatio
+document.documentElement.style.setProperty('--status-bar-height', StatusBarHeight + 'px')
 
 const readFilePromise = {}
 

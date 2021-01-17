@@ -1,4 +1,4 @@
-import { saveReadProgress, loadBg } from '@/util/read'
+import { saveReadProgress, loadBg,StatusBarHeight } from '@/util/read'
 import { getFullUrl } from '@/util'
 import vuetify from '../plugins/vuetify'
 import { Storage } from '@/util/storage'
@@ -181,6 +181,10 @@ export default {
       let rendition = state.book.renderTo(element, option)
       commit('updateRendition', rendition)
       rendition.themes.fontSize(state.fontSize + 'px')
+      rendition.themes.override(
+        '--read-padding',
+        StatusBarHeight + 20 + 'px'
+      )
       setBg(state)
       return rendition
     }
