@@ -203,12 +203,14 @@
       parseBook() {
         this.book.loaded.cover.then((cover) => {
           if (cover){
-            let coverName = md5(this.name)
-            if (window.device && !window.device.fileExits(ImagePath + '/' + coverName )) {
-              this.book.archive.getBase64(cover).then((data) => {
-                console.log('saveFile')
-                window.device.saveFile(coverName, 'Pictures', data)
-              })
+            if (window.device) {
+              let coverName = md5(this.name)
+              if (!window.device.fileExits(ImagePath + '/' + coverName )){
+                this.book.archive.getBase64(cover).then((data) => {
+                  console.log('saveFile')
+                  window.device.saveFile(coverName, 'Pictures', data)
+                })
+              }
             }
             this.book.archive.createUrl(cover).then((url) => {
               this.updateCover(url)
