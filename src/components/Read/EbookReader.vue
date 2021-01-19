@@ -284,7 +284,7 @@
           console.log('没有找到device对象')
         }
       } else {
-        const fileName = 'Test4.epub'
+        const fileName = 'Test1.epub'
         this.updateBookName(fileName)
         this.initEpub(new Epub(fileName), GetReadProgress(fileName))
       }
