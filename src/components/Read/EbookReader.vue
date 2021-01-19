@@ -223,7 +223,7 @@
               : find(navItem.filter((parentItem) => parentItem.id === item.parent)[0], ++levle)
           }
 
-          let basePath = this.book.package.navPath?.split('/')
+          let basePath = this.book.package.navPath ? this.book.package.navPath.split('/') : false
           navItem.forEach((item) => {
             item.level = find(item)
             item.label = item.label.trim()
@@ -284,7 +284,7 @@
           console.log('没有找到device对象')
         }
       } else {
-        const fileName = 'Test1.epub'
+        const fileName = 'Test4.epub'
         this.updateBookName(fileName)
         this.initEpub(new Epub(fileName), GetReadProgress(fileName))
       }
