@@ -5,9 +5,6 @@
       <img :src="img.src" :alt="img.alt" />
     </div>
     <div v-show="menuShow || sidebarShow" class="cover" @click="hide"></div>
-<!--    <div class="cover" style="pointer-events: none;">-->
-<!--      -->
-<!--    </div>-->
     <ebook-menu />
     <ebook-sidebar />
     <font-setting />
@@ -21,9 +18,7 @@
   import Epub from '@/assets/js/epub.85.fix'
   import EpubCFI from 'epubjs/src/epubcfi'
   import { mapActions, mapGetters, mapMutations } from 'vuex'
-  import { flatten, GetReadProgress, throttle,ImagePath } from '@/util/read'
-  import { getFullUrl } from '@/util'
-  import READ_STYLE from '@/assets/styles/read.scss'
+  import { flatten, GetReadProgress, throttle, ImagePath } from '@/util/read'
   import EbookMenu from '@/components/Read/EbookMenu'
   import EbookSidebar from '@/components/Read/EbookSidebar'
   import FontSetting from '@/components/Read/Menu/FontSetting'
@@ -141,7 +136,6 @@
             height: window.innerHeight,
             // flow: 'auto',
             manager: 'continuous',
-            stylesheet: getFullUrl(READ_STYLE)
             // snap: true,
           }
         })
@@ -202,10 +196,10 @@
       },
       parseBook() {
         this.book.loaded.cover.then((cover) => {
-          if (cover){
+          if (cover) {
             if (window.device) {
               let coverName = md5(this.name)
-              if (!window.device.fileExits(ImagePath + '/' + coverName )){
+              if (!window.device.fileExits(ImagePath + '/' + coverName)) {
                 this.book.archive.getBase64(cover).then((data) => {
                   console.log('saveFile')
                   window.device.saveFile(coverName, 'Pictures', data)
@@ -255,14 +249,13 @@
         const screenWidth = Math.round(window.innerWidth)
         const remainder = screenWidth % 8
         this.width = screenWidth - remainder
-      },
+      }
     },
     destroyed() {
       window.removeEventListener('keydown', this.handleKeyDown)
     },
     async mounted() {
       this.getWidth()
-      console.log(this.path)
       if (this.uri) {
         // 连接App调试
         if (window.device) {

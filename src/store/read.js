@@ -1,10 +1,12 @@
-import { saveReadProgress, loadBg,StatusBarHeight } from '@/util/read'
+import { saveReadProgress, StatusBarHeight } from '@/util/read'
 import { getFullUrl } from '@/util'
 import vuetify from '../plugins/vuetify'
 import { Storage } from '@/util/storage'
 import EpubCFI from 'epubjs/src/epubcfi'
 import bg_paper from '@/assets/img/bg-paper.jpg'
 import bg_paper_dark from '@/assets/img/bg-paper-dark.jpg'
+import READ_STYLE from '@/assets/styles/read.scss'
+import { createBlobUrl } from 'epubjs/src/utils/core'
 
 const LightNovel_Reading_Bg_Setting = 'LightNovel_Reading_Bg_Setting'
 const LightNovel_Reading_Bg_Custom = 'LightNovel_Reading_Bg_Custom'
@@ -178,13 +180,14 @@ export default {
       return state.book.rendition.display(target)
     },
     getRendition({ commit, state }, { element, option }) {
+      let inserRules = `@import url('${getFullUrl(READ_STYLE)}');
+body{
+--read-padding: ${StatusBarHeight + 20}px;
+font-size: ${state.fontSize}px;
+}`
+      option.stylesheet = createBlobUrl(inserRules, 'text/css')
       let rendition = state.book.renderTo(element, option)
       commit('updateRendition', rendition)
-      rendition.themes.fontSize(state.fontSize + 'px')
-      rendition.themes.override(
-        '--read-padding',
-        StatusBarHeight + 20 + 'px'
-      )
       setBg(state)
       return rendition
     }
