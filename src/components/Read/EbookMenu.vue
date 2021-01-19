@@ -44,7 +44,6 @@
 <script>
   import { icon } from '@/plugins/vuetify'
   import { mapActions, mapGetters, mapMutations } from 'vuex'
-  import book from '@/store/book'
 
   export default {
     name: 'EbookMenu',

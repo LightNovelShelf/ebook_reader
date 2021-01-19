@@ -135,7 +135,7 @@
             width: this.width,
             height: window.innerHeight,
             // flow: 'auto',
-            manager: 'continuous',
+            manager: 'continuous'
             // snap: true,
           }
         })
@@ -223,9 +223,19 @@
               : find(navItem.filter((parentItem) => parentItem.id === item.parent)[0], ++levle)
           }
 
+          let basePath = this.book.package.navPath?.split('/')
           navItem.forEach((item) => {
             item.level = find(item)
             item.label = item.label.trim()
+
+            if (basePath) {
+              if (item.href.startsWith('#')) {
+                item.href = this.book.package.navPath + item.href
+              } else {
+                basePath[basePath.length - 1] = item.href
+                item.href = basePath.join('/')
+              }
+            }
           })
           this.updateNavigation(navItem)
         })
