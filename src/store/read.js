@@ -7,6 +7,7 @@ import bg_paper from '@/assets/img/bg-paper.jpg'
 import bg_paper_dark from '@/assets/img/bg-paper-dark.jpg'
 import READ_STYLE from '@/assets/styles/read.scss'
 import { createBlobUrl } from 'epubjs/src/utils/core'
+import store from './index'
 
 const LightNovel_Reading_Bg_Setting = 'LightNovel_Reading_Bg_Setting'
 const LightNovel_Reading_Bg_Custom = 'LightNovel_Reading_Bg_Custom'
@@ -80,6 +81,9 @@ export default {
       Storage.write(Reading_FontSize, value)
     },
     updateFontSettingShow(state, value) {
+      if (window.device && state.fontSettingShow !== value) {
+        pushOrPop(value, 'Font')
+      }
       state.fontSettingShow = value
     },
     updateBook(state, value) {
@@ -107,12 +111,21 @@ export default {
       state.section = value
     },
     updateMenuShow(state, value) {
+      if (window.device && state.menuShow !== value) {
+        pushOrPop(value, 'Menu')
+      }
       state.menuShow = value
     },
     updateBgSettingShow(state, value) {
+      if (window.device && state.bgSettingShow !== value) {
+        pushOrPop(value, 'Bg')
+      }
       state.bgSettingShow = value
     },
     updateSidebarShow(state, value) {
+      if (window.device && state.sidebarShow !== value) {
+        pushOrPop(value, 'Sidebar')
+      }
       state.sidebarShow = value
     },
     updateReadingCustomBg(state, { value = null }) {
@@ -222,5 +235,36 @@ function setBg(state) {
     default:
       state.rendition.themes.override('--color', '')
       document.documentElement.style.setProperty('--bg-img', '')
+  }
+}
+
+function pushOrPop(value, str) {
+  if (value) {
+    device.push(str)
+  } else {
+    device.pop()
+  }
+}
+
+window.back = function (str) {
+  switch (str) {
+    case 'Menu': {
+      store.commit('updateMenuShow', false)
+      break
+    }
+    case 'Bg': {
+      store.commit('updateBgSettingShow', false)
+      break
+    }
+    case 'Sidebar': {
+      store.commit('updateSidebarShow', false)
+      break
+    }
+    case 'Font': {
+      store.commit('updateFontSettingShow', false)
+      break
+    }
+    default:
+      break
   }
 }

@@ -44,6 +44,7 @@
 <script>
   import { icon } from '@/plugins/vuetify'
   import { mapActions, mapGetters, mapMutations } from 'vuex'
+  import book from '@/store/book'
 
   export default {
     name: 'EbookMenu',
@@ -54,22 +55,24 @@
           {
             icon: icon.mdiFormatListBulleted,
             handle: () => {
-              this.updateSidebarShow(true)
-              this.updateMenuShow(false)
+              if (this.bookAvailable) {
+                this.updateMenuShow(false)
+                this.updateSidebarShow(true)
+              }
             }
           },
           {
             icon: icon.mdiWhiteBalanceSunny,
             handle: () => {
-              this.updateBgSettingShow(true)
               this.updateMenuShow(false)
+              this.updateBgSettingShow(true)
             }
           },
           {
             icon: icon.mdiFormatSize,
             handle: () => {
-              this.updateFontSettingShow(true)
               this.updateMenuShow(false)
+              this.updateFontSettingShow(true)
             }
           }
         ],
