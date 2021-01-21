@@ -37,3 +37,6 @@ export function getFullUrl(uri){
   url[url.length - 1] = uri
   return url.join('/')
 }
+export const isMobile = () => {
+  return navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|IEMobile)/i)
+}

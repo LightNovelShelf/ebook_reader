@@ -1,6 +1,7 @@
 <template>
   <div v-resize="onResize">
-    <div id="read" :style="{ width: width + 'px' }"></div>
+    <div id="read" :style="{ width: width + 'px' }">
+    </div>
     <div ref="viewer" v-viewer v-show="false">
       <img :src="img.src" :alt="img.alt" />
     </div>
@@ -25,7 +26,7 @@
   import BgSetting from './Menu/BgSetting'
   import { toByteArray } from 'base64-js'
   import md5 from 'md5'
-
+  import { isMobile as IsMobile } from '@/util'
   export default {
     name: 'EbookReader',
     components: { BgSetting, FontSetting, EbookSidebar, EbookMenu },
@@ -48,6 +49,9 @@
       ...mapGetters(['book', 'menuShow', 'sidebarShow', 'fontSize']),
       navigation() {
         return this.$store.state.read.navigation
+      },
+      isMobile () {
+        return IsMobile()
       }
     },
     methods: {
@@ -111,12 +115,18 @@
         const path = e.path || e.composedPath()
         if (e.target.localName === 'img' && path) {
           const classList = [].concat(...path.map((item) => [].concat.apply([], item.classList)))
-          if (classList.findIndex((item) => item === 'duokan-image-single') !== -1) return
+          if (classList.findIndex((item) => item === 'duokan-image-single') !== -1) {
+            if(!this.isInArea(e.offsetX)) {
+              this.previewImg(e)
+              return
+            }
+            
+          }
         }
         if (time < 200) {
-          if (e.screenX - window.screenX > this.width * 0.75) this.nextPage()
-          else if (e.screenX - window.screenX < this.width * 0.25) this.prevPage()
-          else if (e.y < window.innerHeight * 0.75 && e.y > window.innerHeight * 0.25) this.show()
+          if (e.offsetX > this.width * 0.75) this.nextPage()
+          else if (e.offsetX  < this.width * 0.25) this.prevPage()
+          else if (e.offsetY < window.innerHeight * 0.75 && e.y > window.innerHeight * 0.25) this.show()
         }
       },
       handleMouseWheel(e) {
@@ -125,6 +135,9 @@
         } else {
           e.deltaY > 0 ? this.nextPage() : this.prevPage()
         }
+      },
+      isInArea (offsetX) {
+        return offsetX > this.width * 0.75 || offsetX  < this.width * 0.25
       },
       async initEpub(book, cfi) {
         this.updateBook(book)
@@ -135,8 +148,9 @@
             width: this.width,
             height: window.innerHeight,
             // flow: 'auto',
-            manager: 'continuous'
-            // snap: true,
+            flow: "paginated",
+            manager: 'continuous',
+            snap: this.isMobile
           }
         })
 
@@ -183,11 +197,23 @@
             node.style.boxShadow = 'black 0 0 3px'
             node.style.cursor = 'pointer'
             node.style.border = '1px solid white'
-            node.onclick = vueInstance.previewImg
+            // node.onclick = (e) => {
+            //   if(!vueInstance.isInArea(e.offsetX)) {
+            //     vueInstance.previewImg(e)
+            //   }
+            // }
           })
-          contents.window.addEventListener('keydown', this.handleKeyDown)
+          contents.window.addEventListener('keydown', vueInstance.handleKeyDown)
+          if (vueInstance.isMobile) {
+            contents.document.body.addEventListener('touchstart', (e) => {
+              e.stopPropagation()
+            })
+            contents.document.body.addEventListener('touchend', (e) => {
+              e.stopPropagation()
+            })
+          }
         })
-        //单击事件
+        // 单击事件
         this.rendition.on('mousedown', (e) => {
           this.timeStart = e.timeStamp
         })
@@ -284,7 +310,7 @@
           console.log('没有找到device对象')
         }
       } else {
-        const fileName = 'Test1.epub'
+        const fileName = 'Test2.epub'
         this.updateBookName(fileName)
         this.initEpub(new Epub(fileName), GetReadProgress(fileName))
       }
