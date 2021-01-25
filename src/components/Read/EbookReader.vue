@@ -5,7 +5,8 @@
     <div ref="viewer" v-viewer v-show="false">
       <img :src="img.src" :alt="img.alt" />
     </div>
-    <div v-show="menuShow || sidebarShow" class="cover" @click="hide"></div>
+    <!-- <div v-show="menuShow || sidebarShow" class="cover" @click="hide"></div> -->
+    <div v-show="sidebarShow" class="cover" @click="hide"></div>
     <ebook-menu />
     <ebook-sidebar />
     <font-setting />
@@ -38,7 +39,9 @@
         },
         rendition: null,
         promise: null,
-        width: null
+        width: null,
+        enableTouch: false,
+        touchDetail: null
       }
     },
     props: {
@@ -110,13 +113,21 @@
       }, 300),
       handleMouseDown(e) {
         const time = e.timeStamp - this.timeStart
-        if (this.hide()) return
+        // if (this.hide()) return
         if (e.target.localName === 'a' || e.target.parentNode.localName === 'a') return
         const path = e.path || e.composedPath()
+        let X = 0, Y = 0
+        if(e.type === 'touchend') {
+          X = this.touchDetail.targetTouches[0].pageX % this.width
+          Y = this.touchDetail.targetTouches[0].pageY
+        } else {
+          X = e.pageX % this.width
+          Y = e.pageY
+        }
         if (e.target.localName === 'img' && path) {
           const classList = [].concat(...path.map((item) => [].concat.apply([], item.classList)))
           if (classList.findIndex((item) => item === 'duokan-image-single') !== -1) {
-            if(!this.isInArea(e.offsetX)) {
+            if(!this.isInArea(X)) {
               this.previewImg(e)
               return
             }
@@ -124,9 +135,15 @@
           }
         }
         if (time < 200) {
-          if (e.offsetX > this.width * 0.75) this.nextPage()
-          else if (e.offsetX  < this.width * 0.25) this.prevPage()
-          else if (e.offsetY < window.innerHeight * 0.75 && e.y > window.innerHeight * 0.25) this.show()
+          if (X > this.width * 0.75) this.nextPage()
+          else if (X  < this.width * 0.25) this.prevPage()
+          else if (Y < window.innerHeight * 0.75 && Y > window.innerHeight * 0.25) {
+            if(this.menuShow) {
+              this.hide()
+            } else {
+              this.show()
+            }
+          }
         }
       },
       handleMouseWheel(e) {
@@ -205,19 +222,35 @@
           })
           contents.window.addEventListener('keydown', vueInstance.handleKeyDown)
           if (vueInstance.isMobile) {
-            contents.document.body.addEventListener('touchstart', (e) => {
-              e.stopPropagation()
+            contents.document.addEventListener('touchmove', (e) => {
+              if(!vueInstance.enableTouch) {
+                vueInstance.enableTouch = true
+              }
             })
-            contents.document.body.addEventListener('touchend', (e) => {
-              e.stopPropagation()
-            })
+            contents.document.addEventListener('touchstart', (e) => {
+              // console.log('touch', e)
+              vueInstance.timeStart = e.timeStamp
+              vueInstance.touchDetail = e
+            }, true)
+
+            contents.document.addEventListener('touchend', (e) => {
+              // console.log('touchend', e)
+              if(!vueInstance.enableTouch) {
+                e.stopPropagation()
+                vueInstance.handleMouseDown(e)
+              } else {
+                vueInstance.enableTouch = false
+              }
+            }, true)
           }
         })
         // 单击事件
-        this.rendition.on('mousedown', (e) => {
-          this.timeStart = e.timeStamp
-        })
-        this.rendition.on('mouseup', this.handleMouseDown)
+        if (!vueInstance.isMobile) {
+          this.rendition.on('mousedown', (e) => {
+            this.timeStart = e.timeStamp
+          })
+          this.rendition.on('mouseup', this.handleMouseDown)
+        }
         window.addEventListener('keydown', this.handleKeyDown)
       },
       parseBook() {
