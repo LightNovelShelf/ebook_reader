@@ -197,7 +197,8 @@ export default {
 body{
 --read-padding: ${StatusBarHeight + 20}px;
 font-size: ${state.fontSize}px;
-}`
+}
+`
       option.stylesheet = createBlobUrl(inserRules, 'text/css')
       let rendition = state.book.renderTo(element, option)
       commit('updateRendition', rendition)

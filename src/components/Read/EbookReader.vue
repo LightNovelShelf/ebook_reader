@@ -1,10 +1,12 @@
 <template>
   <div v-resize="onResize">
-    <div id="read" :style="{ width: width + 'px' }"></div>
+    <div id="read" :style="{ width: width + 'px' }">
+    </div>
     <div ref="viewer" v-viewer v-show="false">
       <img :src="img.src" :alt="img.alt" />
     </div>
-    <div v-show="menuShow || sidebarShow" class="cover" @click="hide"></div>
+    <!-- <div v-show="menuShow || sidebarShow" class="cover" @click="hide"></div> -->
+    <div v-show="sidebarShow" class="cover" @click="hide"></div>
     <ebook-menu />
     <ebook-sidebar />
     <font-setting />
@@ -25,7 +27,7 @@
   import BgSetting from './Menu/BgSetting'
   import { toByteArray } from 'base64-js'
   import md5 from 'md5'
-
+  import { isMobile as IsMobile } from '@/util'
   export default {
     name: 'EbookReader',
     components: { BgSetting, FontSetting, EbookSidebar, EbookMenu },
@@ -37,7 +39,9 @@
         },
         rendition: null,
         promise: null,
-        width: null
+        width: null,
+        enableTouch: false,
+        touchDetail: null
       }
     },
     props: {
@@ -48,6 +52,9 @@
       ...mapGetters(['book', 'menuShow', 'sidebarShow', 'fontSize']),
       navigation() {
         return this.$store.state.read.navigation
+      },
+      isMobile () {
+        return IsMobile()
       }
     },
     methods: {
@@ -106,17 +113,37 @@
       }, 300),
       handleMouseDown(e) {
         const time = e.timeStamp - this.timeStart
-        if (this.hide()) return
+        // if (this.hide()) return
         if (e.target.localName === 'a' || e.target.parentNode.localName === 'a') return
         const path = e.path || e.composedPath()
+        let X = 0, Y = 0
+        if(e.type === 'touchend') {
+          X = this.touchDetail.targetTouches[0].pageX % this.width
+          Y = this.touchDetail.targetTouches[0].pageY
+        } else {
+          X = e.pageX % this.width
+          Y = e.pageY
+        }
         if (e.target.localName === 'img' && path) {
           const classList = [].concat(...path.map((item) => [].concat.apply([], item.classList)))
-          if (classList.findIndex((item) => item === 'duokan-image-single') !== -1) return
+          if (classList.findIndex((item) => item === 'duokan-image-single') !== -1) {
+            if(!this.isInArea(X)) {
+              this.previewImg(e)
+              return
+            }
+            
+          }
         }
         if (time < 200) {
-          if (e.screenX - window.screenX > this.width * 0.75) this.nextPage()
-          else if (e.screenX - window.screenX < this.width * 0.25) this.prevPage()
-          else if (e.y < window.innerHeight * 0.75 && e.y > window.innerHeight * 0.25) this.show()
+          if (X > this.width * 0.75) this.nextPage()
+          else if (X  < this.width * 0.25) this.prevPage()
+          else if (Y < window.innerHeight * 0.75 && Y > window.innerHeight * 0.25) {
+            if(this.menuShow) {
+              this.hide()
+            } else {
+              this.show()
+            }
+          }
         }
       },
       handleMouseWheel(e) {
@@ -125,6 +152,9 @@
         } else {
           e.deltaY > 0 ? this.nextPage() : this.prevPage()
         }
+      },
+      isInArea (offsetX) {
+        return offsetX > this.width * 0.75 || offsetX  < this.width * 0.25
       },
       async initEpub(book, cfi) {
         this.updateBook(book)
@@ -135,8 +165,9 @@
             width: this.width,
             height: window.innerHeight,
             // flow: 'auto',
-            manager: 'continuous'
-            // snap: true,
+            flow: "paginated",
+            manager: 'continuous',
+            snap: this.isMobile
           }
         })
 
@@ -183,15 +214,43 @@
             node.style.boxShadow = 'black 0 0 3px'
             node.style.cursor = 'pointer'
             node.style.border = '1px solid white'
-            node.onclick = vueInstance.previewImg
+            // node.onclick = (e) => {
+            //   if(!vueInstance.isInArea(e.offsetX)) {
+            //     vueInstance.previewImg(e)
+            //   }
+            // }
           })
-          contents.window.addEventListener('keydown', this.handleKeyDown)
+          contents.window.addEventListener('keydown', vueInstance.handleKeyDown)
+          if (vueInstance.isMobile) {
+            contents.document.addEventListener('touchmove', (e) => {
+              if(!vueInstance.enableTouch) {
+                vueInstance.enableTouch = true
+              }
+            })
+            contents.document.addEventListener('touchstart', (e) => {
+              // console.log('touch', e)
+              vueInstance.timeStart = e.timeStamp
+              vueInstance.touchDetail = e
+            }, true)
+
+            contents.document.addEventListener('touchend', (e) => {
+              // console.log('touchend', e)
+              if(!vueInstance.enableTouch) {
+                e.stopPropagation()
+                vueInstance.handleMouseDown(e)
+              } else {
+                vueInstance.enableTouch = false
+              }
+            }, true)
+          }
         })
-        //单击事件
-        this.rendition.on('mousedown', (e) => {
-          this.timeStart = e.timeStamp
-        })
-        this.rendition.on('mouseup', this.handleMouseDown)
+        // 单击事件
+        if (!vueInstance.isMobile) {
+          this.rendition.on('mousedown', (e) => {
+            this.timeStart = e.timeStamp
+          })
+          this.rendition.on('mouseup', this.handleMouseDown)
+        }
         window.addEventListener('keydown', this.handleKeyDown)
       },
       parseBook() {
@@ -284,7 +343,7 @@
           console.log('没有找到device对象')
         }
       } else {
-        const fileName = 'Test1.epub'
+        const fileName = 'Test2.epub'
         this.updateBookName(fileName)
         this.initEpub(new Epub(fileName), GetReadProgress(fileName))
       }
