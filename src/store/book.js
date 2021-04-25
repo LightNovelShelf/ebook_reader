@@ -11,7 +11,7 @@ const LOCAL_BOOK_LIST_KEY = 'EBookReader_BOOK'
 
 export default {
   state: {
-    list: Storage.read(LOCAL_BOOK_LIST_KEY) || [],
+    list: Storage.read(LOCAL_BOOK_LIST_KEY) || [...BookList],
     coverCache: {}
   },
   getters: {
@@ -84,7 +84,7 @@ export default {
       Storage.write(LOCAL_BOOK_LIST_KEY, state.list)
     },
     updateCoverCache(state, payload) {
-      Vue.set(state.coverCache,payload.name,payload.data)
+      Vue.set(state.coverCache, payload.name, payload.data)
     }
   },
   actions: {
@@ -139,7 +139,7 @@ export default {
       commit('updateBookList', newList)
       return true
     },
-    saveBookList({state}){
+    saveBookList({ state }) {
       Storage.write(LOCAL_BOOK_LIST_KEY, state.list)
     }
   }
@@ -165,7 +165,7 @@ window.addToBook = function (path, name) {
     book_title: name,
     book_path: path,
     add_time: `${time.getFullYear()}-${time.getMonth() + 1}-${time.getDate()}`,
-    book_cover: md5(name)
+    book_cover: md5(path)
   }
   store.dispatch('addToBook', temp)
 }
@@ -180,25 +180,30 @@ window.addToBooks = function (name, data) {
 
 window.readFileResult = function (resultCode, name, data) {
   switch (resultCode) {
-    // getImagePath2中读取EPUB
-    case 0: {
-      data = toByteArray(data)
-      let book = new Epub()
-      book.open(data.buffer).then(async () => {
-        let cover = await book.loaded.cover
-        let coverData = await book.archive.getBase64(cover || '/OEBPS/Images/cover.jpg')
-        // let coverData = await book.archive.getBase64(cover)
-        new Promise(function () {
-          device.saveFile(name, 'Pictures', coverData)
-        })
-        store.commit('updateCoverCache', { name: name, data: coverData })
-      })
-      break
-    }
-    // getImagePath2中读取封面
+    // getImagePath中读取EPUB
+    // case 0: {
+    //   data = toByteArray(data)
+    //   let book = new Epub()
+    //   book.open(data.buffer).then(async () => {
+    //     let cover = await book.loaded.cover
+    //     let coverData = await book.archive.getBase64(cover || '/OEBPS/Images/cover.jpg')
+    //     // let coverData = await book.archive.getBase64(cover)
+    //     new Promise(function () {
+    //       device.saveFile(name, 'Pictures', coverData)
+    //     })
+    //     store.commit('updateCoverCache', { name: name, data: coverData })
+    //   })
+    //   break
+    // }
+    // getImagePath中读取封面
     case 1: {
       store.commit('updateCoverCache', { name: name, data: 'data:image/jpeg;base64,' + data })
       break
     }
+    // case 3: {
+    //   device.toast("3333")
+    //   window.loadBook(name, data)
+    //   break
+    // }
   }
 }

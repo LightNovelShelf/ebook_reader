@@ -8,11 +8,11 @@
               <div class="image" v-for="book in books.data.slice(0, 4)" :key="book['book_cover']">
                 <v-card flat>
                   <v-img :aspect-ratio="2 / 3" :src="coverCache[book['book_cover']]">
-                    <template v-slot:placeholder>
-                      <v-row class="fill-height ma-0" align="center" justify="center">
-                        <v-progress-circular indeterminate color="blue-grey lighten-3"></v-progress-circular>
-                      </v-row>
-                    </template>
+<!--                    <template v-slot:placeholder>-->
+<!--                      <v-row class="fill-height ma-0" align="center" justify="center">-->
+<!--                        <v-progress-circular indeterminate color="blue-grey lighten-3"></v-progress-circular>-->
+<!--                      </v-row>-->
+<!--                    </template>-->
                   </v-img>
                 </v-card>
               </div>
@@ -35,7 +35,7 @@
 </template>
 
 <script>
-  import { getImagePath2 } from '@/util/read'
+  import { getImagePath } from '@/util/read'
   import { mapGetters } from 'vuex'
 
   export default {
@@ -48,7 +48,7 @@
     },
     created() {
       this.books.data.slice(0, 4).forEach((book, index) => {
-        getImagePath2(book['book_cover'], book['book_path'])
+        getImagePath(book['book_cover'], book['book_path'])
       })
     }
   }

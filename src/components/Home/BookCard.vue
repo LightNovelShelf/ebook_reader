@@ -2,11 +2,11 @@
   <div @click="loadBook(book)">
     <v-card ripple>
       <v-img :aspect-ratio="2 / 3" :src="coverCache[book['book_cover']]">
-        <template v-slot:placeholder>
-          <v-row class="fill-height ma-0" align="center" justify="center">
-            <v-progress-circular indeterminate color="blue-grey lighten-3"></v-progress-circular>
-          </v-row>
-        </template>
+<!--        <template v-slot:placeholder>-->
+<!--          <v-row class="fill-height ma-0" align="center" justify="center">-->
+<!--            <v-progress-circular indeterminate color="blue-grey lighten-3"></v-progress-circular>-->
+<!--          </v-row>-->
+<!--        </template>-->
       </v-img>
     </v-card>
     <div class="book-name-wrapper">
@@ -23,7 +23,7 @@
 </template>
 
 <script>
-  import { getImagePath2 } from '@/util/read'
+  import { getImagePath } from '@/util/read'
   import { mapGetters } from 'vuex'
 
   export default {
@@ -36,12 +36,12 @@
     },
     methods: {
       loadBook(book) {
-        window.device?.loadBook(book['book_title'], book['book_path'])
-        this.$emit('load-book',book)
+        window.device?.openBook(book['book_title'], book['book_path'])
+        this.$emit('load-book', book)
       }
     },
     created() {
-      getImagePath2(this.book['book_cover'], this.book['book_path'])
+      getImagePath(this.book['book_cover'], this.book['book_path'])
     }
   }
 </script>

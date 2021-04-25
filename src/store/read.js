@@ -17,7 +17,7 @@ export default {
   state: {
     book: null,
     rendition: null,
-    bookName: null,
+    bookHash: null,
     cover: null,
     navigation: null,
     metadata: null,
@@ -42,6 +42,9 @@ export default {
     },
     fontSize(state) {
       return state.fontSize
+    },
+    bookHash(state){
+      return state.bookHash
     },
     fontSettingShow(state) {
       return state.fontSettingShow
@@ -72,8 +75,8 @@ export default {
     }
   },
   mutations: {
-    updateBookName(state, value) {
-      state.bookName = value
+    updatebookHash(state, value) {
+      state.bookHash = value
     },
     updateFontSize(state, value) {
       state.fontSize = value
@@ -146,7 +149,7 @@ export default {
       console.log(currentLocation)
       if (currentLocation && currentLocation.start) {
         const startCfi = currentLocation.start.cfi
-        if (isSave) saveReadProgress(state.bookName, startCfi)
+        if (isSave) saveReadProgress(state.bookHash, startCfi)
         if (state.bookAvailable) {
           if (isSection) {
             const endCfi = new EpubCFI(currentLocation.end.cfi)

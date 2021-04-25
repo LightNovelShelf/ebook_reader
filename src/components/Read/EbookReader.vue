@@ -1,7 +1,6 @@
 <template>
   <div v-resize="onResize">
-    <div id="read" :style="{ width: width + 'px' }">
-    </div>
+    <div id="read" :style="{ width: width + 'px' }"> </div>
     <div ref="viewer" v-viewer v-show="false">
       <img :src="img.src" :alt="img.alt" />
     </div>
@@ -28,6 +27,7 @@
   import { toByteArray } from 'base64-js'
   import md5 from 'md5'
   import { isMobile as IsMobile } from '@/util'
+
   export default {
     name: 'EbookReader',
     components: { BgSetting, FontSetting, EbookSidebar, EbookMenu },
@@ -45,15 +45,14 @@
       }
     },
     props: {
-      uri: String,
       name: String
     },
     computed: {
-      ...mapGetters(['book', 'menuShow', 'sidebarShow', 'fontSize']),
+      ...mapGetters(['book', 'menuShow', 'sidebarShow', 'fontSize','bookHash']),
       navigation() {
         return this.$store.state.read.navigation
       },
-      isMobile () {
+      isMobile() {
         return IsMobile()
       }
     },
@@ -66,7 +65,7 @@
         'updateBookAvailable',
         'updateMenuShow',
         'updateSidebarShow',
-        'updateBookName',
+        'updatebookHash',
         'updateFontSize'
       ]),
       ...mapActions(['refreshLocation', 'getRendition']),
@@ -116,8 +115,9 @@
         // if (this.hide()) return
         if (e.target.localName === 'a' || e.target.parentNode.localName === 'a') return
         const path = e.path || e.composedPath()
-        let X = 0, Y = 0
-        if(e.type === 'touchend') {
+        let X = 0,
+          Y = 0
+        if (e.type === 'touchend') {
           X = this.touchDetail.targetTouches[0].pageX % this.width
           Y = this.touchDetail.targetTouches[0].pageY
         } else {
@@ -127,18 +127,17 @@
         if (e.target.localName === 'img' && path) {
           const classList = [].concat(...path.map((item) => [].concat.apply([], item.classList)))
           if (classList.findIndex((item) => item === 'duokan-image-single') !== -1) {
-            if(!this.isInArea(X)) {
+            if (!this.isInArea(X)) {
               this.previewImg(e)
               return
             }
-            
           }
         }
         if (time < 200) {
           if (X > this.width * 0.75) this.nextPage()
-          else if (X  < this.width * 0.25) this.prevPage()
+          else if (X < this.width * 0.25) this.prevPage()
           else if (Y < window.innerHeight * 0.75 && Y > window.innerHeight * 0.25) {
-            if(this.menuShow) {
+            if (this.menuShow) {
               this.hide()
             } else {
               this.show()
@@ -153,8 +152,8 @@
           e.deltaY > 0 ? this.nextPage() : this.prevPage()
         }
       },
-      isInArea (offsetX) {
-        return offsetX > this.width * 0.75 || offsetX  < this.width * 0.25
+      isInArea(offsetX) {
+        return offsetX > this.width * 0.75 || offsetX < this.width * 0.25
       },
       async initEpub(book, cfi) {
         this.updateBook(book)
@@ -165,7 +164,7 @@
             width: this.width,
             height: window.innerHeight,
             // flow: 'auto',
-            flow: "paginated",
+            flow: 'paginated',
             manager: 'continuous',
             snap: this.isMobile
           }
@@ -223,25 +222,33 @@
           contents.window.addEventListener('keydown', vueInstance.handleKeyDown)
           if (vueInstance.isMobile) {
             contents.document.addEventListener('touchmove', (e) => {
-              if(!vueInstance.enableTouch) {
+              if (!vueInstance.enableTouch) {
                 vueInstance.enableTouch = true
               }
             })
-            contents.document.addEventListener('touchstart', (e) => {
-              // console.log('touch', e)
-              vueInstance.timeStart = e.timeStamp
-              vueInstance.touchDetail = e
-            }, true)
+            contents.document.addEventListener(
+              'touchstart',
+              (e) => {
+                // console.log('touch', e)
+                vueInstance.timeStart = e.timeStamp
+                vueInstance.touchDetail = e
+              },
+              true
+            )
 
-            contents.document.addEventListener('touchend', (e) => {
-              // console.log('touchend', e)
-              if(!vueInstance.enableTouch) {
-                e.stopPropagation()
-                vueInstance.handleMouseDown(e)
-              } else {
-                vueInstance.enableTouch = false
-              }
-            }, true)
+            contents.document.addEventListener(
+              'touchend',
+              (e) => {
+                // console.log('touchend', e)
+                if (!vueInstance.enableTouch) {
+                  e.stopPropagation()
+                  vueInstance.handleMouseDown(e)
+                } else {
+                  vueInstance.enableTouch = false
+                }
+              },
+              true
+            )
           }
         })
         // 单击事件
@@ -255,20 +262,17 @@
       },
       parseBook() {
         this.book.loaded.cover.then((cover) => {
-          if (cover) {
-            if (window.device) {
-              let coverName = md5(this.name)
-              if (!window.device.fileExits(ImagePath + '/' + coverName)) {
-                this.book.archive.getBase64(cover).then((data) => {
-                  console.log('saveFile')
-                  window.device.saveFile(coverName, 'Pictures', data)
-                })
-              }
+          if (window.device) {
+            if (!window.device.fileExits(ImagePath + '/' + this.bookHash)) {
+              this.book.archive.getBase64(cover || '/OEBPS/Images/cover.jpg').then((data) => {
+                console.log('saveFile')
+                window.device.saveFile(this.bookHash, 'Pictures', data)
+              })
             }
-            this.book.archive.createUrl(cover).then((url) => {
-              this.updateCover(url)
-            })
           }
+          this.book.archive.createUrl(cover || '/OEBPS/Images/cover.jpg').then((url) => {
+            this.updateCover(url)
+          })
         })
         this.book.loaded.metadata.then((metadata) => {
           this.updateMetadata(metadata)
@@ -325,26 +329,22 @@
     },
     async mounted() {
       this.getWidth()
-      if (this.uri) {
+      if (window.device) {
         // 连接App调试
-        if (window.device) {
-          // 本地文件的路径
-          // const filePath = this.path.startsWith('content://') ? this.path : decodeURI(this.path)
-          // const temp = filePath.split('/')
-          // const fileName = temp[temp.length - 1]
-          console.log(this.name)
-          this.updateBookName(this.name)
-          let data = toByteArray(device.readFile(this.uri))
+        let vueInstance = this
+        window.loadBook = async function (path, data) {
+          let hash = md5(path)
+          vueInstance.updatebookHash(hash)
+          data = toByteArray(data)
           console.log(data.length)
           let book = new Epub()
           await book.open(data.buffer)
-          this.initEpub(book, GetReadProgress(this.name))
-        } else {
-          console.log('没有找到device对象')
+          vueInstance.initEpub(book, GetReadProgress(hash))
         }
+        window.device.readBook()
       } else {
         const fileName = 'Test2.epub'
-        this.updateBookName(fileName)
+        this.updatebookHash(fileName)
         this.initEpub(new Epub(fileName), GetReadProgress(fileName))
       }
     }
