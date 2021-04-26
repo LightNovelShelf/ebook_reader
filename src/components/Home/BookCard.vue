@@ -29,13 +29,15 @@
   export default {
     name: 'BookCard',
     props: {
-      book: Object
+      book: Object,
+      disable: Boolean,
     },
     computed: {
       ...mapGetters(['coverCache'])
     },
     methods: {
       loadBook(book) {
+        if(this.disable) return
         window.device?.openBook(book['book_title'], book['book_path'])
         this.$emit('load-book', book)
       }

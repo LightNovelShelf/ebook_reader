@@ -1,7 +1,10 @@
 <template>
   <v-container>
     <v-app-bar dense flat color="white" app>
-      <v-app-bar-title class="text-caption">阅读时长<span class="text-h6">{{readTime}}</span>小时</v-app-bar-title>
+      <v-app-bar-title class="text-caption"
+      >阅读时长<span class="text-h6">{{ readTime }}</span
+      >小时</v-app-bar-title
+      >
       <v-spacer></v-spacer>
       <v-btn text icon small class="mr-3">
         <v-icon>{{ icon.mdiMagnify }}</v-icon>
@@ -22,18 +25,77 @@
     </v-app-bar>
     <v-main>
       <transition-group tag="div" type="transition" name="flip-list" class="move">
-          <template v-if="!gid">
-            <v-col cols="4" sm="4" md="3" lg="2" v-for="book in BookList" :key="book.gid || book.book_path">
-              <book-card v-on:load-book="loadBook" v-if="!book.gid" :book="book"></book-card>
-              <book-group-card v-else :books="book"></book-group-card>
-            </v-col>
-          </template>
-          <template v-else>
-            <v-col cols="4" sm="4" md="3" lg="2" v-for="book in books.data" :key="book['book_path']">
-              <book-card v-on:load-book="loadBook" :book="book"></book-card>
-            </v-col>
-          </template>
+        <template v-if="!gid">
+          <v-col cols="4" sm="4" md="3" lg="2" v-for="book in BookList" :key="book.gid || book.book_path">
+            <div
+              class="box"
+              v-longClick="() => (fab ? null : onLongTouch(book))"
+              @click="() => (fab ? toggleSelect(book) : null)"
+            >
+              <book-card
+                v-on:load-book="loadBook"
+                v-if="!book.gid"
+                :book="book"
+                :disable="fab"
+                :key="(book.gid || book.book_path) + fab"
+              ></book-card>
+              <book-group-card
+                v-else
+                :books="book"
+                :disable="fab"
+                :key="(book.gid || book.book_path) + fab"
+              ></book-group-card>
+              <v-overlay class="overlay" absolute :opacity="0.3" :value="fab">
+                <v-btn class="btn-select" :color="checkIsSelect(book) ? 'green' : 'white'" fab x-small>
+                  <v-icon>{{ icon.mdiCheckBold }}</v-icon>
+                </v-btn>
+              </v-overlay>
+            </div>
+          </v-col>
+        </template>
+        <template v-else>
+          <v-col cols="4" sm="4" md="3" lg="2" v-for="book in books.data" :key="book['book_path']">
+            <div
+              class="box"
+              v-longClick="() => (fab ? null : onLongTouch(book))"
+              @click="() => (fab ? toggleSelect(book) : null)"
+            >
+              <book-card
+                v-on:load-book="loadBook"
+                :book="book"
+                :disable="fab"
+                :key="book['book_path'] + fab"
+              ></book-card>
+              <v-overlay class="overlay" absolute :opacity="0.3" :value="fab">
+                <v-btn class="btn-select" :color="checkIsSelect(book) ? 'green' : 'white'" fab x-small>
+                  <v-icon>{{ icon.mdiCheckBold }}</v-icon>
+                </v-btn>
+              </v-overlay>
+            </div>
+          </v-col>
+        </template>
       </transition-group>
+      <template>
+        <div class="float-box">
+          <v-tooltip left>
+            <template v-slot:activator="{ on }">
+              <v-fab-transition>
+                <v-btn dark fab color="error" v-on="on" class="mb-4" @click="confirmDelete" v-if="fab" small>
+                  <v-icon>{{ icon.mdiTrashCanOutline }}</v-icon>
+                </v-btn>
+              </v-fab-transition>
+            </template>
+            <span>删除</span>
+          </v-tooltip>
+          <v-fab-transition>
+            <v-btn dark fab color="white" @click="toggleFab" v-if="fab" small>
+              <v-badge color="primary" :content="`${selectedCount}`">
+                <v-icon color="grey darken-4">{{ icon.mdiClose }}</v-icon>
+              </v-badge>
+            </v-btn>
+          </v-fab-transition>
+        </div>
+      </template>
     </v-main>
   </v-container>
 </template>
@@ -43,18 +105,24 @@
   import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
   import BookCard from '@/components/Home/BookCard'
   import BookGroupCard from '@/components/Home/BookGroupCard'
+  import longClick from '@/plugins/longClick'
   import { getReadTime, lastUpdateFromNow, saveReadTime } from '@/util/read'
 
   export default {
     name: 'Bookshelf',
     components: { BookGroupCard, BookCard },
+    directives: {
+      longClick
+    },
     data() {
       return {
         showMoveDialog: false,
         showGroupEditDialog: false,
+        fab: false,
+        selectedBooks: [],
         icon: icon,
         time: getReadTime(),
-        task: null,
+        task: null
       }
     },
     props: {
@@ -68,7 +136,12 @@
       books() {
         return this.BookList.find((item) => item.gid === this.gid)
       },
-      readTime(){
+      selectedCount() {
+        return this.selectedBooks.reduce((rst, { data }) => {
+          return (data ? data.length : 1) + rst
+        }, 0)
+      },
+      readTime() {
         return lastUpdateFromNow(this.time)
       }
     },
@@ -92,7 +165,7 @@
             temp.splice(index + 1, 1)
 
             index = temp[0].data.findIndex((item) => item['book_path'] === book['book_path'])
-            let temp2 = [book,...temp[0].data]
+            let temp2 = [book, ...temp[0].data]
             temp2.splice(index + 1, 1)
             temp[0].data = temp2
 
@@ -106,15 +179,70 @@
         }
         window.device ? (window.moveToFirst = moveToFirst) : moveToFirst()
       },
-    },
-    mounted() {
-      this.task = setInterval(() => {
-        this.time = getReadTime()
-      }, 1000)
-    },
-    beforeDestroy() {
-      if (this.task) {
-        clearInterval(this.task)
+      toggleFab() {
+        this.fab = !this.fab
+        if (!this.fab) {
+          this.lastMoveTarget = null
+          this.selectedBooks = []
+        }
+      },
+      toggleSelect(book, forceSelect) {
+        let key = `${book.gid}_${book.book_path}`
+        let add
+        if (forceSelect === 1) {
+          add = true
+        } else if (forceSelect === -1) {
+          add = false
+        } else {
+          add = !this.checkIsSelect(book)
+        }
+        if (add) {
+          this.selectedBooks = [...this.selectedBooks, book]
+        } else {
+          this.selectedBooks = this.selectedBooks.filter(({ gid, book_path }) => `${gid}_${book_path}` !== key)
+        }
+      },
+      onLongTouch(book) {
+        this.fab = true
+        this.toggleSelect(book, 1)
+      },
+      checkIsSelect(book) {
+        let key = `${book.gid}_${book.book_path}`
+        return !!this.selectedBooks.find(({ gid, book_path }) => `${gid}_${book_path}` === key)
+      },
+      confirmDelete() {
+        if (this.selectedCount === 0) return
+        let r = window.confirm(`确认删除选中的 ${this.selectedCount} 本书？`)
+        if (r) {
+          Promise.resolve()
+            .then(() => {
+              let books = this.BookList.filter((g) => {
+                return !this.selectedBooks.find((item) => item.gid === g.gid)
+              }).map((g) => {
+                return {
+                  ...g,
+                  data: (g.data || []).filter((b) => {
+                    return !this.selectedBooks.find((item) => item.book_path === b.book_path)
+                  })
+                }
+              })
+              this.updateBookList(books)
+              return this.$nextTick()
+            })
+            .then(() => {
+              this.toggleFab()
+            })
+        }
+      },
+      mounted() {
+        this.task = setInterval(() => {
+          this.time = getReadTime()
+        }, 1000)
+      },
+      beforeDestroy() {
+        if (this.task) {
+          clearInterval(this.task)
+        }
       }
     }
   }
@@ -166,6 +294,33 @@
       transform: scale(0);
       max-width: 0;
       flex-basis: 0;
+    }
+  }
+  .float-box {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+  }
+  .box {
+    position: relative;
+    .overlay {
+      bottom: 60px;
+      align-items: flex-start !important;
+      justify-content: flex-end !important;
+      z-index: 3 !important;
+
+      .btn-select {
+        margin-top: -16px;
+        margin-right: -10px;
+      }
+
+      pointer-events: none;
+      > .v-overlay__content {
+        pointer-events: auto;
+      }
     }
   }
 </style>

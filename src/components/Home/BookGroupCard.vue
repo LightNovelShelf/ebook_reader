@@ -1,5 +1,5 @@
 <template>
-  <component :is="'router-link'" :to="{ name: 'Bookshelf', params: { gid: books.gid } }" tag="div">
+  <component :is="disable ? 'div' : 'router-link'" :to="{ name: 'Bookshelf', params: { gid: books.gid } }" tag="div">
     <v-card ripple tile>
       <v-responsive :aspect-ratio="2 / 3">
         <div class="image-wrapper">
@@ -41,7 +41,8 @@
   export default {
     name: 'BookGroupCard',
     props: {
-      books: Object
+      books: Object,
+      disable: Boolean
     },
     computed: {
       ...mapGetters(['coverCache'])
