@@ -7,7 +7,10 @@ import {
   mdiFormatListBulleted,
   mdiWhiteBalanceSunny,
   mdiArrowLeft,
-  mdiDotsVertical
+  mdiDotsVertical,
+  mdiTrashCanOutline,
+  mdiClose,
+  mdiCheckBold
 } from '@mdi/js'
 
 Vue.use(Vuetify, {
@@ -26,5 +29,8 @@ export const icon = {
   mdiFormatSize,
   mdiFormatListBulleted,
   mdiWhiteBalanceSunny,
-  mdiDotsVertical
+  mdiDotsVertical,
+  mdiTrashCanOutline,
+  mdiClose,
+  mdiCheckBold
 }
