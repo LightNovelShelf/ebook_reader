@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-app-bar dense flat color="white" app>
-      <v-app-bar-title class="text-caption">阅读时长<span class="text-h6">0</span>小时</v-app-bar-title>
+      <v-app-bar-title class="text-caption">阅读时长<span class="text-h6">{{readTime}}</span>小时</v-app-bar-title>
       <v-spacer></v-spacer>
       <v-btn text icon small class="mr-3">
         <v-icon>{{ icon.mdiMagnify }}</v-icon>
@@ -43,6 +43,7 @@
   import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
   import BookCard from '@/components/Home/BookCard'
   import BookGroupCard from '@/components/Home/BookGroupCard'
+  import { getReadTime, lastUpdateFromNow, saveReadTime } from '@/util/read'
 
   export default {
     name: 'Bookshelf',
@@ -51,7 +52,9 @@
       return {
         showMoveDialog: false,
         showGroupEditDialog: false,
-        icon: icon
+        icon: icon,
+        time: getReadTime(),
+        task: null,
       }
     },
     props: {
@@ -64,6 +67,9 @@
       ...mapGetters(['BookList']),
       books() {
         return this.BookList.find((item) => item.gid === this.gid)
+      },
+      readTime(){
+        return lastUpdateFromNow(this.time)
       }
     },
     methods: {
@@ -79,7 +85,7 @@
       },
       loadBook(book) {
         let vue = this
-        function moveToFirst() {
+        function moveToFirst(progress) {
           if (vue.gid) {
             let index = vue.BookList.findIndex((item) => item.gid === vue.gid)
             let temp = [vue.books, ...vue.BookList]
@@ -99,6 +105,16 @@
           }
         }
         window.device ? (window.moveToFirst = moveToFirst) : moveToFirst()
+      },
+    },
+    mounted() {
+      this.task = setInterval(() => {
+        this.time = getReadTime()
+      }, 1000)
+    },
+    beforeDestroy() {
+      if (this.task) {
+        clearInterval(this.task)
       }
     }
   }

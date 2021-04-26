@@ -5,7 +5,7 @@ Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/read/:uri?/:name?',
+    path: '/read/:name?',
     name: 'Read',
     component: () => import('../views/Read'),
     props: true

@@ -16,7 +16,7 @@ export function formatDate(date, fmt) {
     if (new RegExp(`(${k})`).test(fmt)) {
       let str = `${o[k]}`
       let ct = str.length
-      if (k == 's+') {
+      if (k === 's+') {
         ct--
       }
       fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? str : `00${str}`.substr(ct))
@@ -27,7 +27,7 @@ export function formatDate(date, fmt) {
 export function guid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
     var r = Math.random() * 16 | 0,
-      v = c == 'x' ? r : (r & 0x3 | 0x8)
+      v = c === 'x' ? r : (r & 0x3 | 0x8)
     return v.toString(16)
   })
 }

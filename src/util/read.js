@@ -5,6 +5,7 @@ import store from '../store'
 import vuetify from '../plugins/vuetify'
 import bg_paper_dark from '../assets/img/bg-paper-dark.jpg'
 import bg_paper from '../assets/img/bg-paper.jpg'
+import { Storage } from '@/util/storage'
 
 export function throttle(fn, ms = 160) {
   // let timeout
@@ -54,6 +55,23 @@ export function saveReadProgress(fileName, cfi) {
 export function GetReadProgress(hash) {
   let record = JSON.parse(localStorage.getItem(`Reading_Record`) || '{}')
   return record[hash]?.cfi
+}
+
+export function getReadTime() {
+  return Storage.read('EBookReader_Time')
+}
+
+export function saveReadTime(time) {
+  Storage.write('EBookReader_Time', time)
+}
+
+// dateDiff是分钟
+export function lastUpdateFromNow(dateDiff) {
+  let hours = Math.floor(dateDiff / 60 * 100) / 100
+  if (hours > 0) {
+    return hours
+  }
+  return 0
 }
 
 export const ImagePath = window.device?.getExternalFilesDir('Pictures')
