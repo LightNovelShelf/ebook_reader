@@ -37,13 +37,13 @@
                 v-if="!book.gid"
                 :book="book"
                 :disable="fab"
-                :key="(book.gid || book.book_path) + fab"
+                :key="(book.gid || book.book_path)"
               ></book-card>
               <book-group-card
                 v-else
                 :books="book"
                 :disable="fab"
-                :key="(book.gid || book.book_path) + fab"
+                :key="(book.gid || book.book_path)"
               ></book-group-card>
               <v-overlay class="overlay" absolute :opacity="0.3" :value="fab">
                 <v-btn class="btn-select" :color="checkIsSelect(book) ? 'green' : 'white'" fab x-small>
@@ -64,7 +64,7 @@
                 v-on:load-book="loadBook"
                 :book="book"
                 :disable="fab"
-                :key="book['book_path'] + fab"
+                :key="book['book_path']"
               ></book-card>
               <v-overlay class="overlay" absolute :opacity="0.3" :value="fab">
                 <v-btn class="btn-select" :color="checkIsSelect(book) ? 'green' : 'white'" fab x-small>

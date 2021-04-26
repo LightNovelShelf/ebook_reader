@@ -3,15 +3,13 @@ import { trimStr, formatDate, guid } from '../util/index'
 import { BookList } from './mockData'
 import store from './index'
 import md5 from 'md5'
-import { toByteArray } from 'base64-js'
-import Epub from 'epubjs'
 import Vue from 'vue'
 
 const LOCAL_BOOK_LIST_KEY = 'EBookReader_BOOK'
 
 export default {
   state: {
-    list: Storage.read(LOCAL_BOOK_LIST_KEY) || [...BookList],
+    list: Storage.read(LOCAL_BOOK_LIST_KEY) || [],
     coverCache: {}
   },
   getters: {
