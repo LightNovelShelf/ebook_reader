@@ -210,12 +210,12 @@
           Promise.resolve()
             .then(() => {
               let books = this.BookList.filter((g) => {
-                return !this.selectedBooks.find((item) => item.gid === g.gid)
+                return !this.selectedBooks.find((item) => `${item.gid}_${item.book_path}` === `${g.gid}_${g.book_path}` )
               }).map((g) => {
                 return {
                   ...g,
                   data: (g.data || []).filter((b) => {
-                    return !this.selectedBooks.find((item) => item.book_path === b.book_path)
+                    return !this.selectedBooks.find((item) => `${item.gid}_${item.book_path}` === `${b.gid}_${b.book_path}`)
                   })
                 }
               })
