@@ -5,7 +5,7 @@ Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/read/:uri?/:name?',
+    path: '/read/:name?',
     name: 'Read',
     component: () => import('../views/Read'),
     props: true
@@ -36,5 +36,10 @@ const router = new VueRouter({
     }
   }
 })
+
+const VueRouterPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push(to) {
+  return VueRouterPush.call(this, to).catch(err => err)
+}
 
 export default router

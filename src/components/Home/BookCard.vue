@@ -2,11 +2,6 @@
   <div @click="loadBook(book)">
     <v-card ripple>
       <v-img :aspect-ratio="2 / 3" :src="coverCache[book['book_cover']]">
-<!--        <template v-slot:placeholder>-->
-<!--          <v-row class="fill-height ma-0" align="center" justify="center">-->
-<!--            <v-progress-circular indeterminate color="blue-grey lighten-3"></v-progress-circular>-->
-<!--          </v-row>-->
-<!--        </template>-->
       </v-img>
     </v-card>
     <div class="book-name-wrapper">

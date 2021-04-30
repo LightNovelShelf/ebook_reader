@@ -1,5 +1,5 @@
 <template>
-  <component :is="disable ? 'div' : 'router-link'" :to="{ name: 'Bookshelf', params: { gid: books.gid } }" tag="div">
+  <component :is="'div'" @click="onClick">
     <v-card ripple tile>
       <v-responsive :aspect-ratio="2 / 3">
         <div class="image-wrapper">
@@ -7,13 +7,7 @@
             <div class="d-flex flex-wrap fill-height">
               <div class="image" v-for="book in books.data.slice(0, 4)" :key="book['book_cover']">
                 <v-card flat>
-                  <v-img :aspect-ratio="2 / 3" :src="coverCache[book['book_cover']]">
-<!--                    <template v-slot:placeholder>-->
-<!--                      <v-row class="fill-height ma-0" align="center" justify="center">-->
-<!--                        <v-progress-circular indeterminate color="blue-grey lighten-3"></v-progress-circular>-->
-<!--                      </v-row>-->
-<!--                    </template>-->
-                  </v-img>
+                  <v-img :aspect-ratio="2 / 3" :src="coverCache[book['book_cover']]"> </v-img>
                 </v-card>
               </div>
             </div>
@@ -37,6 +31,7 @@
 <script>
   import { getImagePath } from '@/util/read'
   import { mapGetters } from 'vuex'
+  import router from '@/router'
 
   export default {
     name: 'BookGroupCard',
@@ -46,6 +41,13 @@
     },
     computed: {
       ...mapGetters(['coverCache'])
+    },
+    methods: {
+      onClick() {
+        if (!this.disable) {
+          router.push({ name: 'Bookshelf', params: { gid: this.books.gid } })
+        }
+      }
     },
     created() {
       this.books.data.slice(0, 4).forEach((book, index) => {

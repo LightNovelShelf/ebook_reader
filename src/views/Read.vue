@@ -1,15 +1,38 @@
 <template>
-  <ebook-reader class="read" :uri="uri" :name="name"></ebook-reader>
+  <ebook-reader class="read" :name="name"></ebook-reader>
 </template>
 
 <script>
   import EbookReader from '@/components/Read/EbookReader'
+  import { saveReadTime, getReadTime } from '@/util/read'
+
   export default {
     name: 'Read',
     components: { EbookReader },
     props: {
-      uri: String,
       name: String
+    },
+    methods: {
+      startLoopReadTime() {
+        let readTime = getReadTime()
+        if (!readTime) {
+          readTime = 0
+        }
+        this.task = setInterval(() => {
+          if (!document.hidden) {
+            readTime++
+            saveReadTime(readTime)
+          }
+        }, 60000)
+      }
+    },
+    mounted() {
+      this.startLoopReadTime()
+    },
+    beforeDestroy() {
+      if (this.task) {
+        clearInterval(this.task)
+      }
     }
   }
 </script>
