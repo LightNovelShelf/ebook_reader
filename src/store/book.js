@@ -156,14 +156,15 @@ function sortBook(a, b) {
 }
 
 //暴露出函数给原生调用
-window.addToBook = function (path, name) {
+window.addToBook = function (path, name, progress) {
   if (store.getters.hasBook(path)) return
   const time = new Date()
   const temp = {
     book_title: name,
     book_path: path,
     add_time: `${time.getFullYear()}-${time.getMonth() + 1}-${time.getDate()}`,
-    book_cover: md5(path)
+    book_cover: md5(path),
+    read_progress: progress
   }
   store.dispatch('addToBook', temp)
 }
@@ -178,30 +179,9 @@ window.addToBooks = function (name, data) {
 
 window.readFileResult = function (resultCode, name, data) {
   switch (resultCode) {
-    // getImagePath中读取EPUB
-    // case 0: {
-    //   data = toByteArray(data)
-    //   let book = new Epub()
-    //   book.open(data.buffer).then(async () => {
-    //     let cover = await book.loaded.cover
-    //     let coverData = await book.archive.getBase64(cover || '/OEBPS/Images/cover.jpg')
-    //     // let coverData = await book.archive.getBase64(cover)
-    //     new Promise(function () {
-    //       device.saveFile(name, 'Pictures', coverData)
-    //     })
-    //     store.commit('updateCoverCache', { name: name, data: coverData })
-    //   })
-    //   break
-    // }
-    // getImagePath中读取封面
     case 1: {
       store.commit('updateCoverCache', { name: name, data: 'data:image/jpeg;base64,' + data })
       break
     }
-    // case 3: {
-    //   device.toast("3333")
-    //   window.loadBook(name, data)
-    //   break
-    // }
   }
 }

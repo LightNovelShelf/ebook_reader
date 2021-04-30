@@ -2,8 +2,8 @@
   <v-container>
     <v-app-bar dense flat color="white" app>
       <v-app-bar-title class="text-caption"
-      >阅读时长<span class="text-h6">{{ readTime }}</span
-      >小时</v-app-bar-title
+        >阅读时长<span class="text-h6">{{ readTime }}</span
+        >小时</v-app-bar-title
       >
       <v-spacer></v-spacer>
       <v-btn text icon small class="mr-3">
@@ -37,14 +37,9 @@
                 v-if="!book.gid"
                 :book="book"
                 :disable="fab"
-                :key="(book.gid || book.book_path)"
+                :key="book.gid || book.book_path"
               ></book-card>
-              <book-group-card
-                v-else
-                :books="book"
-                :disable="fab"
-                :key="(book.gid || book.book_path)"
-              ></book-group-card>
+              <book-group-card v-else :books="book" :disable="fab" :key="book.gid || book.book_path"></book-group-card>
               <v-overlay class="overlay" absolute :opacity="0.3" :value="fab">
                 <v-btn class="btn-select" :color="checkIsSelect(book) ? 'green' : 'white'" fab x-small>
                   <v-icon>{{ icon.mdiCheckBold }}</v-icon>
@@ -60,12 +55,7 @@
               v-longClick="() => (fab ? null : onLongTouch(book))"
               @click="() => (fab ? toggleSelect(book) : null)"
             >
-              <book-card
-                v-on:load-book="loadBook"
-                :book="book"
-                :disable="fab"
-                :key="book['book_path']"
-              ></book-card>
+              <book-card v-on:load-book="loadBook" :book="book" :disable="fab" :key="book['book_path']"></book-card>
               <v-overlay class="overlay" absolute :opacity="0.3" :value="fab">
                 <v-btn class="btn-select" :color="checkIsSelect(book) ? 'green' : 'white'" fab x-small>
                   <v-icon>{{ icon.mdiCheckBold }}</v-icon>
@@ -168,16 +158,19 @@
             let temp2 = [book, ...temp[0].data]
             temp2.splice(index + 1, 1)
             temp[0].data = temp2
-
+            if (progress) {
+              temp[0].data[0]['read_progress'] = progress
+            }
             vue.updateBookList(temp)
           } else {
             const index = vue.BookList.findIndex((item) => item['book_path'] === book['book_path'])
             let temp = [book, ...vue.BookList]
+            if (progress) book['read_progress'] = progress
             temp.splice(index + 1, 1)
             vue.updateBookList(temp)
           }
         }
-        window.device ? (window.moveToFirst = moveToFirst) : moveToFirst()
+        window.device ? (window.moveToFirst = moveToFirst) : moveToFirst(0)
       },
       toggleFab() {
         this.fab = !this.fab
