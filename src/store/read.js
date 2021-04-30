@@ -226,7 +226,7 @@ function setBg(state) {
   switch (state.readingBgSetting) {
     case 'custom': {
       let { r, g, b, a } = state.readingCustomBg
-      const color = computeFontColor(r, g, b) === 'light' ? 'rgba(255,255,255,0.7)' : ''
+      const color = computeFontColor(r, g, b) === 'light' ? 'rgba(255,255,255,0.7)' : 'black'
       state.rendition.themes.override('--color', color)
       document.documentElement.style.setProperty('--bg-img', `rgba(${r},${g},${b},${a})`)
       break
@@ -236,10 +236,10 @@ function setBg(state) {
         '--bg-img',
         `url(${vuetify.framework.theme.dark ? bg_paper_dark : getFullUrl(bg_paper)}) repeat`
       )
-      state.rendition.themes.override('--color', vuetify.framework.theme.dark ? 'rgba(255,255,255,0.7)' : '')
+      state.rendition.themes.override('--color', vuetify.framework.theme.dark ? 'rgba(255,255,255,0.7)' : 'black')
       break
     default:
-      state.rendition.themes.override('--color', '')
+      state.rendition.themes.override('--color', 'black')
       document.documentElement.style.setProperty('--bg-img', '')
   }
 }

@@ -27,6 +27,7 @@
   import { toByteArray } from 'base64-js'
   import md5 from 'md5'
   import { isMobile as IsMobile } from '@/util'
+  import handleNote from '@/plugins/note'
 
   export default {
     name: 'EbookReader',
@@ -113,10 +114,10 @@
       handleMouseDown(e) {
         const time = e.timeStamp - this.timeStart
         // if (this.hide()) return
+        if (e.target.outerHTML === '<div class="noteCover"></div>') return
         if (e.target.localName === 'a' || e.target.parentNode.localName === 'a') return
         const path = e.path || e.composedPath()
-        let X = 0,
-          Y = 0
+        let X = 0, Y = 0
         if (e.type === 'touchend') {
           X = this.touchDetail.targetTouches[0].pageX % this.width
           Y = this.touchDetail.targetTouches[0].pageY
@@ -126,11 +127,15 @@
         }
         if (e.target.localName === 'img' && path) {
           const classList = [].concat(...path.map((item) => [].concat.apply([], item.classList)))
-          if (classList.findIndex((item) => item === 'duokan-image-single') !== -1) {
+          // 这里对Img的两种特殊情况，需要EPUB制造者进行兼容
+          if (classList.includes('duokan-image-single')) {
             if (!this.isInArea(X)) {
               this.previewImg(e)
               return
             }
+          }
+          if (classList.includes('footnote') || classList.includes('duokan-footnote')) {
+            return
           }
         }
         if (time < 200) {
@@ -208,12 +213,8 @@
               }
             }
           })
+          handleNote(contents.document)
           contents.window.addEventListener(mousewheel, vueInstance.handleMouseWheel, true)
-          contents.document.querySelectorAll('.duokan-image-single img').forEach((node) => {
-            node.style.boxShadow = 'black 0 0 3px'
-            node.style.cursor = 'pointer'
-            node.style.border = '1px solid white'
-          })
           contents.window.addEventListener('keydown', vueInstance.handleKeyDown)
           if (vueInstance.isMobile) {
             contents.document.addEventListener('touchmove', (e) => {
