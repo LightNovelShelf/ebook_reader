@@ -170,7 +170,7 @@
             vue.updateBookList(temp)
           }
         }
-        window.device ? (window.moveToFirst = moveToFirst) : moveToFirst(0)
+        window.device ? (window.moveToFirst = moveToFirst) : moveToFirst(undefined)
       },
       toggleFab() {
         this.fab = !this.fab
