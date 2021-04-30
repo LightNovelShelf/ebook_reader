@@ -187,7 +187,9 @@ export default {
             }
           }
           if (isProgress) {
-            commit('updateReadProgress', Math.floor(currentLocation.start.percentage * 1000))
+            let progress =  Math.floor(currentLocation.start.percentage * 1000)
+            commit('updateReadProgress',progress)
+            window.device?.setProgress(progress)
           }
         }
       }

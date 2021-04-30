@@ -8,6 +8,7 @@ export const BookList = [
         book_path:
           'content://com.android.externalstorage.documents/tree/primary%3A%E8%BD%BB%E5%B0%8F%E8%AF%B4/document/primary%3A%E8%BD%BB%E5%B0%8F%E8%AF%B4%2F%E6%88%91%E6%83%B3%E6%88%90%E4%B8%BA%E5%BD%B1%E4%B9%8B%E5%BC%BA%E8%80%85%EF%BC%81%2F%E6%88%91%E6%83%B3%E6%88%90%E4%B8%BA%E5%BD%B1%E4%B9%8B%E5%BC%BA%E8%80%85%EF%BC%81%2001.epub',
         book_cover: '6735fe3c523f03b4be424b1889bbd3c1',
+        read_progress: 50,
         add_time: '2020-12-30'
       },
       {
@@ -122,5 +123,26 @@ export const BookList = [
         add_time: '2020-12-30'
       }
     ]
+  },
+  {
+    book_title: '魔技科的剑士与召唤魔王 111',
+    book_path:
+      '111',
+    book_cover: '2cd55679ca51b0089ebebc4f8afea6cc',
+    add_time: '2020-12-30'
+  },
+  {
+    book_title: '魔技科的剑士与召唤魔王 222',
+    book_path:
+      '222imary%3A%E8%BD%BB%E5%B0%8F%E8%AF%B4/document/primary%3A%E8%BD%BB%E5%B0%8F%E8%AF%B4%2F%E9%AD%94%E6%8A%80%E7%A7%91%E7%9A%84%E5%89%91%E5%A3%AB%E4%B8%8E%E5%8F%AC%E5%94%A4%E9%AD%94%E7%8E%8B%2F%E9%AD%94%E6%8A%80%E7%A7%91%E7%9A%84%E5%89%91%E5%A3%AB%E4%B8%8E%E5%8F%AC%E5%94%A4%E9%AD%94%E7%8E%8B%2001.epub',
+    book_cover: '2cd55679ca51b0089ebebc4f8afea6cc',
+    add_time: '2020-12-30'
+  },
+  {
+    book_title: '魔技科的剑士与召唤魔王 333',
+    book_path:
+      '333cuments/tree/primary%3A%E8%BD%BB%E5%B0%8F%E8%AF%B4/document/primary%3A%E8%BD%BB%E5%B0%8F%E8%AF%B4%2F%E9%AD%94%E6%8A%80%E7%A7%91%E7%9A%84%E5%89%91%E5%A3%AB%E4%B8%8E%E5%8F%AC%E5%94%A4%E9%AD%94%E7%8E%8B%2F%E9%AD%94%E6%8A%80%E7%A7%91%E7%9A%84%E5%89%91%E5%A3%AB%E4%B8%8E%E5%8F%AC%E5%94%A4%E9%AD%94%E7%8E%8B%2001.epub',
+    book_cover: '2cd55679ca51b0089ebebc4f8afea6cc',
+    add_time: '2020-12-30'
   }
 ]

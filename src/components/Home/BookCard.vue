@@ -1,8 +1,7 @@
 <template>
   <div @click="loadBook(book)">
     <v-card ripple>
-      <v-img :aspect-ratio="2 / 3" :src="coverCache[book['book_cover']]">
-      </v-img>
+      <v-img :aspect-ratio="2 / 3" :src="coverCache[book['book_cover']]"> </v-img>
     </v-card>
     <div class="book-name-wrapper">
       <div class="pa-0 d-flex book-name">
@@ -12,7 +11,7 @@
           </div>
         </div>
       </div>
-      <div class="book-info">已读0%</div>
+      <div class="book-info">已读{{ read_progress }}%</div>
     </div>
   </div>
 </template>
@@ -25,14 +24,18 @@
     name: 'BookCard',
     props: {
       book: Object,
-      disable: Boolean,
+      disable: Boolean
     },
     computed: {
-      ...mapGetters(['coverCache'])
+      ...mapGetters(['coverCache']),
+      read_progress() {
+        let a = this.book['read_progress']
+        return a ? a : 0
+      }
     },
     methods: {
       loadBook(book) {
-        if(this.disable) return
+        if (this.disable) return
         window.device?.openBook(book['book_title'], book['book_path'])
         this.$emit('load-book', book)
       }

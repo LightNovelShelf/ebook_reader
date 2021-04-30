@@ -213,11 +213,6 @@
             node.style.boxShadow = 'black 0 0 3px'
             node.style.cursor = 'pointer'
             node.style.border = '1px solid white'
-            // node.onclick = (e) => {
-            //   if(!vueInstance.isInArea(e.offsetX)) {
-            //     vueInstance.previewImg(e)
-            //   }
-            // }
           })
           contents.window.addEventListener('keydown', vueInstance.handleKeyDown)
           if (vueInstance.isMobile) {
