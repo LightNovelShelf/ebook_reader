@@ -1,6 +1,6 @@
 <template>
   <div v-resize="onResize">
-    <div id="read" :style="{ width: width + 'px' }"> </div>
+    <div id="read" :style="{ width: width + 'px' }"></div>
     <div ref="viewer" v-viewer v-show="false">
       <img :src="img.src" :alt="img.alt" />
     </div>
@@ -49,7 +49,7 @@
       name: String
     },
     computed: {
-      ...mapGetters(['book', 'menuShow', 'sidebarShow', 'fontSize','bookHash']),
+      ...mapGetters(['book', 'menuShow', 'sidebarShow', 'fontSize', 'bookHash']),
       navigation() {
         return this.$store.state.read.navigation
       },
@@ -117,7 +117,8 @@
         if (e.target.outerHTML === '<div class="noteCover"></div>') return
         if (e.target.localName === 'a' || e.target.parentNode.localName === 'a') return
         const path = e.path || e.composedPath()
-        let X = 0, Y = 0
+        let X = 0,
+          Y = 0
         if (e.type === 'touchend') {
           X = this.touchDetail.targetTouches[0].pageX % this.width
           Y = this.touchDetail.targetTouches[0].pageY
@@ -323,19 +324,16 @@
     destroyed() {
       window.removeEventListener('keydown', this.handleKeyDown)
     },
-    async mounted() {
+    mounted() {
       this.getWidth()
       if (window.device) {
         // 连接App调试
         let vueInstance = this
-        window.loadBook = async function (path, data) {
+        window.loadBook = function (path, url) {
           let hash = md5(path)
           vueInstance.updatebookHash(hash)
-          data = toByteArray(data)
-          console.log(data.length)
-          let book = new Epub()
-          await book.open(data.buffer)
-          vueInstance.initEpub(book, GetReadProgress(hash))
+          vueInstance.initEpub(new Epub('file://' + url), GetReadProgress(hash))
+          // Todo 需要支持测试环境下使用BASE64传递数据
         }
         window.device.readBook()
       } else {
