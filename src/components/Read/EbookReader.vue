@@ -332,8 +332,21 @@
         window.loadBook = function (path, url) {
           let hash = md5(path)
           vueInstance.updatebookHash(hash)
-          vueInstance.initEpub(new Epub('file://' + url), GetReadProgress(hash))
-          // Todo 需要支持测试环境下使用BASE64传递数据
+          if (!url.startsWith('/')) {
+            console.log('base64')
+            let data = toByteArray(url)
+            console.log(data.length)
+            let book = new Epub()
+            book.open(data.buffer).then(() => {
+              vueInstance.initEpub(book, GetReadProgress(hash))
+            })
+          } else {
+            if (window.location.origin === 'file://') {
+              vueInstance.initEpub(new Epub('file://' + url), GetReadProgress(hash))
+            } else {
+              window.device.readFileBase64(url)
+            }
+          }
         }
         window.device.readBook()
       } else {
