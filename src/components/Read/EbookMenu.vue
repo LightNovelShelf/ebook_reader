@@ -6,11 +6,11 @@
           <v-icon size="32">{{ icon.mdiArrowLeft }}</v-icon>
         </v-btn>
         <v-spacer />
-        <v-btn icon class="mr-6">
+        <v-btn @click="searchClick" icon class="mr-6">
           <v-icon size="32">{{ icon.mdiMagnify }}</v-icon>
         </v-btn>
-      </div></v-slide-y-transition
-    >
+      </div>
+    </v-slide-y-transition>
     <v-slide-y-reverse-transition>
       <div v-show="menuShow" class="menu">
         <div class="text-center pt-3">{{ readSection }}({{ progress / 10 }}%)</div>
@@ -119,9 +119,14 @@
         'updateMenuShow',
         'updateSidebarShow',
         'updateFontSettingShow',
-        'updateBgSettingShow'
+        'updateBgSettingShow',
+        'updateSearchShow'
       ]),
       ...mapActions(['display', 'refreshLocation']),
+      searchClick() {
+        this.updateMenuShow(false)
+        this.updateSearchShow(true)
+      },
       change(value) {
         this.isChange = value
       },

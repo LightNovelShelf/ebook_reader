@@ -28,6 +28,7 @@ export default {
     fontSettingShow: false,
     bgSettingShow: false,
     sidebarShow: false,
+    searchShow: false,
     fontSize: Storage.read(Reading_FontSize) || 16,
     readingCustomBg: Storage.read(LightNovel_Reading_Bg_Custom) || null,
     readingBgSetting: Storage.read(LightNovel_Reading_Bg_Setting) || 'none'
@@ -60,6 +61,9 @@ export default {
     },
     bgSettingShow(state) {
       return state.bgSettingShow
+    },
+    searchShow(state){
+      return state.searchShow
     },
     bookAvailable(state) {
       return state.bookAvailable
@@ -112,6 +116,12 @@ export default {
     },
     updateSection(state, value) {
       state.section = value
+    },
+    updateSearchShow(state, value) {
+      if (window.device && state.searchShow !== value) {
+        pushOrPop(value, 'Search')
+      }
+      state.searchShow = value
     },
     updateMenuShow(state, value) {
       if (window.device && state.menuShow !== value) {
@@ -268,6 +278,10 @@ window.back = function (str) {
     }
     case 'Font': {
       store.commit('updateFontSettingShow', false)
+      break
+    }
+    case 'Search':{
+      store.commit('updateSearchShow', false)
       break
     }
     default:

@@ -10,6 +10,7 @@
     <ebook-sidebar />
     <font-setting />
     <bg-setting />
+    <ebook-search/>
   </div>
 </template>
 
@@ -28,10 +29,11 @@
   import md5 from 'md5'
   import { isMobile as IsMobile } from '@/util'
   import handleNote from '@/plugins/note'
+  import EbookSearch from '@/components/Read/EbookSearch'
 
   export default {
     name: 'EbookReader',
-    components: { BgSetting, FontSetting, EbookSidebar, EbookMenu },
+    components: { EbookSearch, BgSetting, FontSetting, EbookSidebar, EbookMenu },
     data() {
       return {
         img: {
@@ -342,7 +344,7 @@
             })
           } else {
             if (window.location.origin === 'file://') {
-              vueInstance.initEpub(new Epub('file://' + url), GetReadProgress(hash))
+              vueInstance.initEpub(new Epub(url), GetReadProgress(hash))
             } else {
               window.device.readFileBase64(url)
             }

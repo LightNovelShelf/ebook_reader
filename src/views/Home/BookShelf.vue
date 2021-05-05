@@ -149,6 +149,7 @@
       loadBook(book) {
         let vue = this
         function moveToFirst(progress) {
+          console.log(progress)
           if (vue.gid) {
             let index = vue.BookList.findIndex((item) => item.gid === vue.gid)
             let temp = [vue.books, ...vue.BookList]
