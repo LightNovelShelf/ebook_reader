@@ -10,7 +10,7 @@
     <ebook-sidebar />
     <font-setting />
     <bg-setting />
-    <ebook-search/>
+    <ebook-search />
   </div>
 </template>
 
@@ -216,7 +216,7 @@
               }
             }
           })
-          handleNote(contents.document)
+          handleNote(contents.document) // 处理注释
           contents.window.addEventListener(mousewheel, vueInstance.handleMouseWheel, true)
           contents.window.addEventListener('keydown', vueInstance.handleKeyDown)
           if (vueInstance.isMobile) {
@@ -366,7 +366,7 @@
   }
 
   .cover {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;

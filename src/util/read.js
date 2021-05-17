@@ -1,6 +1,3 @@
-import { toByteArray } from 'base64-js'
-import Epub from 'epubjs'
-import md5 from 'md5'
 import store from '../store'
 import vuetify from '../plugins/vuetify'
 import bg_paper_dark from '../assets/img/bg-paper-dark.jpg'

@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="fontSettingShow" max-width="500px">
     <v-card>
-      <v-card-subtitle class="pt-5">修改字体大小</v-card-subtitle>
+      <v-card-subtitle class="pt-5">修改字号</v-card-subtitle>
       <v-card-text class="pb-0 pt-4">
         <v-slider
           dense
@@ -11,6 +11,10 @@
           min="12"
           :prepend-icon="icon.mdiFormatSize"
         ></v-slider>
+      </v-card-text>
+      <v-card-subtitle class="pb-2">修改字体</v-card-subtitle>
+      <v-card-text class="">
+        <v-btn>简繁</v-btn>
       </v-card-text>
     </v-card>
   </v-dialog>

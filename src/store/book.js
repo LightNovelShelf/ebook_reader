@@ -9,7 +9,7 @@ const LOCAL_BOOK_LIST_KEY = 'EBookReader_BOOK'
 
 export default {
   state: {
-    list: Storage.read(LOCAL_BOOK_LIST_KEY) || [],
+    list: Storage.read(LOCAL_BOOK_LIST_KEY) || [...BookList],
     coverCache: {}
   },
   getters: {

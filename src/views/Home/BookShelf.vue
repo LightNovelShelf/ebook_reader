@@ -1,10 +1,11 @@
 <template>
   <v-container>
     <v-app-bar dense flat color="white" app>
-      <v-app-bar-title class="text-caption"
-        >阅读时长<span class="text-h6">{{ readTime }}</span
-        >小时</v-app-bar-title
-      >
+      <v-app-bar-title class="text-caption">
+        阅读时长
+        <span class="text-h6">{{ readTime }}</span>
+        小时
+      </v-app-bar-title>
       <v-spacer></v-spacer>
       <v-btn text icon small class="mr-3">
         <v-icon>{{ icon.mdiMagnify }}</v-icon>
@@ -24,7 +25,7 @@
       </v-menu>
     </v-app-bar>
     <v-main>
-      <transition-group tag="div" type="transition" name="flip-list" class="move">
+      <transition-group tag="div" type="transition" :name="canTransition ? 'flip-list' : ''" class="move">
         <template v-if="!gid">
           <v-col cols="4" sm="4" md="3" lg="2" v-for="book in BookList" :key="book.gid || book.book_path">
             <div
@@ -112,7 +113,8 @@
         selectedBooks: [],
         icon: icon,
         time: getReadTime(),
-        task: null
+        task: null,
+        canTransition: false
       }
     },
     props: {
@@ -211,12 +213,14 @@
           Promise.resolve()
             .then(() => {
               let books = this.BookList.filter((g) => {
-                return !this.selectedBooks.find((item) => `${item.gid}_${item.book_path}` === `${g.gid}_${g.book_path}` )
+                return !this.selectedBooks.find((item) => `${item.gid}_${item.book_path}` === `${g.gid}_${g.book_path}`)
               }).map((g) => {
                 return {
                   ...g,
                   data: (g.data || []).filter((b) => {
-                    return !this.selectedBooks.find((item) => `${item.gid}_${item.book_path}` === `${b.gid}_${b.book_path}`)
+                    return !this.selectedBooks.find(
+                      (item) => `${item.gid}_${item.book_path}` === `${b.gid}_${b.book_path}`
+                    )
                   })
                 }
               })
@@ -227,17 +231,25 @@
               this.toggleFab()
             })
         }
-      },
-      mounted() {
-        this.task = setInterval(() => {
-          this.time = getReadTime()
-        }, 1000)
-      },
-      beforeDestroy() {
-        if (this.task) {
-          clearInterval(this.task)
-        }
       }
+    },
+    mounted() {
+      this.task = setInterval(() => {
+        this.time = getReadTime()
+      }, 1000)
+      this.canTransition = true
+    },
+    beforeDestroy() {
+      if (this.task) {
+        clearInterval(this.task)
+      }
+    },
+    updated() {
+      this.canTransition = true
+    },
+    beforeRouteUpdate(to, from, next) {
+      this.canTransition = false
+      next()
     }
   }
 </script>

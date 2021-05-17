@@ -180,7 +180,7 @@
   .toolbar {
     width: 100%;
     height: calc(64px + var(--status-bar-height));
-    position: absolute;
+    position: fixed;
     display: flex;
     top: 0;
     left: 0;
@@ -191,7 +191,7 @@
 
   .menu {
     width: 100%;
-    position: absolute;
+    position: fixed;
     background: white;
     left: 0;
     bottom: 0;
