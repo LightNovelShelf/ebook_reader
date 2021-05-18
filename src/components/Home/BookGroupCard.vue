@@ -40,7 +40,7 @@
       disable: Boolean
     },
     computed: {
-      ...mapGetters(['coverCache'])
+      ...mapGetters('book',['coverCache'])
     },
     methods: {
       onClick() {

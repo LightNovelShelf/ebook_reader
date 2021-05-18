@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import readModule from './read'
-import bookModule from './book'
+import readModule from './modules/read'
+import bookModule from './modules/book'
 
 Vue.use(Vuex)
 

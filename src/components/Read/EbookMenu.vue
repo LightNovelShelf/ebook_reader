@@ -43,7 +43,7 @@
 
 <script>
   import { icon } from '@/plugins/vuetify'
-  import { mapActions, mapGetters, mapMutations } from 'vuex'
+  import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 
   export default {
     name: 'EbookMenu',
@@ -80,22 +80,13 @@
       }
     },
     computed: {
-      ...mapGetters(['menuShow']),
-      bookAvailable() {
-        return this.$store.state.read.bookAvailable
-      },
-      readSection() {
-        return this.$store.getters.readSection
-      },
-      book() {
-        return this.$store.state.read.book
-      },
-      navigation() {
-        return this.$store.state.read.navigation
-      },
-      section() {
-        return this.$store.state.read.section
-      },
+      ...mapGetters(['menuShow','readSection']),
+      ...mapState({
+        bookAvailable : state => state.read.bookAvailable,
+        book: state => state.read.book,
+        navigation : state => state.read.navigation,
+        section : state => state.read.section
+      }),
       progress: {
         get() {
           return this.$store.state.read.readProgress

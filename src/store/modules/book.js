@@ -1,35 +1,33 @@
 import { Storage } from '@/util/storage'
-import { trimStr, formatDate, guid } from '../util/index'
-import { BookList } from './mockData'
-import store from './index'
+import { trimStr, formatDate, guid } from '../../util'
+import { MOCK_DATA } from '../mockData'
+import store from '../index'
 import md5 from 'md5'
 import Vue from 'vue'
 
 const LOCAL_BOOK_LIST_KEY = 'EBookReader_BOOK'
 
 export default {
+  namespaced: true,
   state: {
-    list: Storage.read(LOCAL_BOOK_LIST_KEY) || [...BookList],
+    bookList: Storage.read(LOCAL_BOOK_LIST_KEY) || [...MOCK_DATA],
     coverCache: {}
   },
   getters: {
     localBookExist: (state, getters) => {
       return getters.allGroup.length > 0 || getters.allList.length > 0
     },
-    BookList: (state) => {
-      return state.list
-    },
     hasGroup: (state, getters) => {
       return (gid) => {
         if (gid === null) return true
-        return !!getters.BookList.find((item) => item.gid === gid)
+        return !!state.bookList.find((item) => item.gid === gid)
       }
     },
     groupTitleExist: (state, getters) => {
       return (title, gid) => {
         let str = trimStr(title)
         if (str.length === 0) return true
-        return !!getters.BookList.find((item) => item.gid !== gid && item.book_title === str)
+        return !!state.bookList.find((item) => item.gid !== gid && item.book_title === str)
       }
     },
     cacheTitleExist: (state, getters) => {
@@ -38,13 +36,13 @@ export default {
         if (str.length === 0) return true
         return (
           !!getters.allGroup.find((item) => item.gid !== gid && item.data.title === str) ||
-          !!getters.BookListCache.find((item) => !item.bid && item.gid !== gid && item.data.title === str)
+          !!state.bookListCache.find((item) => !item.bid && item.gid !== gid && item.data.title === str)
         )
       }
     },
     hasBook: (state, getters) => {
       return (book_path) => {
-        return !!getters.BookList.find((item) => {
+        return !!state.bookList.find((item) => {
           if (item.gid) {
             return !!item.data.find((subItem) => subItem.book_path === book_path)
           }
@@ -59,7 +57,7 @@ export default {
     },
     findGroup: (state, getters) => {
       return (gid) => {
-        return getters.BookList.find((item) => item.gid === gid)
+        return state.bookList.find((item) => item.gid === gid)
       }
     },
     mapList: (state, getters) => {
@@ -78,24 +76,24 @@ export default {
   },
   mutations: {
     updateBookList(state, payload) {
-      state.list = payload || []
-      Storage.write(LOCAL_BOOK_LIST_KEY, state.list)
+      state.bookList = payload || []
+      Storage.write(LOCAL_BOOK_LIST_KEY, state.bookList)
     },
     updateCoverCache(state, payload) {
       Vue.set(state.coverCache, payload.name, payload.data)
     }
   },
   actions: {
-    addBookGroup({ commit, getters, dispatch }, payload) {
+    addBookGroup({ commit, getters, state  }, payload) {
       if (!getters.groupTitleExist(payload.group_name)) {
-        let newList = [payload, ...getters.BookList]
+        let newList = [payload, ...state.bookList]
         commit('updateBookList', newList)
         return true
       } else {
         return false
       }
     },
-    removeBookGroup({ commit, getters, dispatch }, payload) {
+    removeBookGroup({ commit, getters }, payload) {
       if (!Array.isArray(payload)) {
         payload = [payload]
       }
@@ -103,7 +101,7 @@ export default {
       commit('updateBookGroup', newList)
       return true
     },
-    updateBookGroup({ commit, getters, dispatch }, payload) {
+    updateBookGroup({ commit, getters }, payload) {
       if (!Array.isArray(payload)) {
         payload = [payload]
       }
@@ -124,12 +122,12 @@ export default {
       commit('updateBookGroup', newList)
       return true
     },
-    addToBook({ commit, getters, dispatch }, payload) {
-      let newList = [payload, ...getters.BookList]
+    addToBook({ commit, getters, state  }, payload) {
+      let newList = [payload, ...state.bookList]
       commit('updateBookList', newList)
       return true
     },
-    removeFromBook({ commit, getters, dispatch }, payload) {
+    removeFromBook({ commit, getters }, payload) {
       if (!Array.isArray(payload)) {
         payload = [payload]
       }
@@ -138,7 +136,7 @@ export default {
       return true
     },
     saveBookList({ state }) {
-      Storage.write(LOCAL_BOOK_LIST_KEY, state.list)
+      Storage.write(LOCAL_BOOK_LIST_KEY, state.bookList)
     }
   }
 }

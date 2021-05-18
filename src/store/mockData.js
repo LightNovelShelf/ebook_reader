@@ -1,4 +1,4 @@
-export const BookList = [
+export const MOCK_DATA = [
   {
     gid: '44841dec-10ad-43f3-8327-d623613388c0',
     group_name: '我想成为影之强者！',

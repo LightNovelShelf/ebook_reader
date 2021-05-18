@@ -27,7 +27,7 @@
     <v-main>
       <transition-group tag="div" type="transition" :name="canTransition ? 'flip-list' : ''" class="move">
         <template v-if="!gid">
-          <v-col cols="4" sm="4" md="3" lg="2" v-for="book in BookList" :key="book.gid || book.book_path">
+          <v-col cols="4" sm="4" md="3" lg="2" v-for="book in bookList" :key="book.gid || book.book_path">
             <div
               class="box"
               v-longClick="() => (fab ? null : onLongTouch(book))"
@@ -124,9 +124,9 @@
       }
     },
     computed: {
-      ...mapGetters(['BookList']),
+      ...mapState('book', ['bookList']),
       books() {
-        return this.BookList.find((item) => item.gid === this.gid)
+        return this.bookList.find((item) => item.gid === this.gid)
       },
       selectedCount() {
         return this.selectedBooks.reduce((rst, { data }) => {
@@ -138,8 +138,8 @@
       }
     },
     methods: {
-      ...mapActions(['saveBookList']),
-      ...mapMutations(['updateBookList']),
+      ...mapActions('book', ['saveBookList']),
+      ...mapMutations('book', ['updateBookList']),
       openBook() {
         console.log('从文件管理器选择一本书并打开书籍')
         window.device?.choiceBook()
@@ -153,8 +153,8 @@
         function moveToFirst(progress) {
           console.log(progress)
           if (vue.gid) {
-            let index = vue.BookList.findIndex((item) => item.gid === vue.gid)
-            let temp = [vue.books, ...vue.BookList]
+            let index = vue.bookList.findIndex((item) => item.gid === vue.gid)
+            let temp = [vue.books, ...vue.bookList]
             temp.splice(index + 1, 1)
 
             index = temp[0].data.findIndex((item) => item['book_path'] === book['book_path'])
@@ -166,8 +166,8 @@
             }
             vue.updateBookList(temp)
           } else {
-            const index = vue.BookList.findIndex((item) => item['book_path'] === book['book_path'])
-            let temp = [book, ...vue.BookList]
+            const index = vue.bookList.findIndex((item) => item['book_path'] === book['book_path'])
+            let temp = [book, ...vue.bookList]
             if (progress) book['read_progress'] = progress
             temp.splice(index + 1, 1)
             vue.updateBookList(temp)
@@ -212,18 +212,22 @@
         if (r) {
           Promise.resolve()
             .then(() => {
-              let books = this.BookList.filter((g) => {
-                return !this.selectedBooks.find((item) => `${item.gid}_${item.book_path}` === `${g.gid}_${g.book_path}`)
-              }).map((g) => {
-                return {
-                  ...g,
-                  data: (g.data || []).filter((b) => {
-                    return !this.selectedBooks.find(
-                      (item) => `${item.gid}_${item.book_path}` === `${b.gid}_${b.book_path}`
-                    )
-                  })
-                }
-              })
+              let books = this.bookList
+                .filter((g) => {
+                  return !this.selectedBooks.find(
+                    (item) => `${item.gid}_${item.book_path}` === `${g.gid}_${g.book_path}`
+                  )
+                })
+                .map((g) => {
+                  return {
+                    ...g,
+                    data: (g.data || []).filter((b) => {
+                      return !this.selectedBooks.find(
+                        (item) => `${item.gid}_${item.book_path}` === `${b.gid}_${b.book_path}`
+                      )
+                    })
+                  }
+                })
               this.updateBookList(books)
               return this.$nextTick()
             })

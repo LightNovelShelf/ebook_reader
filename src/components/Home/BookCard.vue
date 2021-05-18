@@ -27,7 +27,7 @@
       disable: Boolean
     },
     computed: {
-      ...mapGetters(['coverCache']),
+      ...mapGetters('book',['coverCache']),
       read_progress() {
         let a = this.book['read_progress']
         return a ? a : 0

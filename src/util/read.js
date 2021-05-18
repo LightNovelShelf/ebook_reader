@@ -80,15 +80,15 @@ const readFilePromise = {}
 export function getImagePath(name, uri) {
   if (readFilePromise[uri]) return readFilePromise[uri]
   return new Promise(function (resolve, reject) {
-    if (store.getters.coverCache[name]) resolve()
+    if (store.state.book.coverCache[name]) resolve()
     if (name.startsWith('http')) {
-      store.commit('updateCoverCache', { name: name, data: name })
+      store.commit('book/updateCoverCache', { name: name, data: name })
       resolve()
     }
     let path = ImagePath + '/' + name
     if (window.device) {
       if (!device.fileExits(path)) {
-        store.commit('updateCoverCache', { name: name, data: '' })
+        store.commit('book/updateCoverCache', { name: name, data: '' })
         // Todo 封面缓存不存在 在原生解析封面后通知给Web
         readFilePromise[uri] = this
         device.loadCover(1, name, path, uri)
@@ -100,13 +100,13 @@ export function getImagePath(name, uri) {
           resolve()
         } else {
           const result = 'file://' + path
-          store.commit('updateCoverCache', { name: name, data: result })
+          store.commit('book/updateCoverCache', { name: name, data: result })
           resolve(result)
         }
       }
     } else {
       const result = 'file://' + path
-      store.commit('updateCoverCache', { name: name, data: result })
+      store.commit('book/updateCoverCache', { name: name, data: result })
       resolve()
     }
   })
