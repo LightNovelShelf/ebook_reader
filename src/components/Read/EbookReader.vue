@@ -17,7 +17,7 @@
 <script>
   // import { EpubCFI } from 'epubjs' //这样导不进来，奇怪
   // import Epub from 'epubjs'
-  import Epub from '@/assets/js/epub.85.fix'
+  import Epub from '@/assets/js/epub.last'
   import EpubCFI from 'epubjs/src/epubcfi'
   import { mapActions, mapGetters, mapMutations } from 'vuex'
   import { flatten, GetReadProgress, throttle, ImagePath } from '@/util/read'
