@@ -2,15 +2,14 @@
   <div>
     <router-view></router-view>
     <div class="menu">
-      <v-bottom-navigation grow v-model='value' :value="value" color="primary">
-        <template v-for="(menuIcon, i) in menuIcons" >
+      <v-bottom-navigation grow v-model="activeTab" :value="activeTab" color="primary">
 
-          <v-btn @click="menuIcon.handle()" :key="i">
-            <span>{{ menuIcon.text }}</span>
-
-            <v-icon>{{ menuIcon.icon }}</v-icon>
-          </v-btn>
-        </template>
+          <router-link :to="menuIcon.route" custom v-slot="{ navigate }" v-for="(menuIcon, i) in menuIcons" :key="i">
+            <v-btn @click="navigate">
+              <span>{{ menuIcon.text }}</span>
+              <v-icon>{{ menuIcon.icon }}</v-icon>
+            </v-btn>
+          </router-link>
 
       </v-bottom-navigation>
     </div>
@@ -24,22 +23,22 @@
     name: 'Home',
     data() {
       return {
-        value: 1,
+        activeTab: 1,
         menuIcons: [
           {
-            icon: icon.mdiFormatListBulleted,
-            handle: function () {},
-            text: '首页'
+            icon: icon.mdiBookshelf ,
+            text: '首页',
+            route: '/bookshelf'
           },
           {
-            icon: icon.mdiFormatListBulleted,
-            handle: function () {},
-            text: '书架'
+            icon: icon.mdiBookshelf ,
+            text: '书架',
+            route: '/bookshelf'
           },
           {
-            icon: icon.mdiFormatListBulleted,
-            handle: function () {},
-            text: '设置'
+            icon: icon.mdiCog ,
+            text: '设置',
+            route: '/setting'
           }
         ]
       }

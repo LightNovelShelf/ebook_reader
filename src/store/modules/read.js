@@ -207,13 +207,13 @@ export default {
       return state.book.rendition.display(target)
     },
     getRendition({ commit, state }, { element, option }) {
-      let inserRules = `@import url('${getFullUrl(READ_STYLE)}');
+      let insertRules = `@import url('${getFullUrl(READ_STYLE)}');
 body{
 --read-padding: ${StatusBarHeight + 20}px;
 font-size: ${state.fontSize}px;
 }
 `
-      option.stylesheet = createBlobUrl(inserRules, 'text/css')
+      option.stylesheet = createBlobUrl(insertRules, 'text/css')
       let rendition = state.book.renderTo(element, option)
       commit('updateRendition', rendition)
       setBg(state)

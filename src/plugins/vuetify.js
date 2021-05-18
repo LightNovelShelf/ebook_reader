@@ -11,7 +11,9 @@ import {
   mdiTrashCanOutline,
   mdiClose,
   mdiCheckBold,
-  mdiCancel
+  mdiCancel,
+  mdiBookshelf,
+  mdiCog
 } from '@mdi/js'
 
 Vue.use(Vuetify, {
@@ -34,5 +36,7 @@ export const icon = {
   mdiTrashCanOutline,
   mdiClose,
   mdiCheckBold,
-  mdiCancel
+  mdiCancel,
+  mdiBookshelf,
+  mdiCog
 }
