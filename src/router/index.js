@@ -19,7 +19,7 @@ const routes = [
       {
         path: 'bookshelf/:gid?',
         name: 'Bookshelf',
-        component: () => import('../views/Home/BookShelf.vue'),
+        component: () => import('../views/home/BookShelf.vue'),
         props: true,
       }
     ]

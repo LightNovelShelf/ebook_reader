@@ -3,7 +3,7 @@
 </template>
 
 <script>
-  import EbookReader from '@/components/Read/EbookReader'
+  import EbookReader from '@/components/read/EbookReader'
   import { saveReadTime, getReadTime } from '@/util/read'
 
   export default {

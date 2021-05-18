@@ -47,7 +47,6 @@ export default function (document) {
           setTimeout(function () {
             note.style.transform = 'scale(1)'
           }, 0)
-          // debugger
           note.style.display = 'block'
           note.style.left = `${-(width - 12) / 2}px`
           // 有scale，这里为了触发动画，无法用动画后的位置判断，必须使用中心点
@@ -61,8 +60,8 @@ export default function (document) {
           } else if (bodyRect.right - 15 < center.x + width / 2) {
             note.style.left = `${-(width - 12) / 2 + bodyRect.right - 15 - (center.x + width / 2)}px`
           }
-          if (bodyRect.bottom - 20 <= center.y + noteRect.height + height / 2) {
-            note.style.bottom = 10 + noteRect.height + 'px'
+          if (bodyRect.bottom - 20 <= center.y + noteRect.height / 2 + origRect.height) {
+            note.style.bottom = 5 + noteRect.height + 'px'
           }
           cover.addEventListener(
             'click',

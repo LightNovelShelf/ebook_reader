@@ -21,15 +21,15 @@
   import EpubCFI from 'epubjs/src/epubcfi'
   import { mapActions, mapGetters, mapMutations } from 'vuex'
   import { flatten, GetReadProgress, throttle, ImagePath } from '@/util/read'
-  import EbookMenu from '@/components/Read/EbookMenu'
-  import EbookSidebar from '@/components/Read/EbookSidebar'
-  import FontSetting from '@/components/Read/Menu/FontSetting'
-  import BgSetting from './Menu/BgSetting'
+  import EbookMenu from '@/components/read/EbookMenu'
+  import EbookSidebar from '@/components/read/EbookSidebar'
+  import FontSetting from '@/components/read/menu/FontSetting'
+  import BgSetting from './menu/BgSetting'
   import { toByteArray } from 'base64-js'
   import md5 from 'md5'
   import { isMobile as IsMobile } from '@/util'
   import handleNote from '@/plugins/note'
-  import EbookSearch from '@/components/Read/EbookSearch'
+  import EbookSearch from '@/components/read/EbookSearch'
 
   export default {
     name: 'EbookReader',
@@ -68,7 +68,7 @@
         'updateBookAvailable',
         'updateMenuShow',
         'updateSidebarShow',
-        'updatebookHash',
+        'updateBookHash',
         'updateFontSize'
       ]),
       ...mapActions(['refreshLocation', 'getRendition']),
@@ -333,7 +333,7 @@
         let vueInstance = this
         window.loadBook = function (path, url) {
           let hash = md5(path)
-          vueInstance.updatebookHash(hash)
+          vueInstance.updateBookHash(hash)
           if (!url.startsWith('/')) {
             console.log('base64')
             let data = toByteArray(url)
@@ -353,7 +353,7 @@
         window.device.readBook()
       } else {
         const fileName = 'Test2.epub'
-        this.updatebookHash(fileName)
+        this.updateBookHash(fileName)
         this.initEpub(new Epub(fileName), GetReadProgress(fileName))
       }
     }

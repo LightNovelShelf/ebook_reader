@@ -79,7 +79,7 @@ export default {
     }
   },
   mutations: {
-    updatebookHash(state, value) {
+    updateBookHash(state, value) {
       state.bookHash = value
     },
     updateFontSize(state, value) {
@@ -125,7 +125,7 @@ export default {
     },
     updateMenuShow(state, value) {
       if (window.device && state.menuShow !== value) {
-        pushOrPop(value, 'Menu')
+        pushOrPop(value, 'menu')
       }
       state.menuShow = value
     },
@@ -156,7 +156,6 @@ export default {
   actions: {
     refreshLocation({ commit, state }, [isSection, isProgress, isSave = true]) {
       const currentLocation = state.book.rendition.currentLocation()
-      console.log(currentLocation)
       if (currentLocation && currentLocation.start) {
         const startCfi = currentLocation.start.cfi
         if (isSave) saveReadProgress(state.bookHash, startCfi)
@@ -264,7 +263,7 @@ function pushOrPop(value, str) {
 
 window.back = function (str) {
   switch (str) {
-    case 'Menu': {
+    case 'menu': {
       store.commit('updateMenuShow', false)
       break
     }

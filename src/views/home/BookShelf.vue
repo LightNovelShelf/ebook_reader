@@ -94,8 +94,8 @@
 <script>
   import { icon } from '@/plugins/vuetify'
   import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
-  import BookCard from '@/components/Home/BookCard'
-  import BookGroupCard from '@/components/Home/BookGroupCard'
+  import BookCard from '@/components/home/BookCard'
+  import BookGroupCard from '@/components/home/BookGroupCard'
   import longClick from '@/plugins/longClick'
   import { getReadTime, lastUpdateFromNow, saveReadTime } from '@/util/read'
 
