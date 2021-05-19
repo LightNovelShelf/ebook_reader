@@ -1,16 +1,17 @@
 <template>
   <div>
-    <router-view></router-view>
+    <navigation>
+      <router-view style="padding-bottom: 56px"></router-view>
+    </navigation>
+
     <div class="menu">
-      <v-bottom-navigation grow v-model="activeTab" :value="activeTab" color="primary">
-
-          <router-link :to="menuIcon.route" custom v-slot="{ navigate }" v-for="(menuIcon, i) in menuIcons" :key="i">
-            <v-btn @click="navigate">
-              <span>{{ menuIcon.text }}</span>
-              <v-icon>{{ menuIcon.icon }}</v-icon>
-            </v-btn>
-          </router-link>
-
+      <v-bottom-navigation grow :value="activeTab" color="primary">
+        <router-link :to="menuIcon.path" custom v-slot="{ navigate }" v-for="(menuIcon, i) in menuIcons" :key="i">
+          <v-btn @click="navigate">
+            <span>{{ menuIcon.text }}</span>
+            <v-icon>{{ menuIcon.icon }}</v-icon>
+          </v-btn>
+        </router-link>
       </v-bottom-navigation>
     </div>
   </div>
@@ -23,24 +24,28 @@
     name: 'Home',
     data() {
       return {
-        activeTab: 1,
         menuIcons: [
           {
-            icon: icon.mdiBookshelf ,
+            icon: icon.mdiBookshelf,
             text: '首页',
-            route: '/bookshelf'
+            path: '/'
           },
           {
-            icon: icon.mdiBookshelf ,
+            icon: icon.mdiBookshelf,
             text: '书架',
-            route: '/bookshelf'
+            path: '/bookshelf'
           },
           {
-            icon: icon.mdiCog ,
+            icon: icon.mdiCog,
             text: '设置',
-            route: '/setting'
+            path: '/setting'
           }
         ]
+      }
+    },
+    computed: {
+      activeTab() {
+        return this.menuIcons.findIndex((item) => item.path === this.$route.path)
       }
     }
   }

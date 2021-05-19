@@ -24,7 +24,9 @@
         </v-list>
       </v-menu>
     </v-app-bar>
-    <v-main>
+
+    <!-- 这里的padding，虽然框架是会给的，但似乎是一个动态的过程，所以手动设置一下 -->
+    <v-main style='padding: 48px 0 0 0;'>
       <transition-group tag="div" type="transition" :name="canTransition ? 'flip-list' : ''" class="move">
         <template v-if="!gid">
           <v-col cols="4" sm="4" md="3" lg="2" v-for="book in bookList" :key="book.gid || book.book_path">

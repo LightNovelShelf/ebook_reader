@@ -87,7 +87,7 @@ export default {
     addBookGroup({ commit, getters, state  }, payload) {
       if (!getters.groupTitleExist(payload.group_name)) {
         let newList = [payload, ...state.bookList]
-        commit('updateBookList', newList)
+        commit('book/updateBookList', newList)
         return true
       } else {
         return false
@@ -98,7 +98,7 @@ export default {
         payload = [payload]
       }
       let newList = getters.allGroup.filter((item) => !payload.find((p) => p.gid === item.gid))
-      commit('updateBookGroup', newList)
+      commit('book/updateBookGroup', newList)
       return true
     },
     updateBookGroup({ commit, getters }, payload) {
@@ -119,12 +119,12 @@ export default {
             }
           : item
       })
-      commit('updateBookGroup', newList)
+      commit('book/updateBookGroup', newList)
       return true
     },
     addToBook({ commit, getters, state  }, payload) {
       let newList = [payload, ...state.bookList]
-      commit('updateBookList', newList)
+      commit('book/updateBookList', newList)
       return true
     },
     removeFromBook({ commit, getters }, payload) {
@@ -132,7 +132,7 @@ export default {
         payload = [payload]
       }
       let newList = getters.allList.filter((item) => !payload.find((p) => p.bid === item.bid))
-      commit('updateBookList', newList)
+      commit('book/updateBookList', newList)
       return true
     },
     saveBookList({ state }) {
@@ -164,7 +164,7 @@ window.addToBook = function (path, name, progress) {
     book_cover: md5(path),
     read_progress: progress
   }
-  store.dispatch('addToBook', temp)
+  store.dispatch('book/addToBook', temp)
 }
 
 window.addToBooks = function (name, data) {
@@ -172,13 +172,13 @@ window.addToBooks = function (name, data) {
   payload.gid = guid()
   payload.group_name = name
   payload.data = JSON.parse(data)
-  store.dispatch('addBookGroup', payload)
+  store.dispatch('book/addBookGroup', payload)
 }
 
 window.readFileResult = function (resultCode, name, data) {
   switch (resultCode) {
     case 1: {
-      store.commit('updateCoverCache', { name: name, data: 'data:image/jpeg;base64,' + data })
+      store.commit('book/updateCoverCache', { name: name, data: 'data:image/jpeg;base64,' + data })
       break
     }
   }
