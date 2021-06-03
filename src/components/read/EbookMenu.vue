@@ -80,13 +80,8 @@
       }
     },
     computed: {
-      ...mapGetters(['menuShow','readSection']),
-      ...mapState({
-        bookAvailable : state => state.read.bookAvailable,
-        book: state => state.read.book,
-        navigation : state => state.read.navigation,
-        section : state => state.read.section
-      }),
+      ...mapGetters('read', ['readSection']),
+      ...mapState('read', ['bookAvailable', 'book', 'navigation', 'section', 'menuShow']),
       progress: {
         get() {
           return this.$store.state.read.readProgress
@@ -104,7 +99,7 @@
       }
     },
     methods: {
-      ...mapMutations([
+      ...mapMutations('read', [
         'updateReadProgress',
         'updateSection',
         'updateMenuShow',
@@ -113,7 +108,7 @@
         'updateBgSettingShow',
         'updateSearchShow'
       ]),
-      ...mapActions(['display', 'refreshLocation']),
+      ...mapActions('read', ['display', 'refreshLocation']),
       searchClick() {
         this.updateMenuShow(false)
         this.updateSearchShow(true)

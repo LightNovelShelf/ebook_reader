@@ -31,7 +31,7 @@
 </template>
 
 <script>
-  import { mapActions, mapGetters, mapMutations } from 'vuex'
+  import { mapActions, mapMutations, mapState } from 'vuex'
   import { icon } from '@/plugins/vuetify'
 
   export default {
@@ -44,11 +44,11 @@
       }
     },
     computed: {
-      ...mapGetters(['searchShow', 'book'])
+      ...mapState('read',['searchShow', 'book'])
     },
     methods: {
-      ...mapMutations(['updateSearchShow']),
-      ...mapActions(['display', 'refreshLocation']),
+      ...mapMutations('read',['updateSearchShow']),
+      ...mapActions('read',['display', 'refreshLocation']),
       cancel() {
         this.updateSearchShow(false)
       },

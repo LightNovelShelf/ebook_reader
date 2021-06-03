@@ -9,11 +9,12 @@ import READ_STYLE from '@/assets/styles/read.scss'
 import { createBlobUrl } from 'epubjs/src/utils/core'
 import store from '../index'
 
-const LightNovel_Reading_Bg_Setting = 'LightNovel_Reading_Bg_Setting'
-const LightNovel_Reading_Bg_Custom = 'LightNovel_Reading_Bg_Custom'
-const Reading_FontSize = 'Reading_FontSize'
+const EBookReader_Reading_Bg_Setting = 'EBookReader_Reading_Bg_Setting'
+const EBookReader_Reading_Bg_Custom = 'EBookReader_Reading_Bg_Custom'
+const EBookReader_Reading_FontSize = 'EBookReader_Reading_FontSize'
 
 export default {
+  namespaced: true,
   state: {
     book: null,
     rendition: null,
@@ -29,53 +30,14 @@ export default {
     bgSettingShow: false,
     sidebarShow: false,
     searchShow: false,
-    fontSize: Storage.read(Reading_FontSize) || 16,
-    readingCustomBg: Storage.read(LightNovel_Reading_Bg_Custom) || null,
-    readingBgSetting: Storage.read(LightNovel_Reading_Bg_Setting) || 'none'
+    fontSize: Storage.read(EBookReader_Reading_FontSize) || 16,
+    readingCustomBg: Storage.read(EBookReader_Reading_Bg_Custom) || null,
+    readingBgSetting: Storage.read(EBookReader_Reading_Bg_Setting) || 'none'
   },
   getters: {
     readSection(state) {
       if (state.navigation) return state.navigation[state.section - 1]?.label
       else return state.metadata?.title
-    },
-    section(state) {
-      return state.section
-    },
-    fontSize(state) {
-      return state.fontSize
-    },
-    bookHash(state){
-      return state.bookHash
-    },
-    fontSettingShow(state) {
-      return state.fontSettingShow
-    },
-    book(state) {
-      return state.book
-    },
-    menuShow(state) {
-      return state.menuShow
-    },
-    sidebarShow(state) {
-      return state.sidebarShow
-    },
-    bgSettingShow(state) {
-      return state.bgSettingShow
-    },
-    searchShow(state){
-      return state.searchShow
-    },
-    bookAvailable(state) {
-      return state.bookAvailable
-    },
-    navigation(state) {
-      return state.navigation
-    },
-    readingCustomBg(state) {
-      return state.readingCustomBg
-    },
-    readingBgSetting(state) {
-      return state.readingBgSetting
     }
   },
   mutations: {
@@ -85,7 +47,7 @@ export default {
     updateFontSize(state, value) {
       state.fontSize = value
       state.book.rendition.themes.fontSize(value + 'px')
-      Storage.write(Reading_FontSize, value)
+      Storage.write(EBookReader_Reading_FontSize, value)
     },
     updateFontSettingShow(state, value) {
       if (window.device && state.fontSettingShow !== value) {
@@ -144,12 +106,12 @@ export default {
     updateReadingCustomBg(state, { value = null }) {
       state.readingCustomBg = value
       setBg(state)
-      Storage.write(LightNovel_Reading_Bg_Custom, value)
+      Storage.write(EBookReader_Reading_Bg_Custom, value)
     },
     updateReadingBgSetting(state, { setting = 'none' }) {
       state.readingBgSetting = setting
       setBg(state)
-      Storage.write(LightNovel_Reading_Bg_Setting, setting)
+      Storage.write(EBookReader_Reading_Bg_Setting, setting)
       // loadBg(state.book.rendition.themes)
     }
   },
@@ -264,23 +226,23 @@ function pushOrPop(value, str) {
 window.back = function (str) {
   switch (str) {
     case 'menu': {
-      store.commit('updateMenuShow', false)
+      store.commit('read/updateMenuShow', false)
       break
     }
     case 'Bg': {
-      store.commit('updateBgSettingShow', false)
+      store.commit('read/updateBgSettingShow', false)
       break
     }
     case 'Sidebar': {
-      store.commit('updateSidebarShow', false)
+      store.commit('read/updateSidebarShow', false)
       break
     }
     case 'Font': {
-      store.commit('updateFontSettingShow', false)
+      store.commit('read/updateFontSettingShow', false)
       break
     }
     case 'Search':{
-      store.commit('updateSearchShow', false)
+      store.commit('read/updateSearchShow', false)
       break
     }
     default:

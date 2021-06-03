@@ -87,7 +87,7 @@ export default {
     addBookGroup({ commit, getters, state  }, payload) {
       if (!getters.groupTitleExist(payload.group_name)) {
         let newList = [payload, ...state.bookList]
-        commit('book/updateBookList', newList)
+        commit('updateBookList', newList)
         return true
       } else {
         return false
@@ -98,7 +98,7 @@ export default {
         payload = [payload]
       }
       let newList = getters.allGroup.filter((item) => !payload.find((p) => p.gid === item.gid))
-      commit('book/updateBookGroup', newList)
+      commit('updateBookGroup', newList)
       return true
     },
     updateBookGroup({ commit, getters }, payload) {
@@ -119,12 +119,12 @@ export default {
             }
           : item
       })
-      commit('book/updateBookGroup', newList)
+      commit('updateBookGroup', newList)
       return true
     },
     addToBook({ commit, getters, state  }, payload) {
       let newList = [payload, ...state.bookList]
-      commit('book/updateBookList', newList)
+      commit('updateBookList', newList)
       return true
     },
     removeFromBook({ commit, getters }, payload) {
@@ -132,7 +132,7 @@ export default {
         payload = [payload]
       }
       let newList = getters.allList.filter((item) => !payload.find((p) => p.bid === item.bid))
-      commit('book/updateBookList', newList)
+      commit('updateBookList', newList)
       return true
     },
     saveBookList({ state }) {
@@ -155,7 +155,7 @@ function sortBook(a, b) {
 
 //暴露出函数给原生调用
 window.addToBook = function (path, name, progress) {
-  if (store.getters.hasBook(path)) return
+  if (store.getters.book.hasBook(path)) return
   const time = new Date()
   const temp = {
     book_title: name,

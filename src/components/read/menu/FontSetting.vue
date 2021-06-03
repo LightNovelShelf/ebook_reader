@@ -50,7 +50,7 @@
       }
     },
     methods: {
-      ...mapMutations(['updateFontSettingShow', 'updateFontSize'])
+      ...mapMutations('read',['updateFontSettingShow', 'updateFontSize'])
     }
   }
 </script>

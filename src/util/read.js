@@ -43,14 +43,14 @@ export function flatten(array) {
 }
 
 export function saveReadProgress(fileName, cfi) {
-  let record = JSON.parse(localStorage.getItem(`Reading_Record`) || '{}')
+  let record = JSON.parse(localStorage.getItem(`EBookReader_Reading_Record`) || '{}')
   if (!record[fileName]) record[fileName] = {}
   record[fileName].cfi = cfi
-  localStorage.setItem(`Reading_Record`, JSON.stringify(record))
+  localStorage.setItem(`EBookReader_Reading_Record`, JSON.stringify(record))
 }
 
 export function GetReadProgress(hash) {
-  let record = JSON.parse(localStorage.getItem(`Reading_Record`) || '{}')
+  let record = JSON.parse(localStorage.getItem(`EBookReader_Reading_Record`) || '{}')
   return record[hash]?.cfi
 }
 

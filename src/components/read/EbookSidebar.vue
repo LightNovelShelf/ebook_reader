@@ -16,7 +16,7 @@
                 :key="item.label"
                 @click="selectSection(item.href, index)"
               >
-                <div class="pl-3" :style='contentItemStyle(item)'>{{ item.label }}</div>
+                <div class="pl-3" :style="contentItemStyle(item)">{{ item.label }}</div>
               </v-list-item>
               <v-divider :key="index" />
             </template>
@@ -28,7 +28,7 @@
 </template>
 
 <script>
-  import { mapActions, mapGetters, mapMutations } from 'vuex'
+  import { mapActions, mapMutations, mapState } from 'vuex'
 
   export default {
     name: 'EbookSidebar',
@@ -38,11 +38,11 @@
       }
     },
     computed: {
-      ...mapGetters(['sidebarShow', 'bookAvailable', 'navigation', 'section'])
+      ...mapState('read', ['sidebarShow', 'bookAvailable', 'navigation', 'section'])
     },
     methods: {
-      ...mapMutations(['updateSidebarShow', 'updateSection']),
-      ...mapActions(['display', 'refreshLocation']),
+      ...mapMutations('read', ['updateSidebarShow', 'updateSection']),
+      ...mapActions('read', ['display', 'refreshLocation']),
       selectSection(href, index) {
         this.updateSidebarShow(false)
         this.updateSection(index + 1)

@@ -16,10 +16,10 @@
 
 <script>
   // import { EpubCFI } from 'epubjs' //这样导不进来，奇怪
-  // import Epub from 'epubjs'
-  import Epub from '@/assets/js/epub.last'
+  import Epub85 from 'epubjs'
+  import EpubLast from '@/assets/js/epub.last'
   import EpubCFI from 'epubjs/src/epubcfi'
-  import { mapActions, mapGetters, mapMutations } from 'vuex'
+  import { mapActions, mapMutations, mapState } from 'vuex'
   import { flatten, GetReadProgress, throttle, ImagePath } from '@/util/read'
   import EbookMenu from '@/components/read/EbookMenu'
   import EbookSidebar from '@/components/read/EbookSidebar'
@@ -51,7 +51,8 @@
       name: String
     },
     computed: {
-      ...mapGetters(['book', 'menuShow', 'sidebarShow', 'fontSize', 'bookHash']),
+      ...mapState('read', ['book', 'menuShow', 'sidebarShow', 'fontSize', 'bookHash']),
+      ...mapState('setting', ['epubJsVersion']),
       navigation() {
         return this.$store.state.read.navigation
       },
@@ -60,7 +61,7 @@
       }
     },
     methods: {
-      ...mapMutations([
+      ...mapMutations('read', [
         'updateBook',
         'updateCover',
         'updateNavigation',
@@ -71,7 +72,7 @@
         'updateBookHash',
         'updateFontSize'
       ]),
-      ...mapActions(['refreshLocation', 'getRendition']),
+      ...mapActions('read', ['refreshLocation', 'getRendition']),
       hide() {
         this.updateMenuShow(false)
         this.updateSidebarShow(false)
@@ -321,6 +322,12 @@
         const screenWidth = Math.round(window.innerWidth)
         const remainder = screenWidth % 8
         this.width = screenWidth - remainder
+      },
+      getEpubJsType() {
+        // 获取需要使用的epub.js版本
+        let type = Epub85
+        if (this.epubJsVersion === 'last.chinese') type = EpubLast
+        return type
       }
     },
     destroyed() {
@@ -334,17 +341,18 @@
         window.loadBook = function (path, url) {
           let hash = md5(path)
           vueInstance.updateBookHash(hash)
+          let type = vueInstance.getEpubJsType()
           if (!url.startsWith('/')) {
             console.log('base64')
             let data = toByteArray(url)
             console.log(data.length)
-            let book = new Epub()
+            let book = new type()
             book.open(data.buffer).then(() => {
               vueInstance.initEpub(book, GetReadProgress(hash))
             })
           } else {
             if (window.location.origin === 'file://') {
-              vueInstance.initEpub(new Epub(url), GetReadProgress(hash))
+              vueInstance.initEpub(new type(url), GetReadProgress(hash))
             } else {
               window.device.readFileBase64(url)
             }
@@ -354,7 +362,8 @@
       } else {
         const fileName = 'Test2.epub'
         this.updateBookHash(fileName)
-        this.initEpub(new Epub(fileName), GetReadProgress(fileName))
+        let type = this.getEpubJsType()
+        this.initEpub(new type(fileName), GetReadProgress(fileName))
       }
     }
   }

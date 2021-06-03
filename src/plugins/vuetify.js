@@ -13,7 +13,9 @@ import {
   mdiCheckBold,
   mdiCancel,
   mdiBookshelf,
-  mdiCog
+  mdiCog,
+  mdiChevronRight,
+  mdiBookOpenBlankVariant
 } from '@mdi/js'
 
 Vue.use(Vuetify, {
@@ -38,5 +40,7 @@ export const icon = {
   mdiCheckBold,
   mdiCancel,
   mdiBookshelf,
-  mdiCog
+  mdiCog,
+  mdiChevronRight,
+  mdiBookOpenBlankVariant
 }

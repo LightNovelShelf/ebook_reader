@@ -28,7 +28,7 @@
 
 <script>
   import { icon } from '@/plugins/vuetify'
-  import { mapMutations, mapGetters } from 'vuex'
+  import { mapMutations, mapState } from 'vuex'
 
   let defaultColor = { r: 255, g: 255, b: 255, a: 1 }
   export default {
@@ -39,7 +39,7 @@
       color: null
     }),
     computed: {
-      ...mapGetters(['readingBgSetting', 'readingCustomBg', 'book']),
+      ...mapState('read',['readingBgSetting', 'readingCustomBg', 'book']),
       isDark() {
         return this.$vuetify.theme.dark
       },
@@ -53,7 +53,7 @@
       }
     },
     methods: {
-      ...mapMutations(['updateReadingCustomBg', 'updateReadingBgSetting', 'updateBgSettingShow']),
+      ...mapMutations('read',['updateReadingCustomBg', 'updateReadingBgSetting', 'updateBgSettingShow']),
       settingChanged(value) {
         this.updateReadingBgSetting({
           setting: value
