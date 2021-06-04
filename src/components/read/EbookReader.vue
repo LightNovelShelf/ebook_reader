@@ -52,7 +52,7 @@
     },
     computed: {
       ...mapState('read', ['book', 'menuShow', 'sidebarShow', 'fontSize', 'bookHash']),
-      ...mapState('setting', ['epubJsVersion']),
+      ...mapState('setting', ['epubJsVersion', 'epubJsManager', 'epubJsFlow']),
       navigation() {
         return this.$store.state.read.navigation
       },
@@ -172,9 +172,8 @@
           option: {
             width: this.width,
             height: window.innerHeight,
-            // flow: 'auto',
-            flow: 'paginated',
-            manager: 'continuous',
+            flow: this.epubJsFlow,
+            manager: this.epubJsManager,
             snap: this.isMobile
           }
         })
