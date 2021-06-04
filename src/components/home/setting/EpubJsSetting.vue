@@ -42,7 +42,7 @@
     data: () => ({
       versionItems: ['85.chinese', 'last.chinese'],
       managerItems: ['default', 'continuous'],
-      flowItems: ['default', 'paginated']
+      flowItems: ['none', 'paginated']
     }),
     computed: {
       ...mapState('setting', ['epubJsVersion', 'epubJsManager', 'epubJsFlow']),

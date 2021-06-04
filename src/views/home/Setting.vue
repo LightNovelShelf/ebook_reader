@@ -16,16 +16,16 @@
       </v-list>
     </v-card>
 
-    <v-dialog max-width="500" v-model='showChoseVersion'>
-      <epub-js-setting/>
+    <v-dialog max-width="500" v-model="showChoseVersion">
+      <epub-js-setting />
     </v-dialog>
-
   </v-container>
 </template>
 
 <script>
   import { icon } from '@/plugins/vuetify'
   import EpubJsSetting from '@/components/home/setting/EpubJsSetting'
+  import { pushOrPop } from '@/store/modules/read'
 
   export default {
     name: 'Setting',
@@ -33,7 +33,26 @@
     data() {
       return {
         icon: icon,
-        showChoseVersion: false
+        ShowChoseVersion: false
+      }
+    },
+    computed: {
+      showChoseVersion: {
+        get() {
+          return this.ShowChoseVersion
+        },
+        set(val) {
+          if (window.device && this.ShowChoseVersion !== val) {
+            pushOrPop(val, 'EpubJsSetting')
+          }
+          this.ShowChoseVersion = val
+        }
+      }
+    },
+    mounted() {
+      let _this = this
+      window.closeEpubJsSetting = function () {
+        _this.showChoseVersion = false
       }
     }
   }

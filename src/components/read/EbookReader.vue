@@ -167,15 +167,16 @@
       async initEpub(book, cfi) {
         this.updateBook(book)
         // 指定渲染的位置和方式
+        let option = {
+          width: this.width,
+          height: window.innerHeight,
+          manager: this.epubJsManager,
+          snap: this.isMobile
+        }
+        if (this.epubJsFlow !== 'none') option.flow = this.epubJsFlow
         this.rendition = await this.getRendition({
           element: 'read',
-          option: {
-            width: this.width,
-            height: window.innerHeight,
-            flow: this.epubJsFlow,
-            manager: this.epubJsManager,
-            snap: this.isMobile
-          }
+          option: option
         })
 
         this.rendition.display(cfi)

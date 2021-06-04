@@ -158,8 +158,8 @@ export default {
             }
           }
           if (isProgress) {
-            let progress =  Math.floor(currentLocation.start.percentage * 1000)
-            commit('updateReadProgress',progress)
+            let progress = Math.floor(currentLocation.start.percentage * 1000)
+            commit('updateReadProgress', progress)
             window.device?.setProgress(progress)
           }
         }
@@ -215,7 +215,7 @@ function setBg(state) {
   }
 }
 
-function pushOrPop(value, str) {
+export function pushOrPop(value, str) {
   if (value) {
     device.push(str)
   } else {
@@ -241,8 +241,12 @@ window.back = function (str) {
       store.commit('read/updateFontSettingShow', false)
       break
     }
-    case 'Search':{
+    case 'Search': {
       store.commit('read/updateSearchShow', false)
+      break
+    }
+    case 'EpubJsSetting': {
+      window.closeEpubJsSetting()
       break
     }
     default:

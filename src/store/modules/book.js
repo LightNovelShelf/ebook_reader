@@ -10,7 +10,7 @@ const LOCAL_BOOK_LIST_KEY = 'EBookReader_BOOK'
 export default {
   namespaced: true,
   state: {
-    bookList: Storage.read(LOCAL_BOOK_LIST_KEY) || [...MOCK_DATA],
+    bookList: Storage.read(LOCAL_BOOK_LIST_KEY) || [],
     coverCache: {}
   },
   getters: {
