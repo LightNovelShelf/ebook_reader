@@ -31,6 +31,15 @@
   import handleNote from '@/plugins/note'
   import EbookSearch from '@/components/read/EbookSearch'
 
+  const getIframe = (ele) => {
+    while (ele.parentNode) {
+      ele = ele.parentNode
+    }
+    for (let iframe of window.document.querySelectorAll('iframe')) {
+      if (iframe.contentDocument === ele) return iframe
+    }
+  }
+
   export default {
     name: 'EbookReader',
     components: { EbookSearch, BgSetting, FontSetting, EbookSidebar, EbookMenu },
@@ -123,37 +132,31 @@
         if (e.target.outerHTML === '<div class="noteCover"></div>') return
         if (e.target.localName === 'a' || e.target.parentNode.localName === 'a') return
         const path = e.path || e.composedPath()
-        let X = 0,
-          Y = 0
-        if (e.type === 'touchend') {
-          X = this.touchDetail.targetTouches[0].pageX % this.width
-          Y = this.touchDetail.targetTouches[0].pageY
-        } else {
-          X = e.pageX % this.width
-          Y = e.pageY
-        }
+        const { offsetLeft, offsetTop } = getIframe(e.target).parentNode
+        const { scrollLeft, scrollTop } = document.querySelector('.epub-container')
+
+        const eventPosition = e.type === 'touchend' ? this.touchDetail.targetTouches[0] : e
+        const [X, Y] = [offsetLeft + eventPosition.pageX - scrollLeft, offsetTop + eventPosition.pageY - scrollTop]
+
         if (e.target.localName === 'img' && path) {
-          const classList = [].concat(...path.map((item) => [].concat.apply([], item.classList)))
+          const classList = path
+            .filter((e) => e.classList)
+            .map((item) => [...item.classList])
+            .flat()
           // 这里对Img的两种特殊情况，需要EPUB制造者进行兼容
-          if (classList.includes('duokan-image-single')) {
-            if (!this.isInArea(X)) {
-              this.previewImg(e)
-              return
-            }
-          }
-          if (classList.includes('footnote') || classList.includes('duokan-footnote')) {
+          if (classList.includes('duokan-image-single') && !this.isInArea(X)) {
+            this.previewImg(e)
             return
           }
+
+          if (classList.includes('footnote') || classList.includes('duokan-footnote')) return
         }
+
         if (time < 200) {
           if (X > this.width * 0.75) this.nextPage()
           else if (X < this.width * 0.25) this.prevPage()
           else if (Y < window.innerHeight * 0.75 && Y > window.innerHeight * 0.25) {
-            if (this.menuShow) {
-              this.hide()
-            } else {
-              this.show()
-            }
+            this.menuShow ? this.hide() : this.show()
           }
         }
       },
