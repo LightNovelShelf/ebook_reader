@@ -188,19 +188,22 @@
 
         this.initEvent()
         this.parseBook()
-        book.ready
-          .then(() => {
-            window.device?.setResultOK()
-            // 修改网页title
-            document.title = book.package.metadata.title
-            // return this.book.locations.generate(750 * (window.innerWidth / 375) * bookState.defaultFontSize / 16)
-            return book.locations.generate()
-          })
-          .then(() => {
-            // 书籍加载完毕
-            this.updateBookAvailable(true)
-            this.refreshLocation([true, true])
-          })
+
+        const [, bookError] = await book.ready.then((res) => [res, null]).catch((err) => [null, err])
+        if (bookError) return
+
+        window.device?.setResultOK()
+        // 修改网页title
+        document.title = book.package.metadata.title
+        // return this.book.locations.generate(750 * (window.innerWidth / 375) * bookState.defaultFontSize / 16)
+        const [, locationError] = await book.locations
+          .generate()
+          .then((res) => [res, null])
+          .catch((err) => [null, err])
+        if (locationError) return
+        // 书籍加载完毕
+        this.updateBookAvailable(true)
+        this.refreshLocation([true, true])
       },
       initEvent() {
         let vueInstance = this
