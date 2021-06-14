@@ -206,17 +206,13 @@
         this.refreshLocation([true, true])
       },
       initEvent() {
-        let vueInstance = this
         const mousewheel = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'mousewheel'
-        this.rendition.hooks.content.register(function (contents) {
+        this.rendition.hooks.content.register((contents) => {
           const baseName = contents.cfiBase.match(/\[(.*?)\]/)[1]
-          vueInstance.navigation.forEach((navItem) => {
+          this.navigation.forEach((navItem) => {
             if (navItem.href.indexOf(baseName) !== -1) {
               const href = navItem.href.match(/\/(.*?)$/)[1]
-              let id = undefined
-              if (href.indexOf('#') !== -1) {
-                id = href.split('#')[1]
-              }
+              const id = href.replace(/^([^#]*)#?(.*)$/, '$2')
               if (id) {
                 //得到每个目录的cfi地址
                 const node = contents.document.getElementById(id)
@@ -226,20 +222,19 @@
             }
           })
           handleNote(contents.document) // 处理注释
-          contents.window.addEventListener(mousewheel, vueInstance.handleMouseWheel, true)
-          contents.window.addEventListener('keydown', vueInstance.handleKeyDown)
-          if (vueInstance.isMobile) {
-            contents.document.addEventListener('touchmove', (e) => {
-              if (!vueInstance.enableTouch) {
-                vueInstance.enableTouch = true
-              }
+          contents.window.addEventListener(mousewheel, this.handleMouseWheel, true)
+          contents.window.addEventListener('keydown', this.handleKeyDown)
+
+          if (this.isMobile) {
+            contents.document.addEventListener('touchmove', () => {
+              this.enableTouch = true
             })
             contents.document.addEventListener(
               'touchstart',
               (e) => {
                 // console.log('touch', e)
-                vueInstance.timeStart = e.timeStamp
-                vueInstance.touchDetail = e
+                this.timeStart = e.timeStamp
+                this.touchDetail = e
               },
               true
             )
@@ -248,11 +243,11 @@
               'touchend',
               (e) => {
                 // console.log('touchend', e)
-                if (!vueInstance.enableTouch) {
+                if (!this.enableTouch) {
                   e.stopPropagation()
-                  vueInstance.handleMouseDown(e)
+                  this.handleMouseDown(e)
                 } else {
-                  vueInstance.enableTouch = false
+                  this.enableTouch = false
                 }
               },
               true
@@ -260,7 +255,7 @@
           }
         })
         // 单击事件
-        if (!vueInstance.isMobile) {
+        if (!this.isMobile) {
           this.rendition.on('mousedown', (e) => {
             this.timeStart = e.timeStamp
           })
