@@ -58,6 +58,9 @@
       },
       isMobile() {
         return IsMobile()
+      },
+      Epub() {
+        return this.epubJsVersion === 'last.chinese' ? EpubLast : Epub85
       }
     },
     methods: {
@@ -322,12 +325,6 @@
         const screenWidth = Math.round(window.innerWidth)
         const remainder = screenWidth % 8
         this.width = screenWidth - remainder
-      },
-      getEpubJsType() {
-        // 获取需要使用的epub.js版本
-        let type = Epub85
-        if (this.epubJsVersion === 'last.chinese') type = EpubLast
-        return type
       }
     },
     destroyed() {
@@ -337,33 +334,30 @@
       this.getWidth()
       if (window.device) {
         // 连接App调试
-        let vueInstance = this
+        const { updateBookHash, Epub, initEpub } = this
         window.loadBook = function (path, url) {
           let hash = md5(path)
-          vueInstance.updateBookHash(hash)
-          let type = vueInstance.getEpubJsType()
+          updateBookHash(hash)
           if (!url.startsWith('/')) {
             console.log('base64')
             let data = toByteArray(url)
             console.log(data.length)
-            let book = new type()
+            let book = new Epub()
             book.open(data.buffer).then(() => {
-              vueInstance.initEpub(book, GetReadProgress(hash))
+              initEpub(book, GetReadProgress(hash))
             })
+          } else if (window.location.origin === 'file://') {
+            initEpub(new Epub(url), GetReadProgress(hash))
           } else {
-            if (window.location.origin === 'file://') {
-              vueInstance.initEpub(new type(url), GetReadProgress(hash))
-            } else {
-              window.device.readFileBase64(url)
-            }
+            window.device.readFileBase64(url)
           }
         }
         window.device.readBook()
       } else {
+        const { updateBookHash, initEpub, Epub } = this
         const fileName = 'Test2.epub'
-        this.updateBookHash(fileName)
-        let type = this.getEpubJsType()
-        this.initEpub(new type(fileName), GetReadProgress(fileName))
+        updateBookHash(fileName)
+        initEpub(new Epub(fileName), GetReadProgress(fileName))
       }
     }
   }
