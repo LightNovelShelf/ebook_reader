@@ -31,6 +31,15 @@
   import handleNote from '@/plugins/note'
   import EbookSearch from '@/components/read/EbookSearch'
 
+  const getIframe = (ele) => {
+    while (ele.parentNode) {
+      ele = ele.parentNode
+    }
+    for (let iframe of window.document.querySelectorAll('iframe')) {
+      if (iframe.contentDocument === ele) return iframe
+    }
+  }
+
   export default {
     name: 'EbookReader',
     components: { EbookSearch, BgSetting, FontSetting, EbookSidebar, EbookMenu },
@@ -58,6 +67,9 @@
       },
       isMobile() {
         return IsMobile()
+      },
+      Epub() {
+        return this.epubJsVersion === 'last.chinese' ? EpubLast : Epub85
       }
     },
     methods: {
@@ -120,37 +132,31 @@
         if (e.target.outerHTML === '<div class="noteCover"></div>') return
         if (e.target.localName === 'a' || e.target.parentNode.localName === 'a') return
         const path = e.path || e.composedPath()
-        let X = 0,
-          Y = 0
-        if (e.type === 'touchend') {
-          X = this.touchDetail.targetTouches[0].pageX % this.width
-          Y = this.touchDetail.targetTouches[0].pageY
-        } else {
-          X = e.pageX % this.width
-          Y = e.pageY
-        }
+        const { offsetLeft, offsetTop } = getIframe(e.target).parentNode
+        const { scrollLeft, scrollTop } = document.querySelector('.epub-container')
+
+        const eventPosition = e.type === 'touchend' ? this.touchDetail.targetTouches[0] : e
+        const [X, Y] = [offsetLeft + eventPosition.pageX - scrollLeft, offsetTop + eventPosition.pageY - scrollTop]
+
         if (e.target.localName === 'img' && path) {
-          const classList = [].concat(...path.map((item) => [].concat.apply([], item.classList)))
+          const classList = path
+            .filter((e) => e.classList)
+            .map((item) => [...item.classList])
+            .flat()
           // 这里对Img的两种特殊情况，需要EPUB制造者进行兼容
-          if (classList.includes('duokan-image-single')) {
-            if (!this.isInArea(X)) {
-              this.previewImg(e)
-              return
-            }
-          }
-          if (classList.includes('footnote') || classList.includes('duokan-footnote')) {
+          if (classList.includes('duokan-image-single') && !this.isInArea(X)) {
+            this.previewImg(e)
             return
           }
+
+          if (classList.includes('footnote') || classList.includes('duokan-footnote')) return
         }
+
         if (time < 200) {
           if (X > this.width * 0.75) this.nextPage()
           else if (X < this.width * 0.25) this.prevPage()
           else if (Y < window.innerHeight * 0.75 && Y > window.innerHeight * 0.25) {
-            if (this.menuShow) {
-              this.hide()
-            } else {
-              this.show()
-            }
+            this.menuShow ? this.hide() : this.show()
           }
         }
       },
@@ -167,48 +173,46 @@
       async initEpub(book, cfi) {
         this.updateBook(book)
         // 指定渲染的位置和方式
-        let option = {
-          width: this.width,
-          height: window.innerHeight,
-          manager: this.epubJsManager,
-          snap: this.isMobile
-        }
-        if (this.epubJsFlow !== 'none') option.flow = this.epubJsFlow
         this.rendition = await this.getRendition({
           element: 'read',
-          option: option
+          option: {
+            width: this.width,
+            height: window.innerHeight,
+            manager: this.epubJsManager,
+            snap: this.isMobile,
+            ...(this.epubJsFlow !== 'none' ? { flow: this.epubJsFlow } : {})
+          }
         })
 
         this.rendition.display(cfi)
 
         this.initEvent()
         this.parseBook()
-        book.ready
-          .then(() => {
-            window.device?.setResultOK()
-            // 修改网页title
-            document.title = book.package.metadata.title
-            // return this.book.locations.generate(750 * (window.innerWidth / 375) * bookState.defaultFontSize / 16)
-            return book.locations.generate()
-          })
-          .then(() => {
-            // 书籍加载完毕
-            this.updateBookAvailable(true)
-            this.refreshLocation([true, true])
-          })
+
+        const [, bookError] = await book.ready.then((res) => [res, null]).catch((err) => [null, err])
+        if (bookError) return
+
+        window.device?.setResultOK()
+        // 修改网页title
+        document.title = book.package.metadata.title
+        // return this.book.locations.generate(750 * (window.innerWidth / 375) * bookState.defaultFontSize / 16)
+        const [, locationError] = await book.locations
+          .generate()
+          .then((res) => [res, null])
+          .catch((err) => [null, err])
+        if (locationError) return
+        // 书籍加载完毕
+        this.updateBookAvailable(true)
+        this.refreshLocation([true, true])
       },
       initEvent() {
-        let vueInstance = this
         const mousewheel = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'mousewheel'
-        this.rendition.hooks.content.register(function (contents) {
+        this.rendition.hooks.content.register((contents) => {
           const baseName = contents.cfiBase.match(/\[(.*?)\]/)[1]
-          vueInstance.navigation.forEach((navItem) => {
+          this.navigation.forEach((navItem) => {
             if (navItem.href.indexOf(baseName) !== -1) {
               const href = navItem.href.match(/\/(.*?)$/)[1]
-              let id = undefined
-              if (href.indexOf('#') !== -1) {
-                id = href.split('#')[1]
-              }
+              const id = href.replace(/^([^#]*)#?(.*)$/, '$2')
               if (id) {
                 //得到每个目录的cfi地址
                 const node = contents.document.getElementById(id)
@@ -218,20 +222,19 @@
             }
           })
           handleNote(contents.document) // 处理注释
-          contents.window.addEventListener(mousewheel, vueInstance.handleMouseWheel, true)
-          contents.window.addEventListener('keydown', vueInstance.handleKeyDown)
-          if (vueInstance.isMobile) {
-            contents.document.addEventListener('touchmove', (e) => {
-              if (!vueInstance.enableTouch) {
-                vueInstance.enableTouch = true
-              }
+          contents.window.addEventListener(mousewheel, this.handleMouseWheel, true)
+          contents.window.addEventListener('keydown', this.handleKeyDown)
+
+          if (this.isMobile) {
+            contents.document.addEventListener('touchmove', () => {
+              this.enableTouch = true
             })
             contents.document.addEventListener(
               'touchstart',
               (e) => {
                 // console.log('touch', e)
-                vueInstance.timeStart = e.timeStamp
-                vueInstance.touchDetail = e
+                this.timeStart = e.timeStamp
+                this.touchDetail = e
               },
               true
             )
@@ -240,11 +243,11 @@
               'touchend',
               (e) => {
                 // console.log('touchend', e)
-                if (!vueInstance.enableTouch) {
+                if (!this.enableTouch) {
                   e.stopPropagation()
-                  vueInstance.handleMouseDown(e)
+                  this.handleMouseDown(e)
                 } else {
-                  vueInstance.enableTouch = false
+                  this.enableTouch = false
                 }
               },
               true
@@ -252,7 +255,7 @@
           }
         })
         // 单击事件
-        if (!vueInstance.isMobile) {
+        if (!this.isMobile) {
           this.rendition.on('mousedown', (e) => {
             this.timeStart = e.timeStamp
           })
@@ -322,12 +325,6 @@
         const screenWidth = Math.round(window.innerWidth)
         const remainder = screenWidth % 8
         this.width = screenWidth - remainder
-      },
-      getEpubJsType() {
-        // 获取需要使用的epub.js版本
-        let type = Epub85
-        if (this.epubJsVersion === 'last.chinese') type = EpubLast
-        return type
       }
     },
     destroyed() {
@@ -337,33 +334,30 @@
       this.getWidth()
       if (window.device) {
         // 连接App调试
-        let vueInstance = this
+        const { updateBookHash, Epub, initEpub } = this
         window.loadBook = function (path, url) {
           let hash = md5(path)
-          vueInstance.updateBookHash(hash)
-          let type = vueInstance.getEpubJsType()
+          updateBookHash(hash)
           if (!url.startsWith('/')) {
             console.log('base64')
             let data = toByteArray(url)
             console.log(data.length)
-            let book = new type()
+            let book = new Epub()
             book.open(data.buffer).then(() => {
-              vueInstance.initEpub(book, GetReadProgress(hash))
+              initEpub(book, GetReadProgress(hash))
             })
+          } else if (window.location.origin === 'file://') {
+            initEpub(new Epub(url), GetReadProgress(hash))
           } else {
-            if (window.location.origin === 'file://') {
-              vueInstance.initEpub(new type(url), GetReadProgress(hash))
-            } else {
-              window.device.readFileBase64(url)
-            }
+            window.device.readFileBase64(url)
           }
         }
         window.device.readBook()
       } else {
+        const { updateBookHash, initEpub, Epub } = this
         const fileName = 'Test2.epub'
-        this.updateBookHash(fileName)
-        let type = this.getEpubJsType()
-        this.initEpub(new type(fileName), GetReadProgress(fileName))
+        updateBookHash(fileName)
+        initEpub(new Epub(fileName), GetReadProgress(fileName))
       }
     }
   }
