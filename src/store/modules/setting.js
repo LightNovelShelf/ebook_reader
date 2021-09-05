@@ -9,7 +9,7 @@ export default {
   state: {
     epubJsVersion: Storage.read(EBookReader_EPUBJS_Version) || '85.chinese',
     epubJsManager: Storage.read(EBookReader_EPUBJS_Manager) || 'continuous',
-    epubJsFlow: Storage.read(EBookReader_EPUBJS_Flow) || 'auto'
+    epubJsFlow: Storage.read(EBookReader_EPUBJS_Flow) || 'none'
   },
   getters: {},
   mutations: {
