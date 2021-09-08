@@ -1,3 +1,13 @@
+body {
+  padding: 0 !important;
+  margin: 0;
+  overflow: hidden;
+}
+
+.selected{
+  color: coral;
+}
+
 .flex-align-center {
   display: flex;
   align-items: center;

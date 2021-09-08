@@ -1,5 +1,5 @@
 <template>
-  <ebook-reader class="read" :name="name"></ebook-reader>
+  <ebook-reader :name="name"></ebook-reader>
 </template>
 
 <script>

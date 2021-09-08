@@ -1,26 +1,26 @@
 import { defineStore } from 'pinia'
-import Epub85, { Book as Book85, Rendition as Rendition85, EpubCFI as EpubCFI85 } from 'epubjs85'
-import { RenditionOptions as RenditionOptions85 } from 'epubjs85/types/rendition'
-// import EpubLast from 'epubjs'
-import { Book, Rendition, EpubCFI } from 'epubjs'
-import { RenditionOptions } from 'epubjs/types/rendition'
+import { default as Epub85 } from 'epubjs85'
+// 后续让用户选择时需要
+import { default as EpubLast } from 'epubjs'
+import { Book as BookLast } from 'epubjs'
+import { Book, Rendition, RenditionOptions } from './epubjs'
 
 export const useReadStore = defineStore('app.read', {
   state: () => ({
-    book: null as null | Book | Book85,
-    rendition: null as null | Rendition | Rendition85
+    book: undefined as undefined | Book,
+    rendition: undefined as undefined | Rendition
   }),
   actions: {
-    loadEpub(bookUrlOrData: string | BinaryType): Promise<Book85 | Book> {
+    loadEpub(bookUrlOrData: string | BinaryType): Promise<Book> {
       if (typeof bookUrlOrData === 'string') {
         this.book = Epub85(bookUrlOrData)
         return this.book.opened
       } else {
-        this.book = new Book()
+        this.book = new BookLast()
         return this.book.openEpub(bookUrlOrData)
       }
     },
-    getRendition(option: RenditionOptions | RenditionOptions85) {
+    getRendition(option?: RenditionOptions) {
       this.rendition = this.book!.renderTo('read', option)
       return this.rendition
     },
@@ -34,7 +34,7 @@ export const useReadStore = defineStore('app.read', {
     },
     prevPage() {
       console.log('上一页')
-      return this.rendition!.next()
+      return this.rendition!.prev()
     }
   }
 })
