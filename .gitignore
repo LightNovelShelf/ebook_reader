@@ -14,14 +14,12 @@ yarn-error.log*
 pnpm-debug.log*
 
 # Editor directories and files
-.idea
 .vscode
+.idea
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
-# Lock files
-yarn.lock
 package-lock.json

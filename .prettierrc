@@ -7,5 +7,5 @@
   "trailingComma": "none",
   "semi": false,
   "htmlWhitespaceSensitivity": "strict",
-  "vueIndentScriptAndStyle": true
+  "vueIndentScriptAndStyle": false
 }

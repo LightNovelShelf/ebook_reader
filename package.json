@@ -3,60 +3,70 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --modern",
-    "lint": "vue-cli-service lint"
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "serve": "vite preview"
   },
   "dependencies": {
-    "base64-js": "^1.5.1",
-    "core-js": "^3.13.1",
-    "epubjs": "^0.3.88",
-    "md5": "^2.3.0",
-    "prettier": "^2.3.0",
-    "v-viewer": "^1.6.3",
-    "vue": "^2.6.13",
-    "vue-navigation": "^1.1.4",
-    "vue-router": "^3.5.1",
-    "vuetify": "^2.5.3",
-    "vuex": "^3.6.2",
-    "xmldom": "^0.6.0"
+    "@microsoft/signalr": "^5.0.9",
+    "core-js": "^3.17.2",
+    "epubjs": "git+https://github.com/LightNovelShelf/epub.js.git",
+    "epubjs85": "git+https://github.com/LightNovelShelf/epub.js.git#85",
+    "naive-ui": "^2.18.1",
+    "pinia": "^2.0.0-rc.8",
+    "vfonts": "^0.1.0",
+    "vue": "^3.2.10",
+    "vue-router": "^4.0.0-0"
   },
   "devDependencies": {
-    "@mdi/js": "^5.9.55",
-    "@vue/cli-plugin-babel": "~4.5.13",
-    "@vue/cli-plugin-eslint": "~4.5.13",
-    "@vue/cli-plugin-router": "^4.5.13",
-    "@vue/cli-plugin-vuex": "^4.5.13",
-    "@vue/cli-service": "~4.5.13",
-    "babel-eslint": "^10.1.0",
-    "eslint": "^7.27.0",
-    "eslint-plugin-vue": "^7.10.0",
-    "sass": "^1.34.1",
-    "sass-loader": "^10.2.0",
-    "vue-cli-plugin-vuetify": "~2.4.1",
-    "vue-template-compiler": "^2.6.13",
-    "vuedraggable": "^2.24.3",
-    "vuetify-loader": "^1.7.2"
+    "@vitejs/plugin-vue": "^1.6.1",
+    "@typescript-eslint/eslint-plugin": "^4.31.0",
+    "@typescript-eslint/parser": "^4.31.0",
+    "@vicons/material": "^0.11.0",
+    "@vue/compiler-sfc": "^3.2.10",
+    "@vue/eslint-config-prettier": "^6.0.0",
+    "@vue/eslint-config-typescript": "^7.0.0",
+    "babel-plugin-component": "^1.1.1",
+    "eslint": "^6.8.0",
+    "eslint-plugin-prettier": "^3.4.1",
+    "eslint-plugin-vue": "^7.17.0",
+    "prettier": "^2.3.2",
+    "sass": "^1.39.0",
+    "sass-loader": "^8.0.2",
+    "typescript": "~4.4.2",
+    "vite": "^2.5.5",
+    "vue-tsc": "^0.3.0",
+    "buffer": "^5.7.1"
   },
   "eslintConfig": {
     "root": true,
     "env": {
       "node": true
     },
-    "globals": {
-      "device": true
-    },
     "extends": [
-      "plugin:vue/essential",
-      "eslint:recommended"
+      "plugin:vue/vue3-essential",
+      "eslint:recommended",
+      "@vue/typescript/recommended",
+      "@vue/prettier",
+      "@vue/prettier/@typescript-eslint"
     ],
     "parserOptions": {
-      "parser": "babel-eslint"
+      "ecmaVersion": 2020
     },
     "rules": {
-      "no-unused-vars": "off",
-      "no-debugger": "off",
-      "no-unused-labels": "off"
+      "no-unused-vars": 0,
+      "no-unused-labels": 0,
+      "@typescript-eslint/no-var-requires": 0,
+      "@typescript-eslint/no-explicit-any": 0,
+      "@typescript-eslint/no-non-null-assertion": 0,
+      "quotes": [
+        1,
+        "single"
+      ],
+      "semi": [
+        1,
+        "never"
+      ]
     }
   },
   "browserslist": [

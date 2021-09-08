@@ -1,4 +1,4 @@
-@mixin ellipsis2($line) {
+@mixin ellipsis($line) {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: $line;

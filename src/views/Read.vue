@@ -3,42 +3,19 @@
 </template>
 
 <script>
-  import EbookReader from '@/components/read/EbookReader'
-  import { saveReadTime, getReadTime } from '@/util/read'
+import { defineComponent } from 'vue'
+import EbookReader from '@/components/read/EbookReader.vue'
 
-  export default {
-    name: 'Read',
-    components: { EbookReader },
-    props: {
-      name: String
-    },
-    methods: {
-      startLoopReadTime() {
-        let readTime = getReadTime()
-        if (!readTime) {
-          readTime = 0
-        }
-        this.task = setInterval(() => {
-          if (!document.hidden) {
-            readTime++
-            saveReadTime(readTime)
-          }
-        }, 60000)
-      }
-    },
-    mounted() {
-      this.startLoopReadTime()
-    },
-    beforeDestroy() {
-      if (this.task) {
-        clearInterval(this.task)
-      }
-    }
+export default defineComponent({
+  name: 'Read',
+  components: { EbookReader },
+  props: {
+    name: String
+  },
+  setup() {
+    return {}
   }
+})
 </script>
 
-<style scoped lang="scss">
-  .read {
-    background: var(--bg-img);
-  }
-</style>
+<style lang="scss"></style>
