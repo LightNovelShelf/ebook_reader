@@ -1,7 +1,6 @@
 <template>
   <div>
-    <!--    <div id="read" :style="{ width: width + 'px' }"></div>-->
-    <div>read</div>
+    <div id="read" :style="{ width: width + 'px' }"></div>
   </div>
 </template>
 
@@ -18,6 +17,8 @@ export default defineComponent({
     const readStore = useReadStore()
     readStore.loadEpub('/Test1.epub').then((book) => {
       console.log(book)
+      readStore.getRendition()
+      readStore.display()
     })
 
     return {}
