@@ -1,0 +1,649 @@
+/*預設文本樣式*/
+body{
+	padding: 0%;
+	margin-top: 0%;
+	margin-bottom: 0%;
+	margin-left: 1%;
+	margin-right: 1%;
+	line-height: 130%;
+	text-align: justify;
+}
+h1{
+	font-size: 1.65em;
+	line-height: 120%;
+	text-align: center;
+	font-weight: bold;
+	margin-top: 0.1em;
+	margin-bottom: 0.4em;
+}
+h2{
+	font-size: 1.25em;
+	line-height: 120%;
+	text-align: center;
+	font-weight: bold;
+	margin-top: 0.3em;
+	margin-bottom: 0.5em;
+}
+h3{
+	font-size: 0.95em;
+	line-height: 120%;
+	text-align: center;
+	text-indent: 0em;
+	font-weight: bold;
+	margin-top: 0.2em;
+	margin-bottom: 0.2em;
+}
+h4{
+	font-size: 1.4em;
+	text-align: center;
+	line-height: 1.2em;
+	text-indent: 0em;
+	font-weight: bold;
+	margin-top: 1em;
+	margin-bottom: 1.5em;
+}
+div{
+	margin: 0px;
+	padding: 0px;
+	text-align: justify;
+}
+p{
+	text-indent: 2em;
+	display: block;
+	line-height: 1.3em;
+	margin-top: 0.4em;
+	margin-bottom: 0.4em;
+}
+
+/*圖片相關*/
+.illus{
+	text-indent: 0em;
+	text-align: center;
+}
+.cover{
+	margin: 0em;
+	padding: 0em;
+	text-indent: 0em;
+	text-align: center;
+}
+.coverborder{
+	border-style: none;
+	border-color: #716F71;
+	border-width: 1px;
+}
+
+/*logo相关*/
+
+.logo-img{
+	text-align: center;
+	margin-top: 30%;
+	margin-bottom: 1em;
+}
+.maker{
+	font-weight: bold;
+	text-indent: 0em;
+	text-align: center;
+}
+.logo-width{
+	width:100%;
+}
+.logo-font{
+	margin-top: -0.3em;
+	text-indent: 0em;
+}
+.cut-line{
+	text-indent: 0em;
+	line-height: 0%;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+}
+
+/*預設格式相關樣式*/
+.right{
+	text-indent: 0em;
+	text-align: right;
+}
+.left{
+	text-indent: 0em;
+	text-align: left;
+}
+.center{
+	text-indent: 0em;
+    text-align: center;
+}
+.zin{
+    text-indent: 0em;
+}
+.bold{
+    font-weight: bold;
+}
+.stress{
+	font-weight: bold;
+	font-size: 1.1em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+}
+.author{
+	font-size: 1.2em;
+	text-align: right;
+	font-weight: bold;
+	font-style: italic;
+	margin-right: 1em;
+}
+.dash-break{
+	word-break: break-all;
+	word-wrap: break-word;
+}
+.no-d{
+	text-decoration: none;
+}
+.message{
+	text-indent: 0em;
+	line-height: 1.2em;
+	margin-top: 0.2em;
+	margin-bottom: 0.2em;
+}
+.meg{
+	font-size: 1.3em;
+	text-indent: 0em;
+	font-weight: bold;
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+.tilh{
+	text-indent: 0em;
+	line-height: 1em;
+	margin: 0;
+}
+
+/*文字大小*/
+
+.em04{
+    font-size: 0.4em;
+}
+.em05{
+    font-size: 0.5em;
+}
+.em06{
+    font-size: 0.6em;
+}
+.em07{
+    font-size: 0.7em;
+}
+.em08{
+    font-size: 0.8em;
+}
+.em09{
+    font-size: 0.9em;
+}
+.em11{
+    font-size: 1.1em;
+}
+.em12{
+    font-size: 1.2em;
+}
+.em125{
+    font-size: 1.25em;
+}
+.em13{
+    font-size: 1.3em;
+}
+.em14{
+    font-size: 1.4em;
+}
+.em15{
+    font-size: 1.5em;
+}
+.em16{
+    font-size: 1.6em;
+}
+.em17{
+    font-size: 1.7em;
+}
+.em18{
+    font-size: 1.8em;
+}
+.em19{
+    font-size: 1.9em;
+}
+.em20{
+    font-size: 2em;
+}
+.em21{
+    font-size: 2.1em;
+}
+.em22{
+    font-size: 2.2em;
+}
+.em23{
+    font-size: 2.3em;
+}
+.em24{
+    font-size: 2.4em;
+}
+.em25{
+    font-size: 2.5em;
+}
+.em26{
+    font-size: 2.6em;
+}
+.em27{
+    font-size: 2.7em;
+}
+.em28{
+    font-size: 2.8em;
+}
+.em29{
+    font-size: 2.9em;
+}
+.em30{
+    font-size: 3em;
+}
+
+
+/*預設目錄樣式*/
+.contents{
+	text-indent: 0em;
+	text-align: left;
+    padding: 0.5em 0 1em 0;
+}
+.mulu{
+	text-indent: 0em;
+	text-align: left;
+    padding: 0.3em 0 0.3em 0;
+}
+.back{
+	background-image: url(../Images/contents.jpg);
+	background-repeat:no-repeat;
+	background-position:top center;
+	background-size:cover;
+}
+
+
+/*圖片允許放大*/
+
+/*
+html代碼：
+
+<div class="duokan-image-single illus"><img alt="圖片名" src="../Images/圖片名.jpg" /></div>
+
+
+
+
+圖片導覽：
+
+  <div class="duokan-image-gallery">
+	<div class="illus duokan-image-single"><img alt="圖片名" src="../Images/圖片名.jpg" /></div>
+	<div class="illus duokan-image-gallery-cell"><img alt="圖片名" src="../Images/圖片名.jpg" /></div>
+ </div>
+*/
+
+
+
+/*預設註釋樣式*/
+
+.footnote{
+    height: 1.2em!important;
+    width: auto;
+    border:0;
+}
+.duokan-footnote{
+    height: 1.2em!important;
+    width: auto;
+    border: 0;
+}
+.duokan-footnote-item{
+    text-indent: 0em;
+    font-family: "DK-SONGTI";
+    text-shadow: 0em 0em 0.1em #000000;
+    font-size: 0.9em;
+    text-align: left;
+}
+sup{
+    font-size: 0.75em;
+    line-height: 1.2;
+    vertical-align: super!important;
+}
+/*
+html代碼：
+
+<a class="duokan-footnote no-d" epub:type="noteref" href="#n1" id="A_1"><sup><img alt="note" class="footnote" src="../Images/note.png" /></sup></a>
+
+
+    <aside epub:type="footnote" id="n1">
+      <ol class="duokan-footnote-content">
+        <li class="duokan-footnote-item" id="n1" value="1"></li>
+      </ol>
+    </aside>
+
+代碼說明：
+1. 請將「href="n1"」「id="n1"」「value="1"」這三段代碼中的數字改為該註釋的順序
+例：第3個註釋的該段代碼為「href="n3"」「id="n3"」「value="3"」
+2. 「註：」根據不同情況可以改為其它文字，例如譯者名
+*/
+
+
+/*字型*/
+
+@font-face{
+    font-family: "jp";
+    src: url(../Fonts/jp.ttf);
+}
+.jp{
+    font-family: jp;
+}
+@font-face{
+    font-family: "illus1";
+    src: url(../Fonts/illus1.ttf);
+}
+.illus1{
+    font-family: illus1;
+}
+@font-face{
+    font-family: "illus2";
+    src: url(../Fonts/illus2.ttf);
+}
+.illus2{
+    font-family: illus2;
+}
+@font-face{
+    font-family: "illus3";
+    src: url(../Fonts/illus3.ttf);
+}
+.illus3{
+    font-family: illus3;
+}
+@font-face{
+    font-family: "illus4";
+    src: url(../Fonts/illus4.ttf);
+}
+.illus4{
+    font-family: illus4;
+}
+@font-face{
+    font-family: "illus5";
+    src: url(../Fonts/illus1.ttf);
+}
+.illus5{
+    font-family: illus5;
+}
+
+
+/*關於 Summary */
+
+.s-hr1{
+	margin: 1.0em -3em -1px -3em;
+	border-top: solid 2px #000;
+	line-height: 1em;
+}
+.s-hr2{
+	margin: 11px -3em -0.5em -3em;
+	border-top: solid 2px #000;
+	line-height: 1em;
+}
+.summary {
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	text-indent: 0em;
+	font-family: "DK-SYMBOL";
+}
+.renwu{
+	margin-bottom:-0.6em;
+	text-align: center;
+	font-size: 1.4em;
+}
+
+
+/*以下填寫自定義css樣式*/
+
+.fr{
+	float: right;
+}
+.fl{
+	float: left;
+}
+.vt{
+	vertical-align: top;
+}
+.vb{
+	vertical-align: bottom;
+}
+.vm{
+	vertical-align: middle;
+}
+.bs{
+	border-spacing:0;
+}
+.bc{
+	border-collapse: collapse;
+	line-height: 1em;
+}
+.lh{
+	line-height: 1em;
+}
+.lh1{
+	line-height: 1.1em;
+}
+.lh2{
+	line-height: 1.2em;
+}
+.t-lt{
+	text-decoration: line-through;
+}
+.pius1{
+	text-indent: 0em;
+	line-height: 1.1em;
+	font-weight: bold;
+	margin: 2em 0 2em 1.7em;
+    font-family: illus3;
+	font-size: 1.2em;
+}
+.biaoti1{
+    font-size: 1.1em;
+	margin: 0em 0 1em 3em;
+    font-family: illus3;
+}
+.biaoti2{
+    font-size: 0.9em;
+    text-align: center;
+    text-indent: 0em;
+    font-weight: bold;
+}
+.rotate1{  
+   -webkit-transform: rotate(-4deg);
+   transform: rotate(-4deg);    
+}
+.em-dot {
+	-webkit-text-emphasis-style: filled dot;
+	-epub-text-emphasis-style:   filled circle;
+	text-emphasis: circle #000;
+}
+.symbol{
+	font-family: "DK-SYMBOL";
+}
+.co0{
+	color: #000;
+}
+.tco1{
+	color: #00AFA9;
+}
+.tco2{
+	color: #69C8F2;
+}
+.tco3{
+	color: #E95299;
+}
+.tco4{
+	color: #EB88B4;
+}
+.tco5{
+	color: #F19800;
+}
+.tco6{
+	color: #FCBD00;
+}
+.tco7{
+	color: #462300;
+    text-shadow: 1px 2px 2px #fff;
+}
+.tco8{
+    text-shadow: 1px 2px 2px #fff;
+}
+.tco9{
+    color: #00A559;
+}
+
+.ico1{
+	color: #fff;
+    text-shadow: 1px 2px 2px #C490A6;
+}
+.ico2{
+	color: #fff;
+    text-shadow: 0px 2px 2px #EF8201;
+}
+.ico3{
+	color: #fff;
+    text-shadow: 0px 2px 2px #00A1E6;
+}
+.ico4{
+	color: #fff;
+    text-shadow: 0px 0px 5px #6B698E;
+}
+.ico4-1{
+	color: #000;
+    text-shadow: 0px 2px 2px #fff;
+}
+.ico5{
+	color: #000;
+    text-shadow: 1px 2px 2px #fff;
+}
+.ico6{
+	color: #fff;
+    text-shadow: 1px 2px 2px #E98AB4;
+}
+.ico7{
+	color: #fff;
+    text-shadow: 1px 2px 2px #4C4298;
+}
+.ico8{
+	color: #fff;
+    text-shadow: 1px 2px 2px #EF8201;
+}
+.ico9{
+	color: #fff;
+    text-shadow: 1px 2px 2px #01B9EF;
+}
+.aline{
+	border-right: 1.5px dotted #3E2109;
+	line-height: 1em;
+	margin: 0;
+	padding: 0 0.3em 0 0;
+	font-size: 1.8em;
+}
+.aline1{
+	border-left: 1.5px dotted #3E2109;
+	line-height: 1em;
+	margin: 0;
+	padding: 0 0 0 0.3em;
+	font-size: 1.8em;
+}
+.tline{
+	border-right: 1.5px dotted #3E2109;
+	border-left: 1.5px dotted #3E2109;
+	height: 9.8em;
+	margin: 0;
+	padding: 0 0.3em;
+}
+.num{
+  	width:1em;
+}
+.num1{
+  	width:0.5em;
+}
+.num2{
+  	width:2.8em;
+}
+.tbox1{
+	background-color: #fff;
+	padding: 0.2em;
+	width: 10em;
+	border-top: dotted 1px #000;
+	border-bottom: dotted 1px #000;
+}
+.bg{
+	background-color: #fff;
+}
+.bgi1{
+	background-color: #E6D4BE;
+}
+.bgi2{
+	background-color: #D19E81;
+}
+.bgi3{
+	background-color: #BDBFD8;
+}
+.tbox1{
+	border: solid 1px #fff;
+	background-color: #fff;
+	padding: 0px 1px;
+	color: #E74291;
+	text-align: center;
+	border-radius:0px;
+}
+.tbox1-1{
+	border: solid 1px #E74291;
+	background-color: #E74291;
+	padding: 0px 1px;
+	color: #FFF;
+	text-align: center;
+	border-radius:0px;
+}
+.tbox2{
+	border: solid 1px #fff;
+	background-color: #fff;
+	padding: 0px 1px;
+	color: #EF8201;
+	text-align: center;
+	border-radius:0px;
+}
+.tbox2-1{
+	border: solid 1px #EF8201;
+	background-color: #EF8201;
+	padding: 0px 1px;
+	color: #FFF;
+	text-align: center;
+	border-radius:0px;
+}
+.tbox3{
+	border: solid 1px #fff;
+	background-color: #fff;
+	padding: 0px 1px;
+	color: #00A1E6;
+	text-align: center;
+	border-radius:0px;
+}
+.tbox3-1{
+	border: solid 1px #00A1E6;
+	background-color: #00A1E6;
+	padding: 0px 1px;
+	color: #FFF;
+	text-align: center;
+	border-radius:0px;
+}
+.tbox4{
+	border: solid 1px #fff;
+	background-color: #fff;
+	padding: 0px 1px;
+	color: #905DA2;
+	text-align: center;
+	border-radius:0px;
+}
+.tbox4-1{
+	border: solid 1px #905DA2;
+	background-color: #905DA2;
+	padding: 0px 1px;
+	color: #FFF;
+	text-align: center;
+	border-radius:0px;
+}
