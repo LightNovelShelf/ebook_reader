@@ -7,6 +7,7 @@
 
 <script>
 import { defineComponent } from 'vue'
+import { useReadStore } from '@/store/read'
 
 export default defineComponent({
   name: 'EbookReader',
@@ -14,6 +15,11 @@ export default defineComponent({
     name: String
   },
   setup() {
+    const readStore = useReadStore()
+    readStore.loadEpub('/Test1.epub').then((book) => {
+      console.log(book)
+    })
+
     return {}
   }
 })
