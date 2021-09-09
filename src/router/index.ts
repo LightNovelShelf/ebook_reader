@@ -3,25 +3,25 @@ import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/read/:name?',
-    name: 'read',
+    name: 'Read',
     component: () => import('../views/Read.vue'),
     props: true
   },
   {
     path: '/',
-    name: 'home',
+    name: 'Home',
     redirect: '/bookshelf',
     component: () => import('../views/Home.vue'),
     children: [
       {
         path: 'bookshelf/:gid?',
-        name: 'bookshelf',
+        name: 'BookShelf',
         component: () => import('../views/home/BookShelf.vue'),
         props: true
       },
       {
         path: 'setting',
-        name: 'setting',
+        name: 'Setting',
         component: () => import('../views/home/Setting.vue')
       }
     ]

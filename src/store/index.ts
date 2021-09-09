@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
 import { HubConnectionState } from '@microsoft/signalr/dist/esm/HubConnection'
-import { MessageModel } from './result'
+import { MessageModel } from '../types/result'
 
 /** @url https://pinia.esm.dev/getting-started.html */
 

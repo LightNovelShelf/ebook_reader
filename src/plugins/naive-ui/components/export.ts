@@ -36,5 +36,6 @@ export {
   NThing,
   NNotificationProvider,
   NMessageProvider,
-  NLoadingBarProvider
+  NLoadingBarProvider,
+  NSpin
 } from 'naive-ui'
