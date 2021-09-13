@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { default as Epub85 } from 'epubjs85'
 // 后续让用户选择时需要
-import { default as EpubLast } from 'epubjs'
+// import { default as EpubLast } from 'epubjs'
 import { Book as BookLast } from 'epubjs'
 import { Book, Rendition, RenditionOptions } from '../types/epubjs'
 import localforage from 'localforage'
@@ -25,6 +25,7 @@ export const useReadStore = defineStore('app.read', {
     },
     getRendition(option?: RenditionOptions) {
       this.rendition = this.book!.renderTo('read', option)
+      this.rendition.hooks.render.register(this.saveLocation)
       return this.rendition
     },
     display(cfi?: string | number) {
@@ -34,10 +35,12 @@ export const useReadStore = defineStore('app.read', {
     // 保存进度
     async saveLocation() {
       const currentLocation = this.rendition!.currentLocation() as any // 这里默认给出的类型不对
-      const key = `book_${this.bookId}`
-      const info = ((await localforage.getItem(key)) as Record<string, unknown>) || {}
-      info.location = currentLocation.start.cfi
-      localforage.setItem(key, info)
+      if (currentLocation && currentLocation.start) {
+        const key = `book_${this.bookId}`
+        const info = ((await localforage.getItem(key)) as Record<string, unknown>) || {}
+        info.location = currentLocation.start.cfi
+        localforage.setItem(key, info)
+      }
     },
     // 获取进度
     async getLocation(bookId?: string) {

@@ -1,9 +1,6 @@
 <template>
   <v-resize-observer :on-resize="handleResize">
-    <div id="read" v-hotkey="keymap" :style="{ width: width + 'px', margin: '0 auto' }"> </div>
-    <n-drawer v-model:show="menuShow" :width="200" :height="200" placement="bottom">
-      <n-drawer-content title="斯通纳"> 《斯通纳》是美国作家约翰·威廉姆斯在 1965 年出版的小说。 </n-drawer-content>
-    </n-drawer>
+    <div id="read" ref="readDom" v-hotkey="keymap" :style="{ width: width + 'px', margin: '0 auto' }"> </div>
   </v-resize-observer>
 </template>
 
@@ -97,8 +94,61 @@ export default defineComponent({
       }
     }
 
+    let initEvent = (window: Window) => {
+      // @ts-ignore
+      window.addEventListener(mousewheel, handleMouseWheel, true)
+      window.addEventListener('keydown', (e) => {
+        let event = new KeyboardEvent('keydown', e)
+        window.parent.document.dispatchEvent(event)
+      })
+
+      if ('ontouchstart' in window) {
+        // Mobile
+        window.addEventListener(
+          'touchmove',
+          () => {
+            // console.log('touchmove', e)
+            enableTouch = true
+          },
+          true
+        )
+        window.addEventListener(
+          'touchstart',
+          (e: any) => {
+            // console.log('touchstart', e)
+            timeStart = e.timeStamp
+            touchDetail = e
+          },
+          true
+        )
+        window.addEventListener(
+          'touchend',
+          (e: any) => {
+            // console.log('touchend', e)
+            if (!enableTouch) {
+              e.stopPropagation()
+              handleMouseDown(e)
+            } else {
+              enableTouch = false
+            }
+          },
+          true
+        )
+      } else {
+        // PC
+        readStore.rendition!.on('mousedown', (e: any) => {
+          timeStart = e.timeStamp
+        })
+        readStore.rendition!.on('mouseup', handleMouseDown)
+      }
+    }
+
+    let isInArea = (offsetX: number) => {
+      return offsetX > width.value * 0.75 || offsetX < width.value * 0.25
+    }
+
     // 原生实现解压，这里再读取，可以加快读取速度
-    readStore.loadEpub('/Test1/OEBPS/content.opf').then(async (book) => {
+    readStore.loadEpub('/Test2/OEBPS/content.opf').then(async (book) => {
       console.log(book)
       readStore.getRendition({
         // 预加载
@@ -110,48 +160,7 @@ export default defineComponent({
       })
 
       readStore.rendition!.hooks.content.register((content: Contents) => {
-        // @ts-ignore
-        content.window.addEventListener(mousewheel, handleMouseWheel, true)
-
-        if ('ontouchstart' in window) {
-          // Mobile
-          content.window!.addEventListener(
-            'touchmove',
-            (e: TouchEvent) => {
-              // console.log('touchmove', e)
-              enableTouch = true
-            },
-            true
-          )
-          content.window!.addEventListener(
-            'touchstart',
-            (e: TouchEvent) => {
-              // console.log('touchstart', e)
-              timeStart = e.timeStamp
-              touchDetail = e
-            },
-            true
-          )
-          content.window!.addEventListener(
-            'touchend',
-            (e: TouchEvent) => {
-              // console.log('touchend', e)
-              if (!enableTouch) {
-                e.stopPropagation()
-                handleMouseDown(e)
-              } else {
-                enableTouch = false
-              }
-            },
-            true
-          )
-        } else {
-          // PC
-          readStore.rendition!.on('mousedown', (e: any) => {
-            timeStart = e.timeStamp
-          })
-          readStore.rendition!.on('mouseup', handleMouseDown)
-        }
+        initEvent(content.window)
       })
 
       const location = await readStore.getLocation()
@@ -159,11 +168,7 @@ export default defineComponent({
       loading.value = false
     })
 
-    let isInArea = (offsetX: number) => {
-      return offsetX > width.value * 0.75 || offsetX < width.value * 0.25
-    }
-
-    let menuShow = ref(true)
+    let menuShow = ref(false)
     let width = ref(0)
     let loading = ref(false)
     width.value = getWidth()
@@ -171,15 +176,14 @@ export default defineComponent({
     return {
       width,
       loading,
-      // TODO 想法很美好，但实际上用户点击的是iframe里的东西，得想办法把事件传递到父页面
       keymap: {
         enter: next,
         right: next,
         left: prev
       },
-      menuShow,
+      readDom: ref(),
       handleResize(entry: ResizeObserverEntry) {
-        // 这个Resize每次翻页都会动，搞不懂
+        // 这个Resize每次翻页都会调用，搞不懂
         // console.log(entry)
         width.value = getWidth(entry.contentRect.width)
       }

@@ -1,5 +1,5 @@
 <template>
-  <n-config-provider :locale="zhCN" :date-locale="dateZhCN">
+  <n-config-provider :theme="theme" :locale="zhCN" :date-locale="dateZhCN">
     <n-global-style />
     <router-view />
   </n-config-provider>
@@ -9,23 +9,20 @@
 import { computed, defineComponent } from 'vue'
 import { zhCN, dateZhCN } from 'naive-ui'
 import { icon } from './plugins/naive-ui'
-import { useAppStore } from '@/store'
+import { useOsTheme, darkTheme } from 'naive-ui'
 
 export default defineComponent({
   components: {
     ...icon
   },
   setup() {
-    const appStore = useAppStore()
+    const osThemeRef = useOsTheme()
 
     return {
       zhCN,
       dateZhCN,
 
-      appName: computed(() => appStore.appName),
-      changAppName() {
-        appStore.asyncReverse()
-      }
+      theme: computed(() => (osThemeRef.value === 'dark' ? darkTheme : null))
     }
   }
 })
