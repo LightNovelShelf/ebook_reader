@@ -10,6 +10,7 @@ import { useReadStore } from '@/store/read'
 import { throttle } from 'lodash-es'
 import { VResizeObserver } from 'vueuc'
 import { Contents } from '@/types/epubjs'
+import { useMenu } from '@/composables/readMenu'
 // import { createBlobUrl } from 'epubjs/src/utils/core'
 // TODO 等vite修#符号的bug
 // import ContinuousViewManager from 'epubjs/src/managers/continuous/index.js'
@@ -45,6 +46,8 @@ export default defineComponent({
     name: String
   },
   setup() {
+    const { menuShow } = useMenu()
+
     const mousewheel = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'mousewheel'
     const readStore = useReadStore()
     let next = throttle(readStore.nextPage, 200)
@@ -168,7 +171,6 @@ export default defineComponent({
       loading.value = false
     })
 
-    let menuShow = ref(false)
     let width = ref(0)
     let loading = ref(false)
     width.value = getWidth()

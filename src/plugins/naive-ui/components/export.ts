@@ -11,7 +11,6 @@ export {
   NImage,
   NSpace,
   NMenu,
-  NIcon,
   NInput,
   NAvatar,
   NTooltip,

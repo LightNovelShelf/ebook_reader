@@ -13,15 +13,16 @@ export const useReadStore = defineStore('app.read', {
     rendition: undefined as undefined | Rendition
   }),
   actions: {
-    loadEpub(bookUrlOrData: string | BinaryType, bookId?: string): Promise<Book> {
-      this.bookId = bookId || bookUrlOrData
+    loadEpub(bookUrlOrData: string | ArrayBuffer, bookId?: string): Promise<Book> {
       if (typeof bookUrlOrData === 'string') {
+        this.bookId = bookId || bookUrlOrData
         this.book = Epub85(bookUrlOrData)
-        return this.book.opened
       } else {
+        this.bookId = bookId || ''
         this.book = new BookLast()
-        return this.book.openEpub(bookUrlOrData)
+        this.book.open(bookUrlOrData)
       }
+      return this.book.opened
     },
     getRendition(option?: RenditionOptions) {
       this.rendition = this.book!.renderTo('read', option)
@@ -39,7 +40,7 @@ export const useReadStore = defineStore('app.read', {
         const key = `book_${this.bookId}`
         const info = ((await localforage.getItem(key)) as Record<string, unknown>) || {}
         info.location = currentLocation.start.cfi
-        localforage.setItem(key, info)
+        await localforage.setItem(key, info)
       }
     },
     // 获取进度
