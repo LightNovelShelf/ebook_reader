@@ -7,6 +7,7 @@ import { naive } from './plugins/naive-ui'
 import VueHotkey from 'v-hotkey'
 import { ClickOutside, Intersect } from 'vuetify/lib/directives/index'
 import { default as NIcon } from '@/plugins/naive-ui/components/Icon.vue'
+import 'vuetify/lib/styles/generic/_transitions.scss'
 
 const app = createApp(App)
 

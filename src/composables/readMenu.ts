@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 
-const menuShow = ref(true)
+const menuShow = ref(false)
 
 export function useMenu(): any {
   return { menuShow }

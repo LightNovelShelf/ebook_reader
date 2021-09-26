@@ -1,1 +1,1 @@
-export { mdiMagnify, mdiArrowLeft, mdiMenu } from '@mdi/js'
+export { mdiMagnify, mdiArrowLeft, mdiMenu, mdiFormatListBulleted, mdiWhiteBalanceSunny, mdiFormatSize } from '@mdi/js'

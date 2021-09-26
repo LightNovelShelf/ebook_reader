@@ -1,9 +1,9 @@
 <template>
   <teleport to="body">
-    <n-config-provider :theme-overrides="themeOverrides" v-if="menuShow">
-      <n-layout position="absolute" class="menu">
-        <n-layout-content position="absolute" @click="menuShow = false">平山道</n-layout-content>
-        <n-layout-header position="absolute" class="header">
+    <n-config-provider :theme-overrides="themeOverrides" abstract>
+      <n-layout-content v-show="menuShow" position="absolute" @click="menuShow = false" />
+      <transition name="slide-y-transition">
+        <n-layout-header key="header" v-show="menuShow" position="absolute" class="header">
           <n-space justify="space-between" align="center">
             <div style="display: flex">
               <n-button text>
@@ -17,24 +17,35 @@
             </div>
           </n-space>
         </n-layout-header>
-        <n-layout-footer position="absolute" class="footer">
+      </transition>
+
+      <transition name="slide-y-reverse-transition">
+        <n-layout-footer v-show="menuShow" position="absolute" class="footer">
           <n-space justify="space-around">
             <div style="display: flex">
               <n-button text>
-                <n-icon size="24">{{ icon.mdiMenu }} </n-icon>
+                <n-icon size="24">{{ icon.mdiFormatListBulleted }} </n-icon>
               </n-button>
             </div>
-            <div>字体</div>
-            <div>设置</div>
+            <div style="display: flex">
+              <n-button text>
+                <n-icon size="24">{{ icon.mdiWhiteBalanceSunny }} </n-icon>
+              </n-button>
+            </div>
+            <div style="display: flex">
+              <n-button text>
+                <n-icon size="24">{{ icon.mdiFormatSize }} </n-icon>
+              </n-button>
+            </div>
           </n-space>
         </n-layout-footer>
-      </n-layout>
+      </transition>
     </n-config-provider>
   </teleport>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent } from 'vue'
 import { GlobalThemeOverrides } from 'naive-ui'
 import { icon } from '@/plugins/naive-ui'
 import { useMenu } from '@/composables/readMenu'
@@ -65,7 +76,7 @@ export default defineComponent({
   box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
 }
 .footer {
-  padding: 10px;
+  padding: 15px 10px;
   box-shadow: 0 -5px 5px rgba(0, 0, 0, 0.2);
 }
 </style>

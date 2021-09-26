@@ -14,6 +14,7 @@ import { useMenu } from '@/composables/readMenu'
 // import { createBlobUrl } from 'epubjs/src/utils/core'
 // TODO 等vite修#符号的bug
 // import ContinuousViewManager from 'epubjs/src/managers/continuous/index.js'
+// console.log(ContinuousViewManager)
 
 // TODO 这个地方运行没问题，但打包时路径解析的有问题，怀疑也是vite bug
 // const cssUrl = new URL('/style/read.css', import.meta.url)
@@ -83,7 +84,7 @@ export default defineComponent({
         if (X > width.value * 0.75) next()
         else if (X < width.value * 0.25) prev()
         else if (Y < window.innerHeight * 0.75 && Y > window.innerHeight * 0.25) {
-          menuShow.value = !menuShow.value
+          menuShow.value = true
         }
       }
     }
@@ -137,12 +138,6 @@ export default defineComponent({
           },
           true
         )
-      } else {
-        // PC
-        readStore.rendition!.on('mousedown', (e: any) => {
-          timeStart = e.timeStamp
-        })
-        readStore.rendition!.on('mouseup', handleMouseDown)
       }
     }
 
@@ -151,6 +146,7 @@ export default defineComponent({
     }
 
     // 原生实现解压，这里再读取，可以加快读取速度
+    // 仅限于本地文件，网络文件的跨章节翻页有点问题
     readStore.loadEpub('/Test2/OEBPS/content.opf').then(async (book) => {
       console.log(book)
       readStore.getRendition({
@@ -161,6 +157,13 @@ export default defineComponent({
         // snap: true,
         // flow: 'paginated'
       })
+
+      if (!('ontouchstart' in window)) {
+        readStore.rendition!.on('mousedown', (e: any) => {
+          timeStart = e.timeStamp
+        })
+        readStore.rendition!.on('mouseup', handleMouseDown)
+      }
 
       readStore.rendition!.hooks.content.register((content: Contents) => {
         initEvent(content.window)
