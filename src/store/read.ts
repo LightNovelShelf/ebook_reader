@@ -97,7 +97,7 @@ export const useReadStore = defineStore('app.read', {
     // 获取进度
     async getLocation(bookId?: string) {
       const key = `book_${bookId || this.bookId}`
-      return (await getCache(key, 'location')) as string | null
+      return (await getCache(key, 'location')) as string | undefined
     },
     nextPage() {
       console.log('下一页')

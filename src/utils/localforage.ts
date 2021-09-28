@@ -1,37 +1,23 @@
 import localforage from 'localforage'
+import PQueue from 'p-queue'
 
-const stack = [] as any[]
-let isRun = false
+const queue = new PQueue({ concurrency: 1 })
 
-const _setCache = async (cacheId: string, key: string, value: unknown) => {
-  const info = ((await localforage.getItem(cacheId)) as Record<string, unknown>) || {}
-  info[key] = value
-  await localforage.setItem(cacheId, info)
-  new Promise(next)
-}
-
-export const getCache = async (cacheId: string, key: string): Promise<unknown | undefined> => {
+export const _getCache = async (cacheId: string, key: string): Promise<unknown | undefined> => {
   const info = (await localforage.getItem(cacheId)) as Record<string, unknown>
   return info ? info[key] : undefined
 }
 
-function next() {
-  if (stack.length === 0) {
-    isRun = false
-    return
-  }
-  const fn = stack.shift()
-  fn()
+const _setCache = async (cacheId: string, key: string, value: unknown): Promise<Record<string, unknown>> => {
+  const info = ((await localforage.getItem(cacheId)) as Record<string, unknown>) || {}
+  info[key] = value
+  return await localforage.setItem(cacheId, info)
 }
 
-function run() {
-  if (!isRun) {
-    isRun = true
-    next()
-  }
+export const setCache = (cacheId: string, key: string, value: unknown): Promise<Record<string, unknown>> => {
+  return queue.add(() => _setCache(cacheId, key, value))
 }
 
-export const setCache = (cacheId: string, key: string, value: unknown): void => {
-  stack.push(() => _setCache(cacheId, key, value))
-  run()
+export const getCache = (cacheId: string, key: string): Promise<unknown | undefined> => {
+  return queue.add(() => _getCache(cacheId, key))
 }
