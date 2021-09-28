@@ -1,9 +1,11 @@
 import { defineStore } from 'pinia'
+import { toRaw } from '@vue/reactivity'
 import { default as Epub85 } from 'epubjs85'
+import EpubCFI from 'epubjs/src/epubcfi'
 // 后续让用户选择时需要
 // import { default as EpubLast } from 'epubjs'
 import { Book as BookLast } from 'epubjs'
-import { Book, Rendition, RenditionOptions, PackagingMetadataObject, NavItem } from '../types/epubjs'
+import { Book, Rendition, RenditionOptions, PackagingMetadataObject, NavItem, Contents } from '../types/epubjs'
 import localforage from 'localforage'
 import { getCache, setCache } from '@/utils/localforage'
 
@@ -14,62 +16,83 @@ export const useReadStore = defineStore('app.read', {
     rendition: undefined as undefined | Rendition,
     cover: '',
     metadata: {} as PackagingMetadataObject,
-    toc: {} as any
+    toc: undefined as undefined | Array<any>,
+    // 当前章节位置
+    currentSection: 0,
+    func: {
+      next: null,
+      prev: null,
+      nextSection: null,
+      prevSection: null
+    }
   }),
   actions: {
     loadEpub(bookUrlOrData: string | ArrayBuffer, bookId?: string): Promise<Book> {
       // 每本书一个id，不同书但id相同会导致无法找到目录等情况
       if (typeof bookUrlOrData === 'string') {
-        this.bookId = bookId || bookUrlOrData
+        this.bookId = 'book_' + (bookId || bookUrlOrData)
         this.book = Epub85(bookUrlOrData)
       } else {
-        this.bookId = bookId || ''
+        this.bookId = 'book_' + (bookId || '')
         this.book = new BookLast()
         this.book.open(bookUrlOrData)
       }
       return this.book.opened.then(async (book) => {
         // 加载书籍信息并保存
-        const key = `book_${this.bookId}`
-        // const info = (await localforage.getItem(key)) as Record<string, unknown>
+        const info = (await localforage.getItem(this.bookId)) as Record<string, unknown>
 
-        book.loaded.cover.then(async (cover) => {
-          this.cover = cover
-          await setCache(key, 'cover', cover)
-        })
-
-        book.loaded.metadata.then(async (metadata) => {
-          this.metadata = metadata
-          await setCache(key, 'metadata', metadata)
-        })
-        // 把多级目录转换成1级目录，新增一个level属性判断级别
-        book.loaded.navigation.then(async (nav) => {
-          function flatten(array: NavItem[]): any {
-            return [].concat(...array.map((item: any) => [].concat(item, ...flatten(item.subitems))))
-          }
-          const navItem = flatten(nav.toc)
-          function find(item: NavItem, levle = 0): any {
-            return !item.parent
-              ? levle
-              : find(navItem.filter((parentItem: NavItem) => parentItem.id === item.parent)[0], ++levle)
-          }
-          const basePath = book.packaging.navPath ? book.packaging.navPath.split('/') : false
-          const toc = navItem.map((item: any) => {
-            const obj = { ...item }
-            obj.level = find(obj)
-            obj.label = obj.label.trim()
-            if (basePath) {
-              if (obj.href.startsWith('#')) {
-                obj.href = book.packaging.navPath + obj.href
-              } else {
-                basePath[basePath.length - 1] = obj.href
-                obj.href = basePath.join('/')
-              }
-            }
-            return obj
+        if (info && info.cover) {
+          this.cover = info.cover as string
+        } else {
+          book.loaded.cover.then(async (cover) => {
+            this.cover = cover
+            await setCache(this.bookId, 'cover', cover)
           })
-          this.toc = toc
-          await setCache(key, 'toc', toc)
-        })
+        }
+
+        if (info && info.metadata) {
+          this.metadata = info.metadata as PackagingMetadataObject
+        } else {
+          book.loaded.metadata.then(async (metadata) => {
+            this.metadata = metadata
+            await setCache(this.bookId, 'metadata', metadata)
+          })
+        }
+
+        // 把多级目录转换成1级目录，新增一个level属性判断级别
+        if (info && info.toc) {
+          this.toc = info.toc as Array<any>
+        } else {
+          book.loaded.navigation.then(async (nav) => {
+            function flatten(array: NavItem[]): any {
+              return [].concat(...array.map((item: any) => [].concat(item, ...flatten(item.subitems))))
+            }
+            const navItem = flatten(nav.toc)
+            function find(item: NavItem, levle = 0): any {
+              return !item.parent
+                ? levle
+                : find(navItem.filter((parentItem: NavItem) => parentItem.id === item.parent)[0], ++levle)
+            }
+            const basePath = book.packaging.navPath ? book.packaging.navPath.split('/') : false
+            const toc = navItem.map((item: any) => {
+              const obj = { ...item }
+              obj.level = find(obj)
+              obj.label = obj.label.trim()
+              if (basePath) {
+                if (obj.href.startsWith('#')) {
+                  obj.href = book.packaging.navPath + obj.href
+                } else {
+                  basePath[basePath.length - 1] = obj.href
+                  obj.href = basePath.join('/')
+                }
+              }
+              return obj
+            })
+            this.toc = toc
+            await setCache(this.bookId, 'toc', toc)
+          })
+        }
+
         return book
       })
     },
@@ -79,37 +102,96 @@ export const useReadStore = defineStore('app.read', {
         // console.log(location)
         this.saveLocation(this.rendition?.location)
       })
+      // 渲染的时候遍历toc，记录每个章节的cfi地址
+      this.rendition.hooks.content.register(async (contents: Contents) => {
+        const match = contents.cfiBase.match(/\[(.*?)\]/)
+        if (match) {
+          const baseName = match[1]
+          this.toc?.forEach((navItem: any) => {
+            if (navItem.href.indexOf(baseName) !== -1) {
+              const href = navItem.href.match(/\/(.*?)$/)[1]
+              const id = href.replace(/^([^#]*)#?(.*)$/, '$2')
+              if (id) {
+                //得到每个目录的cfi地址
+                const node = contents.document.getElementById(id)
+                if (node) {
+                  const cfi = new EpubCFI(node, contents.cfiBase)
+                  navItem.cfi = cfi.toString()
+                }
+              } else if (href === baseName) {
+                // 完全一样取开头
+                const cfi = new EpubCFI(contents.document.body.firstChild, contents.cfiBase)
+                navItem.cfi = cfi.toString()
+              }
+            }
+          })
+          await setCache(this.bookId, 'toc', toRaw(this.toc))
+        }
+      })
       return this.rendition
     },
     display(cfi?: string | number) {
       // @ts-ignore
       return this.rendition!.display(cfi)
     },
-    // 保存进度
+    // 保存进度并刷新当前章节位置
     async saveLocation(location?: any) {
-      // console.log('saveLocation')
       const currentLocation = location || (this.rendition!.currentLocation() as any) // 这里默认给出的类型不对
       if (currentLocation && currentLocation.start) {
-        const key = `book_${this.bookId}`
-        await setCache(key, 'location', currentLocation.start.cfi)
+        const temp = [] as Array<number>
+        this.toc?.forEach((navItem: any, index: number) => {
+          if (navItem.href === currentLocation.start.href) {
+            temp.push(index)
+          } else {
+            if (navItem.cfi) {
+              const cfi_a = new EpubCFI(navItem.cfi)
+              const cfi_b = new EpubCFI(currentLocation.start.cfi)
+              if (cfi_a.compare(cfi_b, cfi_a) != -1) {
+                temp.push(index)
+              }
+            }
+          }
+        })
+        // 把所有位置比当前位置小的都记录下来，然后取最大的
+        this.currentSection = Math.max(...temp)
+        await setCache(this.bookId, 'location', currentLocation.start.cfi)
       }
     },
     // 获取进度
     async getLocation(bookId?: string) {
-      const key = `book_${bookId || this.bookId}`
+      const key = bookId ? `book_${bookId}` : this.bookId
       return (await getCache(key, 'location')) as string | undefined
     },
+    // TODO 内部添加节流
     nextPage() {
       console.log('下一页')
       return this.rendition!.next()
     },
     nextSection() {
       console.log('下一章')
-      return this.rendition!.next()
+      if (this.toc) {
+        if (this.currentSection === this.toc.length - 1) {
+          // 已经最后了
+          return
+        } else {
+          this.display(this.toc[this.currentSection + 1].href)
+        }
+      }
     },
     prevPage() {
       console.log('上一页')
       return this.rendition!.prev()
+    },
+    prevSection() {
+      console.log('上一章')
+      if (this.toc) {
+        if (this.currentSection === 0) {
+          // 已经最前了
+          return
+        } else {
+          this.display(this.toc[this.currentSection - 1].href)
+        }
+      }
     }
   }
 })

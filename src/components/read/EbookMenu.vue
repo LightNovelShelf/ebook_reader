@@ -21,7 +21,18 @@
 
       <transition name="slide-y-reverse-transition">
         <n-layout-footer v-show="menuShow" position="absolute" class="footer">
-          <n-space justify="space-around">
+          <n-space justify="space-between" align="center">
+            <div style="display: flex">
+              <n-button @click="bookStore.prevSection()"> 上一章 </n-button>
+            </div>
+            <div style="display: flex">
+              <n-text>{{ title }}</n-text>
+            </div>
+            <div style="display: flex">
+              <n-button @click="bookStore.nextSection()"> 下一章 </n-button>
+            </div>
+          </n-space>
+          <n-space justify="space-around" style="padding-top: 20px">
             <div style="display: flex">
               <n-button text>
                 <n-icon size="24">{{ icon.mdiFormatListBulleted }} </n-icon>
@@ -45,10 +56,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, computed } from 'vue'
 import { GlobalThemeOverrides } from 'naive-ui'
 import { icon } from '@/plugins/naive-ui'
 import { useMenu } from '@/composables/readMenu'
+import { useReadStore } from '@/store/read'
 
 const themeOverrides: GlobalThemeOverrides = {
   Layout: {
@@ -60,11 +72,19 @@ export default defineComponent({
   name: 'EbookMenu',
   setup() {
     const { menuShow } = useMenu()
+    const bookStore = useReadStore()
 
     return {
       icon,
       themeOverrides,
-      menuShow
+      menuShow,
+      bookStore,
+      title: computed(() => {
+        if (bookStore.toc && bookStore.currentSection < bookStore.toc.length) {
+          return bookStore.toc[bookStore.currentSection].label
+        }
+        return ''
+      })
     }
   }
 })

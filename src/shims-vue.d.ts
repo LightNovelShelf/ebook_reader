@@ -8,3 +8,4 @@ declare module '*.vue' {
 declare module 'v-hotkey'
 declare module 'epubjs/src/utils/core'
 declare module 'epubjs/src/managers/continuous/index.js'
+declare module 'epubjs/src/epubcfi'

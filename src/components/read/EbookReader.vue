@@ -57,6 +57,7 @@ export default defineComponent({
     let timeStart = 0 as number
     let enableTouch = false
     let touchDetail = null as TouchEvent | null
+    // 点击事件处理
     let handleMouseDown = (e: any) => {
       const time = e.timeStamp - timeStart
       let target = e.target! as HTMLElement
@@ -74,6 +75,7 @@ export default defineComponent({
           .flat()
         // 这里对Img的两种特殊情况，需要EPUB制作者进行兼容
         if (classList.includes('duokan-image-single') && !isInArea(X)) {
+          console.log('previewImg')
           // TODO
           // this.previewImg(e)
           return
@@ -89,6 +91,7 @@ export default defineComponent({
       }
     }
 
+    // 滚轮事件处理
     let handleMouseWheel = (e: WheelEvent) => {
       if (e.detail) {
         // Firefox
