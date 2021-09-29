@@ -23,13 +23,13 @@
         <n-layout-footer v-show="menuShow" position="absolute" class="footer">
           <n-space justify="space-between" align="center">
             <div style="display: flex">
-              <n-button @click="bookStore.prevSection()"> 上一章 </n-button>
+              <n-button @click="prevSection()"> 上一章 </n-button>
             </div>
             <div style="display: flex">
               <n-text>{{ title }}</n-text>
             </div>
             <div style="display: flex">
-              <n-button @click="bookStore.nextSection()"> 下一章 </n-button>
+              <n-button @click="nextSection()"> 下一章 </n-button>
             </div>
           </n-space>
           <n-space justify="space-around" style="padding-top: 20px">
@@ -61,6 +61,7 @@ import { GlobalThemeOverrides } from 'naive-ui'
 import { icon } from '@/plugins/naive-ui'
 import { useMenu } from '@/composables/readMenu'
 import { useReadStore } from '@/store/read'
+import { throttle } from 'lodash-es'
 
 const themeOverrides: GlobalThemeOverrides = {
   Layout: {
@@ -85,7 +86,9 @@ export default defineComponent({
           return `${section.label} (${bookStore.section.pageIndex}/${bookStore.section.pageTotal})`
         }
         return ''
-      })
+      }),
+      nextSection: throttle(bookStore.nextSection, 500),
+      prevSection: throttle(bookStore.prevSection, 500)
     }
   }
 })
