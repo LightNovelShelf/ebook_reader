@@ -41,7 +41,7 @@ export const useReadStore = defineStore('app.read', {
       }
       return this.book.opened.then(async (book) => {
         // 加载书籍信息并保存
-        const info = (await localforage.getItem(this.bookId)) as Record<string, unknown>
+        const info = await localforage.getItem<Record<string, unknown>>(this.bookId)
 
         if (info && info.cover) {
           this.cover = info.cover as string
