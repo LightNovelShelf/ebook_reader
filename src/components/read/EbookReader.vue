@@ -17,6 +17,7 @@ import { useMenu } from '@/composables/readMenu'
 // console.log(ContinuousViewManager)
 
 // TODO 这个地方运行没问题，但打包时路径解析的有问题，怀疑也是vite bug
+// 最好是得到一个编译后的css文件的路径，在下面getRendition的stylesheet参数中使用
 // const cssUrl = new URL('/style/read.css', import.meta.url)
 // console.log(cssUrl)
 
