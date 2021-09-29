@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
-import { createPinia } from 'pinia'
+import { piniaInstance } from '@/plugins/pinia'
 import App from './App.vue'
 import './assets/style/main.scss'
 import router from './router'
@@ -20,4 +20,4 @@ app.directive('intersect', Intersect)
 app.directive('click-outside', ClickOutside)
 app.component('n-icon', NIcon)
 
-app.use(createPinia()).use(router).use(naive).mount('#app')
+app.use(piniaInstance).use(router).use(naive).mount('#app')
