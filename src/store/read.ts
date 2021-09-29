@@ -18,12 +18,13 @@ export const useReadStore = defineStore('app.read', {
     metadata: {} as PackagingMetadataObject,
     toc: undefined as undefined | Array<any>,
     // 当前章节位置
-    currentSection: 0,
-    func: {
-      next: null,
-      prev: null,
-      nextSection: null,
-      prevSection: null
+    section: {
+      // 当前位置对于toc对象的位置
+      index: 0,
+      // 当前章节的总页数
+      pageTotal: 0,
+      // 现在阅读的页数
+      pageIndex: 0
     }
   }),
   actions: {
@@ -138,6 +139,7 @@ export const useReadStore = defineStore('app.read', {
     async saveLocation(location?: any) {
       const currentLocation = location || (this.rendition!.currentLocation() as any) // 这里默认给出的类型不对
       if (currentLocation && currentLocation.start) {
+        console.log(location)
         const temp = [] as Array<number>
         this.toc?.forEach((navItem: any, index: number) => {
           if (navItem.href === currentLocation.start.href) {
@@ -153,7 +155,9 @@ export const useReadStore = defineStore('app.read', {
           }
         })
         // 把所有位置比当前位置小的都记录下来，然后取最大的
-        this.currentSection = Math.max(...temp)
+        this.section.index = Math.max(...temp)
+        this.section.pageIndex = currentLocation.start.displayed.page
+        this.section.pageTotal = currentLocation.start.displayed.total
         await setCache(this.bookId, 'location', currentLocation.start.cfi)
       }
     },
@@ -170,11 +174,11 @@ export const useReadStore = defineStore('app.read', {
     nextSection() {
       console.log('下一章')
       if (this.toc) {
-        if (this.currentSection === this.toc.length - 1) {
+        if (this.section.index === this.toc.length - 1) {
           // 已经最后了
           return
         } else {
-          this.display(this.toc[this.currentSection + 1].href)
+          this.display(this.toc[this.section.index + 1].href)
         }
       }
     },
@@ -185,11 +189,11 @@ export const useReadStore = defineStore('app.read', {
     prevSection() {
       console.log('上一章')
       if (this.toc) {
-        if (this.currentSection === 0) {
+        if (this.section.index === 0) {
           // 已经最前了
           return
         } else {
-          this.display(this.toc[this.currentSection - 1].href)
+          this.display(this.toc[this.section.index - 1].href)
         }
       }
     }

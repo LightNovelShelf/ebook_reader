@@ -80,8 +80,9 @@ export default defineComponent({
       menuShow,
       bookStore,
       title: computed(() => {
-        if (bookStore.toc && bookStore.currentSection < bookStore.toc.length) {
-          return bookStore.toc[bookStore.currentSection].label
+        if (bookStore.toc && bookStore.section.index < bookStore.toc.length) {
+          let section = bookStore.toc[bookStore.section.index]
+          return `${section.label} (${bookStore.section.pageIndex}/${bookStore.section.pageTotal})`
         }
         return ''
       })
