@@ -25,7 +25,8 @@ export const useReadStore = defineStore('app.read', {
       pageTotal: 0,
       // 现在阅读的页数
       pageIndex: 0
-    }
+    },
+    changeSection: false
   }),
   actions: {
     loadEpub(bookUrlOrData: string | ArrayBuffer, bookId?: string): Promise<Book> {
@@ -155,9 +156,14 @@ export const useReadStore = defineStore('app.read', {
           }
         })
         // 把所有位置比当前位置小的都记录下来，然后取最大的
-        this.section.index = Math.max(...temp)
+        if (this.changeSection) {
+          this.changeSection = false
+        } else {
+          this.section.index = Math.max(...temp)
+        }
         this.section.pageIndex = currentLocation.start.displayed.page
         this.section.pageTotal = currentLocation.start.displayed.total
+
         await setCache(this.bookId, 'location', currentLocation.start.cfi)
       }
     },
@@ -173,12 +179,15 @@ export const useReadStore = defineStore('app.read', {
     },
     nextSection() {
       console.log('下一章')
+
       if (this.toc) {
         if (this.section.index === this.toc.length - 1) {
           // 已经最后了
           return
         } else {
-          this.display(this.toc[this.section.index + 1].href)
+          this.changeSection = true
+          this.section.index++
+          this.display(this.toc[this.section.index].href)
         }
       }
     },
@@ -193,7 +202,9 @@ export const useReadStore = defineStore('app.read', {
           // 已经最前了
           return
         } else {
-          this.display(this.toc[this.section.index - 1].href)
+          this.changeSection = true
+          this.section.index--
+          this.display(this.toc[this.section.index].href)
         }
       }
     }

@@ -155,7 +155,7 @@ export default defineComponent({
       console.log(book)
       readStore.getRendition({
         // 预加载
-        manager: 'continuous'
+        // manager: 'continuous'
         // manager: new ContinuousViewManager(),
         // stylesheet: createBlobUrl(`@import url('${cssUrl}')`, 'text/css'),
         // snap: true,
