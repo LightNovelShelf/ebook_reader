@@ -21,6 +21,11 @@ import { useMenu } from '@/composables/readMenu'
 // const cssUrl = new URL('/style/read.css', import.meta.url)
 // console.log(cssUrl)
 
+// import cssUrl from '@/assets/style/read.css?url'
+// console.log(cssUrl)
+// import cssRaw from '@/assets/style/read.css?raw'
+// console.log(cssRaw)
+
 function getWidth(width?: number) {
   // 根据文档，在使用显示比例缩放的系统上，scrollLeft可能会为您提供一个十进制值。
   // 这导致了可能错误的移动位置

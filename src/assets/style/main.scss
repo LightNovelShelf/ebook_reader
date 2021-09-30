@@ -1,10 +1,18 @@
 body {
   padding: 0 !important;
   margin: 0;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
-.selected{
+body::-webkit-scrollbar {
+  display: none;
+}
+
+html {
+  scrollbar-width: none;
+}
+
+.selected {
   color: coral;
 }
 

@@ -136,11 +136,10 @@ export const useReadStore = defineStore('app.read', {
       // @ts-ignore
       return this.rendition!.display(cfi)
     },
-    // 保存进度并刷新当前章节位置
+    // 保存进度并刷新当前章节位置,一般来说无需手动调用
     async saveLocation(location?: any) {
       const currentLocation = location || (this.rendition!.currentLocation() as any) // 这里默认给出的类型不对
       if (currentLocation && currentLocation.start) {
-        console.log(location)
         const temp = [] as Array<number>
         this.toc?.forEach((navItem: any, index: number) => {
           if (navItem.href === currentLocation.start.href) {
