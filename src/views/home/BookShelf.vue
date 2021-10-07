@@ -1,8 +1,8 @@
 <template>
   <div class="wrapper">
-    <div class="header" :style="headerStyle" ref="header" v-mutate="onMutate">
+    <div class="header" ref="header" v-mutate="onMutate">
       <n-space justify="space-between" align="center">
-        <div>共计阅读xxxx小时</div>
+        <div>共计阅读114514小时</div>
         <div>
           <n-space>
             <n-button text>
@@ -24,70 +24,59 @@
       </n-space>
     </div>
 
-    <n-layout-content :style="contentStyle" content-style="padding: var(--padding-x);">
-      <n-h2>意义不明的内容</n-h2>
-      <n-h2>意义不明的内容</n-h2>
-      <n-h2>意义不明的内容</n-h2>
-      <n-h2>意义不明的内容</n-h2>
-      <n-h2>意义不明的内容</n-h2>
-      <n-h2>意义不明的内容</n-h2>
-      <n-h2>意义不明的内容</n-h2>
-      <n-h2>意义不明的内容</n-h2>
-      <n-h2>意义不明的内容</n-h2>
-      <n-h2>意义不明的内容</n-h2>
-      <n-h2>意义不明的内容</n-h2>
-      <n-h2>意义不明的内容</n-h2>
-      <n-h2>意义不明的内容</n-h2>
-      <n-h2>意义不明的内容</n-h2>
-      <n-h2>意义不明的内容</n-h2>
-      <n-h2>意义不明的内容</n-h2>
-      <n-h2>意义不明的内容</n-h2>
-      <n-h2>意义不明的内容</n-h2>
-      <n-h2>意义不明的内容</n-h2>
-      <n-h2>意义不明的内容</n-h2>
-      <n-h2>意义不明的内容</n-h2>
-      <n-h2>意义不明的内容</n-h2>
-      <n-h2>意义不明的内容</n-h2>
-      <n-h2>意义不明的内容</n-h2>
+    <n-layout-content class="content" content-style="padding:var(--padding-x);">
+      <n-grid x-gap="12" y-gap="8" :cols="3">
+        <n-gi>
+          <n-card content-style="padding:0;padding-bottom:150%">
+            <template #cover>
+              <img
+                style="position: absolute; top: 0; left: 0; bottom: 0; right: 0"
+                src="https://img.acgdmzy.com:45112/images/2021/10/05/0d1e85517e85.webp"
+                alt=""
+              />
+            </template>
+          </n-card>
+          <div>魔弹之王与冻涟的雪姬</div>
+        </n-gi>
+        <n-gi>
+          <div class="green"></div>
+        </n-gi>
+        <n-gi>
+          <div class="light-green"></div>
+        </n-gi>
+        <n-gi>
+          <div class="green"></div>
+        </n-gi>
+      </n-grid>
     </n-layout-content>
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent, computed, ref } from 'vue'
-import { NH2, NLayoutContent, NButtonGroup, NButton, NPopover, NSpace, useThemeVars } from 'naive-ui'
+import { NLayoutContent, NButtonGroup, NButton, NPopover, NSpace, useThemeVars, NGrid, NGi, NCard } from 'naive-ui'
 import { icon } from '@/plugins/naive-ui'
 
 export default defineComponent({
   name: 'BookShelf',
   components: {
-    NH2,
     NLayoutContent,
     NSpace,
     NButtonGroup,
     NButton,
-    NPopover
+    NPopover,
+    NGrid,
+    NGi,
+    NCard
   },
   setup() {
     const theme = useThemeVars()
-    const header = ref()
-    let headerHeight = ref('62px')
 
     return {
       icon,
       onMutate(a) {
-        console.log(a)
-      },
-      headerStyle: computed(() => {
-        return {
-          borderBottom: `solid 1px ${theme.value.borderColor}`
-        }
-      }),
-      contentStyle: computed(() => {
-        return {
-          paddingTop: headerHeight.value
-        }
-      })
+        // console.log(a)
+      }
     }
   }
 })
@@ -95,15 +84,13 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .wrapper {
-  // --header-height: 64px;
-  --padding-x: 15px;
+  --padding-x: 12px;
 
   .header {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    // height: var(--header-height);
     padding: 15px var(--padding-x);
     z-index: 1;
     background-color: white;
@@ -111,6 +98,16 @@ export default defineComponent({
 
   .content {
     top: var(--header-height);
+    padding-top: 62px;
+  }
+
+  .light-green {
+    height: 108px;
+    background-color: rgba(0, 128, 0, 0.12);
+  }
+  .green {
+    height: 108px;
+    background-color: rgba(0, 128, 0, 0.24);
   }
 }
 </style>
