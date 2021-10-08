@@ -27,25 +27,16 @@
     <n-layout-content class="content" content-style="padding:var(--padding-x);">
       <n-grid x-gap="12" y-gap="8" :cols="3">
         <n-gi>
-          <n-card content-style="padding:0;padding-bottom:150%">
-            <template #cover>
-              <img
-                style="position: absolute; top: 0; left: 0; bottom: 0; right: 0"
-                src="https://img.acgdmzy.com:45112/images/2021/10/05/0d1e85517e85.webp"
-                alt=""
-              />
-            </template>
-          </n-card>
-          <div>魔弹之王与冻涟的雪姬</div>
+          <book-card-group></book-card-group>
         </n-gi>
         <n-gi>
-          <div class="green"></div>
+          <book-card-group></book-card-group>
         </n-gi>
         <n-gi>
-          <div class="light-green"></div>
+          <book-card-group></book-card-group>
         </n-gi>
         <n-gi>
-          <div class="green"></div>
+          <book-card-group></book-card-group>
         </n-gi>
       </n-grid>
     </n-layout-content>
@@ -56,6 +47,7 @@
 import { defineComponent, computed, ref } from 'vue'
 import { NLayoutContent, NButtonGroup, NButton, NPopover, NSpace, useThemeVars, NGrid, NGi, NCard } from 'naive-ui'
 import { icon } from '@/plugins/naive-ui'
+import BookCardGroup from '@/components/home/BookCardGroup.vue'
 
 export default defineComponent({
   name: 'BookShelf',
@@ -67,16 +59,25 @@ export default defineComponent({
     NPopover,
     NGrid,
     NGi,
-    NCard
+    BookCardGroup
   },
   setup() {
     const theme = useThemeVars()
 
     return {
       icon,
+      theme,
       onMutate(a) {
         // console.log(a)
-      }
+      },
+      boxStyle: computed(() => {
+        return {
+          border: `1px solid ${theme.value.borderColor}`,
+          borderRadius: `${theme.value.borderRadius}`,
+          borderColor: `${theme.value.borderColor}`,
+          boxShadow: '0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%)'
+        }
+      })
     }
   }
 })
@@ -102,11 +103,9 @@ export default defineComponent({
   }
 
   .light-green {
-    height: 108px;
     background-color: rgba(0, 128, 0, 0.12);
   }
   .green {
-    height: 108px;
     background-color: rgba(0, 128, 0, 0.24);
   }
 }

@@ -10,7 +10,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'Home',
-    redirect: '/read',
+    redirect: '/bookshelf',
     component: () => import('../views/Home.vue'),
     children: [
       {

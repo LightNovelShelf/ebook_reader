@@ -7,6 +7,7 @@ import { naive } from './plugins/naive-ui'
 import VueHotkey from 'v-hotkey'
 import { ClickOutside, Intersect, Mutate } from 'vuetify/lib/directives/index'
 import { default as NIcon } from '@/plugins/naive-ui/components/Icon.vue'
+import AspectRatio from '@/components/AspectRatio.vue'
 import 'vuetify/lib/styles/generic/_transitions.scss'
 
 const app = createApp(App)
@@ -20,5 +21,6 @@ app.directive('intersect', Intersect)
 app.directive('click-outside', ClickOutside)
 app.directive('mutate', Mutate)
 app.component('n-icon', NIcon)
+app.component('aspect-ratio', AspectRatio)
 
 app.use(createPinia()).use(router).use(naive).mount('#app')
