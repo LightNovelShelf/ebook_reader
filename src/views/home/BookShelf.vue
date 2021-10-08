@@ -24,7 +24,7 @@
       </n-space>
     </div>
 
-    <n-layout-content class="content" content-style="padding:var(--padding-x);">
+    <div class="content">
       <n-grid x-gap="12" y-gap="8" :cols="3">
         <n-gi>
           <book-card-group></book-card-group>
@@ -42,7 +42,7 @@
           <book-card></book-card>
         </n-gi>
       </n-grid>
-    </n-layout-content>
+    </div>
   </div>
 </template>
 
@@ -55,7 +55,6 @@ import { BookCardGroup, BookCard } from '@/components/home/index'
 export default defineComponent({
   name: 'BookShelf',
   components: {
-    NLayoutContent,
     NSpace,
     NButtonGroup,
     NButton,
@@ -102,7 +101,7 @@ export default defineComponent({
   }
 
   .content {
-    top: var(--header-height);
+    padding: var(--padding-x);
     padding-top: 62px;
   }
 

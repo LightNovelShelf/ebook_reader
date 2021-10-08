@@ -25,8 +25,11 @@
       </div>
     </div>
   </aspect-ratio>
-  <div class="full-height" style="height: 4em; display: flex; align-items: center">
-    <div> 魔弹之王与冻涟的雪姬 </div>
+  <div class="text-wrapper">
+    <div class="title">
+      魔弹之王与冻涟的雪姬魔弹之王与冻涟的雪姬魔弹之王与冻涟的雪姬魔弹之王与冻涟的雪姬魔弹之王与冻涟的雪姬魔弹之王与冻涟的雪姬
+    </div>
+    <span class="info">共4本</span>
   </div>
 </template>
 
@@ -52,21 +55,10 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-.box {
-  border: 1px solid var(--border-color);
-  border-color: var(--border-color);
-  border-radius: var(--border-radius);
-  box-shadow: 0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%);
-}
+@import 'src/assets/style/bookCard';
 
 .image-wrapper {
   background-color: white;
   border-radius: var(--border-radius);
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
 }
 </style>
