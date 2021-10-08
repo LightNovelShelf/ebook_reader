@@ -1,17 +1,17 @@
 <template>
   <div class="wrapper">
-    <div class="header" ref="header" v-mutate="onMutate">
+    <div class="header" ref="header">
       <n-space justify="space-between" align="center">
         <div>阅读时长 <span style="font-size: 1.5em">114514</span> 小时</div>
         <div>
           <n-space>
             <n-button text>
-              <n-icon size="24">{{ icon.mdiMagnify }}</n-icon>
+              <n-icon size="24" class="icon">{{ icon.mdiMagnify }}</n-icon>
             </n-button>
             <n-popover placement="bottom-end" trigger="click" style="padding: 0">
               <template #trigger>
                 <n-button text>
-                  <n-icon size="24">{{ icon.mdiDotsVertical }}</n-icon>
+                  <n-icon size="24" class="icon">{{ icon.mdiDotsVertical }}</n-icon>
                 </n-button>
               </template>
               <n-button-group vertical size="large">
@@ -47,8 +47,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref } from 'vue'
-import { NLayoutContent, NButtonGroup, NButton, NPopover, NSpace, useThemeVars, NGrid, NGi, NCard } from 'naive-ui'
+import { defineComponent } from 'vue'
+import { NButtonGroup, NButton, NPopover, NSpace, useThemeVars, NGrid, NGi } from 'naive-ui'
 import { icon } from '@/plugins/naive-ui'
 import { BookCardGroup, BookCard } from '@/components/home/index'
 
@@ -69,18 +69,7 @@ export default defineComponent({
 
     return {
       icon,
-      theme,
-      onMutate(a) {
-        // console.log(a)
-      },
-      boxStyle: computed(() => {
-        return {
-          border: `1px solid ${theme.value.borderColor}`,
-          borderRadius: `${theme.value.borderRadius}`,
-          borderColor: `${theme.value.borderColor}`,
-          boxShadow: '0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%)'
-        }
-      })
+      theme
     }
   }
 })
@@ -98,6 +87,10 @@ export default defineComponent({
     padding: 15px var(--padding-x);
     z-index: 1;
     background-color: white;
+
+    .icon {
+      opacity: 0.6;
+    }
   }
 
   .content {

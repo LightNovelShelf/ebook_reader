@@ -17,12 +17,11 @@ img {
   margin-top: 8px;
 
   .title {
-    height: 44px;
     @include ellipsis(2);
   }
 
   .info {
-    opacity: 0.7;
+    opacity: var(--opacity-2);
     font-size: 0.6em;
   }
 }
