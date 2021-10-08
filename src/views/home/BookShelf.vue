@@ -38,6 +38,9 @@
         <n-gi>
           <book-card-group></book-card-group>
         </n-gi>
+        <n-gi>
+          <book-card></book-card>
+        </n-gi>
       </n-grid>
     </n-layout-content>
   </div>
@@ -47,7 +50,7 @@
 import { defineComponent, computed, ref } from 'vue'
 import { NLayoutContent, NButtonGroup, NButton, NPopover, NSpace, useThemeVars, NGrid, NGi, NCard } from 'naive-ui'
 import { icon } from '@/plugins/naive-ui'
-import BookCardGroup from '@/components/home/BookCardGroup.vue'
+import { BookCardGroup, BookCard } from '@/components/home/index'
 
 export default defineComponent({
   name: 'BookShelf',
@@ -59,7 +62,8 @@ export default defineComponent({
     NPopover,
     NGrid,
     NGi,
-    BookCardGroup
+    BookCardGroup,
+    BookCard
   },
   setup() {
     const theme = useThemeVars()

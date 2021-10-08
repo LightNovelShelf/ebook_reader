@@ -67,9 +67,6 @@ export default defineComponent({
     width: 100%;
     height: 100%;
     object-fit: cover;
-    // 锯齿严重
-    // image-rendering: -webkit-optimize-contrast;
-    // backface-visibility: hidden;
   }
 }
 </style>
