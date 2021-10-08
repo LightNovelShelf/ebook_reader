@@ -2,7 +2,7 @@
   <div class="wrapper">
     <div class="header" ref="header" v-mutate="onMutate">
       <n-space justify="space-between" align="center">
-        <div>共计阅读114514小时</div>
+        <div>阅读时长 <span style="font-size: 1.5em">114514</span> 小时</div>
         <div>
           <n-space>
             <n-button text>

@@ -14,7 +14,8 @@ const themeOverrides: GlobalThemeOverrides = {
     primaryColor: '#2080f0',
     primaryColorHover: '#4098fc',
     primaryColorPressed: '#1060c9',
-    primaryColorSuppl: '#4098fc'
+    primaryColorSuppl: '#4098fc',
+    borderRadius: '4px'
   }
 }
 
