@@ -1,34 +1,37 @@
 <template>
   <div class="full-size" :style="property">
     <aspect-ratio class="box" ar="2:3" v-bind="$attrs">
-      <img src="https://img.acgdmzy.com:45112/images/2021/10/05/0d1e85517e85.md.webp" alt="" />
+      <img :src="book.cover" alt="" />
     </aspect-ratio>
     <div class="text-wrapper">
-      <div class="title">
-        魔弹之王与冻涟的雪姬魔弹之王与冻涟的雪姬魔弹之王与冻涟的雪姬魔弹之王与冻涟的雪姬魔弹之王与冻涟的雪姬魔弹之王与冻涟的雪姬
-      </div>
+      <div class="title"> {{ book.title }}</div>
       <span class="info">已读0%</span>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, PropType } from 'vue'
 import { useThemeVars } from 'naive-ui'
+import { BookData } from '@/types/bookCard'
 
 export default defineComponent({
   name: 'BookCardGroup',
-  setup() {
-    const theme = useThemeVars()
-
-    return {
-      property: computed(() => {
-        return {
-          '--border-color': theme.value.borderColor,
-          '--border-radius': theme.value.borderRadius,
-          '--opacity-2': theme.value.opacity2
-        }
+  props: {
+    book: {
+      type: Object as PropType<BookData>,
+      default: () => ({
+        cover: 'https://img.acgdmzy.com:45112/images/2021/10/05/0d1e85517e85.md.webp',
+        title:
+          '魔弹之王与冻涟的雪姬魔弹之王与冻涟的雪姬魔弹之王与冻涟的雪姬魔弹之王与冻涟的雪姬魔弹之王与冻涟的雪姬魔弹之王与冻涟的雪姬'
       })
+    }
+  },
+  setup() {
+    return {
+      property: computed(() => ({
+        '--border-size': '0'
+      }))
     }
   }
 })

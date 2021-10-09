@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div class="wrapper" :style="property">
     <div class="header" ref="header">
       <n-space justify="space-between" align="center">
         <div>阅读时长 <span style="font-size: 1.5em">114514</span> 小时</div>
@@ -26,20 +26,9 @@
 
     <div class="content">
       <n-grid x-gap="12" y-gap="8" :cols="3">
-        <n-gi>
-          <book-card-group></book-card-group>
-        </n-gi>
-        <n-gi>
-          <book-card-group></book-card-group>
-        </n-gi>
-        <n-gi>
-          <book-card-group></book-card-group>
-        </n-gi>
-        <n-gi>
-          <book-card-group></book-card-group>
-        </n-gi>
-        <n-gi>
-          <book-card></book-card>
+        <n-gi v-for="book in bookList" :key="book.id">
+          <book-group-card :book-list="book.data" :group-name="book.groupName" v-if="book.type === 'BookGroupCard'" />
+          <book-card :book="book.data" v-else />
         </n-gi>
       </n-grid>
     </div>
@@ -47,10 +36,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { computed, defineComponent } from 'vue'
+import { storeToRefs } from 'pinia'
 import { NButtonGroup, NButton, NPopover, NSpace, useThemeVars, NGrid, NGi } from 'naive-ui'
 import { icon } from '@/plugins/naive-ui'
-import { BookCardGroup, BookCard } from '@/components/home/index'
+import { BookGroupCard, BookCard } from '@/components/home/index'
+import { useBookshelfStore } from '@/store/bookshelf'
 
 export default defineComponent({
   name: 'BookShelf',
@@ -61,15 +52,23 @@ export default defineComponent({
     NPopover,
     NGrid,
     NGi,
-    BookCardGroup,
+    BookGroupCard,
     BookCard
   },
   setup() {
     const theme = useThemeVars()
+    const bookshelfStore = useBookshelfStore()
+    const { bookList } = storeToRefs(bookshelfStore)
 
     return {
+      bookList,
       icon,
-      theme
+      property: computed(() => ({
+        '--border-size': '1px',
+        '--border-color': theme.value.borderColor,
+        '--border-radius': theme.value.borderRadius,
+        '--opacity-2': theme.value.opacity2
+      }))
     }
   }
 })
@@ -89,13 +88,13 @@ export default defineComponent({
     background-color: white;
 
     .icon {
-      opacity: 0.6;
+      opacity: var(--opacity-2);
     }
   }
 
   .content {
     padding: var(--padding-x);
-    padding-top: 62px;
+    padding-top: 64px;
   }
 
   .light-green {
