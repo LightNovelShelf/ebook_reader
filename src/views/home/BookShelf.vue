@@ -42,6 +42,7 @@ import { NButtonGroup, NButton, NPopover, NSpace, useThemeVars, NGrid, NGi } fro
 import { icon } from '@/plugins/naive-ui'
 import { BookGroupCard, BookCard } from '@/components/home/index'
 import { useBookshelfStore } from '@/store/bookshelf'
+import { getExternalStorageDirectory, getFiles, getDirectories, readFile } from '@/service/index'
 
 export default defineComponent({
   name: 'BookShelf',
@@ -59,6 +60,17 @@ export default defineComponent({
     const theme = useThemeVars()
     const bookshelfStore = useBookshelfStore()
     const { bookList } = storeToRefs(bookshelfStore)
+
+    if (import.meta.env.DEV) {
+      ;(async () => {
+        const path = await getExternalStorageDirectory()
+        console.log(path)
+        let files = await getDirectories(path)
+        console.log(files)
+        files = await getFiles(path)
+        console.log(files)
+      })()
+    }
 
     return {
       bookList,
