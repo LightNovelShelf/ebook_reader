@@ -1,5 +1,5 @@
 <template>
-  <ebook-reader :name="name"></ebook-reader>
+  <ebook-reader :path="path"></ebook-reader>
   <ebook-menu></ebook-menu>
 </template>
 
@@ -12,7 +12,7 @@ export default defineComponent({
   name: 'Read',
   components: { EbookMenu, EbookReader },
   props: {
-    name: String
+    path: String
   },
   setup() {
     return {}

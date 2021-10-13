@@ -15,8 +15,8 @@
                 </n-button>
               </template>
               <n-button-group vertical size="large">
-                <n-button> 打开书籍 </n-button>
-                <n-button> 打开文件夹 </n-button>
+                <n-button @click="chooseBook"> 打开书籍 </n-button>
+                <n-button @click="chooseDir"> 打开文件夹 </n-button>
               </n-button-group>
             </n-popover>
           </n-space>
@@ -36,13 +36,14 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, inject } from 'vue'
 import { storeToRefs } from 'pinia'
 import { NButtonGroup, NButton, NPopover, NSpace, useThemeVars, NGrid, NGi } from 'naive-ui'
 import { icon } from '@/plugins/naive-ui'
 import { BookGroupCard, BookCard } from '@/components/home/index'
 import { useBookshelfStore } from '@/store/bookshelf'
-import { getExternalStorageDirectory, getFiles, getDirectories, readFile } from '@/service/index'
+import { useRouter } from 'vue-router'
+import { getEpubInfo } from '@/service'
 
 export default defineComponent({
   name: 'BookShelf',
@@ -58,19 +59,11 @@ export default defineComponent({
   },
   setup() {
     const theme = useThemeVars()
+    const router = useRouter()
     const bookshelfStore = useBookshelfStore()
+    bookshelfStore.init()
     const { bookList } = storeToRefs(bookshelfStore)
-
-    if (import.meta.env.DEV) {
-      ;(async () => {
-        const path = await getExternalStorageDirectory()
-        console.log(path)
-        let files = await getDirectories(path)
-        console.log(files)
-        files = await getFiles(path)
-        console.log(files)
-      })()
-    }
+    const chooseFile = inject('chooseFile') as any
 
     return {
       bookList,
@@ -80,7 +73,19 @@ export default defineComponent({
         '--border-color': theme.value.borderColor,
         '--border-radius': theme.value.borderRadius,
         '--opacity-2': theme.value.opacity2
-      }))
+      })),
+      async chooseBook() {
+        console.log('chooseBook')
+        let file = await chooseFile.chooseFile('epub')
+        await router.push({ name: 'Read', params: { path: file } })
+        let bookInfo = await getEpubInfo(file)
+        if (!bookshelfStore.hasBook(file)) {
+          bookshelfStore.addBook(bookInfo.id, { title: bookInfo.title, cover: bookInfo.cover, path: file })
+        }
+      },
+      chooseDir() {
+        console.log('chooseDir')
+      }
     }
   }
 })

@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
-import { toRaw } from '@vue/reactivity'
-import { default as Epub85 } from 'epubjs85'
+import { toRaw } from 'vue'
+// import { default as Epub85 } from 'epubjs85'
 import EpubCFI from 'epubjs/src/epubcfi'
 // 后续让用户选择时需要
-// import { default as EpubLast } from 'epubjs'
+import { default as EpubLast } from 'epubjs'
 import { Book as BookLast } from 'epubjs'
 import { Book, Rendition, RenditionOptions, PackagingMetadataObject, NavItem, Contents } from '@/types/epubjs'
 import localforage from 'localforage'
@@ -33,7 +33,7 @@ export const useReadStore = defineStore('app.read', {
       // 每本书一个id，不同书但id相同会导致无法找到目录等情况
       if (typeof bookUrlOrData === 'string') {
         this.bookId = 'book_' + (bookId || bookUrlOrData)
-        this.book = Epub85(bookUrlOrData)
+        this.book = EpubLast(bookUrlOrData)
       } else {
         this.bookId = 'book_' + (bookId || '')
         this.book = new BookLast()
@@ -133,21 +133,21 @@ export const useReadStore = defineStore('app.read', {
       return this.rendition
     },
     display(cfi?: string | number) {
-      // @ts-ignore
       return this.rendition!.display(cfi)
     },
     // 保存进度并刷新当前章节位置,一般来说无需手动调用
     async saveLocation(location?: any) {
       const currentLocation = location || (this.rendition!.currentLocation() as any) // 这里默认给出的类型不对
       if (currentLocation && currentLocation.start) {
+        const cfiLocation = currentLocation.start
         const temp = [] as Array<number>
         this.toc?.forEach((navItem: any, index: number) => {
-          if (navItem.href === currentLocation.start.href) {
+          if (navItem.href === cfiLocation.href) {
             temp.push(index)
           } else {
             if (navItem.cfi) {
               const cfi_a = new EpubCFI(navItem.cfi)
-              const cfi_b = new EpubCFI(currentLocation.start.cfi)
+              const cfi_b = new EpubCFI(cfiLocation.cfi)
               if (cfi_a.compare(cfi_b, cfi_a) != -1) {
                 temp.push(index)
               }
@@ -160,10 +160,10 @@ export const useReadStore = defineStore('app.read', {
         } else {
           this.section.index = Math.max(...temp)
         }
-        this.section.pageIndex = currentLocation.start.displayed.page
-        this.section.pageTotal = currentLocation.start.displayed.total
+        this.section.pageIndex = cfiLocation.displayed.page
+        this.section.pageTotal = cfiLocation.displayed.total
 
-        await setCache(this.bookId, 'location', currentLocation.start.cfi)
+        await setCache(this.bookId, 'location', cfiLocation.cfi)
       }
     },
     // 获取进度

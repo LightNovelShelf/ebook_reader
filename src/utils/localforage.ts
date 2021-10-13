@@ -1,9 +1,9 @@
 import localforage from 'localforage'
-import PQueue from 'p-queue'
+import PQueue from 'p-queue/dist'
 
 const queue = new PQueue({ concurrency: 1 })
 
-export const _getCache = async (cacheId: string, key: string): Promise<unknown | undefined> => {
+const _getCache = async (cacheId: string, key: string): Promise<unknown | undefined> => {
   const info = (await localforage.getItem(cacheId)) as Record<string, unknown>
   return info ? info[key] : undefined
 }

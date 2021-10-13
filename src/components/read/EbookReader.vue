@@ -1,16 +1,25 @@
 <template>
   <v-resize-observer :on-resize="handleResize">
-    <div id="read" ref="readDom" v-hotkey="keymap" :style="{ width: width + 'px', margin: '0 auto' }"> </div>
+    <n-spin :show="loading">
+      <div
+        id="read"
+        ref="readDom"
+        v-hotkey="keymap"
+        :style="{ width: width + 'px', margin: '0 auto', height: '100vh' }"
+      >
+      </div>
+    </n-spin>
   </v-resize-observer>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, onMounted } from 'vue'
 import { useReadStore } from '@/store/read'
 import { throttle } from 'lodash-es'
 import { VResizeObserver } from 'vueuc'
 import { Contents } from '@/types/epubjs'
 import { useMenu } from '@/composables/readMenu'
+import { getEpubPath } from '@/service'
 // import { createBlobUrl } from 'epubjs/src/utils/core'
 // TODO 等vite修#符号的bug
 // import ContinuousViewManager from 'epubjs/src/managers/continuous/index.js'
@@ -50,9 +59,9 @@ export default defineComponent({
     VResizeObserver
   },
   props: {
-    name: String
+    path: String
   },
-  setup() {
+  setup(props) {
     const { menuShow } = useMenu()
 
     const mousewheel = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'mousewheel'
@@ -108,7 +117,6 @@ export default defineComponent({
     }
 
     let initEvent = (window: Window) => {
-      // @ts-ignore
       window.addEventListener(mousewheel, handleMouseWheel, true)
       window.addEventListener('keydown', (e) => {
         let event = new KeyboardEvent('keydown', e)
@@ -154,37 +162,51 @@ export default defineComponent({
       return offsetX > width.value * 0.75 || offsetX < width.value * 0.25
     }
 
-    // 原生实现解压，这里再读取，可以加快读取速度
-    // 仅限于本地文件，网络文件的跨章节翻页有点问题
-    readStore.loadEpub('/Test2/OEBPS/content.opf').then(async (book) => {
-      console.log(book)
-      readStore.getRendition({
-        // 预加载
-        manager: 'continuous'
-        // manager: new ContinuousViewManager(),
-        // stylesheet: createBlobUrl(`@import url('${cssUrl}')`, 'text/css'),
-        // snap: true,
-        // flow: 'paginated'
-      })
-
-      if (!('ontouchstart' in window)) {
-        readStore.rendition!.on('mousedown', (e: any) => {
-          timeStart = e.timeStamp
-        })
-        readStore.rendition!.on('mouseup', handleMouseDown)
+    onMounted(async () => {
+      // eslint-disable-next-line vue/no-setup-props-destructure
+      let path = ''
+      let id = null
+      if (!props.path || props.path === '') {
+        if (process.env.NODE_ENV === 'development') path = '/Test2/OEBPS/content.opf'
+        // TODO 从原生获取indent路径
+        else path = '/Test2/OEBPS/content.opf'
+      } else {
+        // id是文件的md5，每本书唯一
+        ;[path, id] = await getEpubPath(props.path)
       }
 
-      readStore.rendition!.hooks.content.register((content: Contents) => {
-        initEvent(content.window)
-      })
+      // 原生实现解压，这里再读取，可以加快读取速度
+      // 仅限于本地文件，网络文件的跨章节翻页有点问题
+      readStore.loadEpub(path, id || path).then(async (book) => {
+        console.log(book)
+        readStore.getRendition({
+          // 预加载
+          // manager: 'continuous'
+          // manager: new ContinuousViewManager(),
+          // stylesheet: createBlobUrl(`@import url('${cssUrl}')`, 'text/css'),
+          // snap: true,
+          // flow: 'paginated'
+        })
 
-      const location = await readStore.getLocation()
-      await readStore.display(location)
-      loading.value = false
+        if (!('ontouchstart' in window)) {
+          readStore.rendition!.on('mousedown', (e: any) => {
+            timeStart = e.timeStamp
+          })
+          readStore.rendition!.on('mouseup', handleMouseDown)
+        }
+
+        readStore.rendition!.hooks.content.register((content: Contents) => {
+          initEvent(content.window)
+        })
+
+        const location = await readStore.getLocation()
+        await readStore.display(location)
+        loading.value = false
+      })
     })
 
     let width = ref(0)
-    let loading = ref(false)
+    let loading = ref(true)
     width.value = getWidth()
 
     return {

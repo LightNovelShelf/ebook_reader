@@ -5,5 +5,7 @@ export {
   mdiMenu,
   mdiFormatListBulleted,
   mdiWhiteBalanceSunny,
-  mdiFormatSize
+  mdiFormatSize,
+  mdiFile,
+  mdiFolder
 } from '@mdi/js'

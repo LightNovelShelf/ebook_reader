@@ -37,5 +37,7 @@ export {
   NLoadingBarProvider,
   NSpin,
   NDrawer,
-  NDrawerContent
+  NDrawerContent,
+  NModal,
+  NScrollbar
 } from 'naive-ui'

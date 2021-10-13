@@ -1,6 +1,6 @@
 <template>
   <n-config-provider :theme-overrides="themeOverrides" abstract>
-    <n-layout-content v-show="menuShow" position="absolute" @click="menuShow = false" />
+    <n-layout-content v-if="menuShow" position="absolute" @click="menuShow = false" />
     <transition name="slide-y-transition">
       <n-layout-header key="header" v-show="menuShow" position="absolute" class="header">
         <n-space justify="space-between" align="center">
@@ -25,7 +25,11 @@
             <n-button @click="prevSection()"> 上一章 </n-button>
           </div>
           <div style="display: flex">
-            <n-text>{{ title }}</n-text>
+            <n-text
+              style="max-width: calc(100vw - 250px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap"
+              >{{ title }}
+            </n-text>
+            <n-text>{{ progress }}</n-text>
           </div>
           <div style="display: flex">
             <n-button @click="nextSection()"> 下一章 </n-button>
@@ -54,12 +58,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue'
+import { defineComponent, computed, ref } from 'vue'
 import { GlobalThemeOverrides } from 'naive-ui'
 import { icon } from '@/plugins/naive-ui'
 import { useMenu } from '@/composables/readMenu'
 import { useReadStore } from '@/store/read'
-import { throttle } from 'lodash-es'
+import { functions, throttle } from 'lodash-es'
 
 const themeOverrides: GlobalThemeOverrides = {
   Layout: {
@@ -72,19 +76,28 @@ export default defineComponent({
   setup() {
     const { menuShow } = useMenu()
     const bookStore = useReadStore()
+    const close = ref<any>(null)
 
     return {
+      close,
       icon,
       themeOverrides,
       menuShow,
       bookStore,
-      title: computed(() => {
-        if (bookStore.toc && bookStore.section.index < bookStore.toc.length) {
-          let section = bookStore.toc[bookStore.section.index]
-          return `${section.label} (${bookStore.section.pageIndex}/${bookStore.section.pageTotal})`
+      progress: computed(() => {
+        if (bookStore.toc && bookStore.section && bookStore.section.index < bookStore.toc.length) {
+          return `(${bookStore.section.pageIndex}/${bookStore.section.pageTotal})`
         }
         return ''
       }),
+      title: computed(() => {
+        if (bookStore.toc && bookStore.section && bookStore.section.index < bookStore.toc.length) {
+          let section = bookStore.toc[bookStore.section.index]
+          return section?.label
+        }
+        return ''
+      }),
+
       nextSection: throttle(bookStore.nextSection, 500),
       prevSection: throttle(bookStore.prevSection, 500)
     }

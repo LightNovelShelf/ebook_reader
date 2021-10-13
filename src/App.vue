@@ -1,13 +1,18 @@
 <template>
   <n-config-provider :theme="theme" :locale="zhCN" :date-locale="dateZhCN" :theme-overrides="themeOverrides">
     <n-global-style />
-    <router-view />
+    <n-message-provider>
+      <choose-file>
+        <router-view />
+      </choose-file>
+    </n-message-provider>
   </n-config-provider>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
 import { zhCN, dateZhCN, GlobalThemeOverrides, useOsTheme, darkTheme } from 'naive-ui'
+import { ChooseFile } from '@/components/home'
 
 const themeOverrides: GlobalThemeOverrides = {
   common: {
@@ -20,6 +25,9 @@ const themeOverrides: GlobalThemeOverrides = {
 }
 
 export default defineComponent({
+  components: {
+    ChooseFile
+  },
   setup() {
     const osThemeRef = useOsTheme()
 

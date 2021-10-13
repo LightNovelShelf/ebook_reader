@@ -2,7 +2,7 @@ import { HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signal
 import { ref } from 'vue'
 
 /** signalr接入点 */
-const HOST = location.hostname === '10.0.2.2' ? 'http://127.0.0.1:5555/api' : `${import.meta.env.VITE_API_SERVER}`
+const HOST = process.env.VUE_APP_API_SERVER
 
 /** 缓存 HubConnection，当初始化或者链接失效时置为null */
 let connection: null | HubConnection = null

@@ -17,6 +17,7 @@ img {
   margin-top: 8px;
 
   .title {
+    height: 44px;
     @include ellipsis(2);
   }
 
