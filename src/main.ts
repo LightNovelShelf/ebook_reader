@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
-import { createPinia } from 'pinia'
+import { piniaInstance } from '@/plugins/pinia'
 import App from './App.vue'
 import './assets/style/main.scss'
 import router from './router'
@@ -23,4 +23,4 @@ app.directive('mutate', Mutate)
 app.component('n-icon', NIcon)
 app.component('aspect-ratio', AspectRatio)
 
-app.use(createPinia()).use(router).use(naive).mount('#app')
+app.use(piniaInstance).use(router).use(naive).mount('#app')
