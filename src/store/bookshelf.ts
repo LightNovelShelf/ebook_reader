@@ -8,9 +8,20 @@ export const useBookshelfStore = defineStore('app.bookshelf', {
   state: () => ({
     bookList: [] as BookCard[]
   }),
+  getters: {
+    getBookList: (state) => {
+      return (id) => {
+        if (id) {
+          return state.bookList.find((item: BookCard) => item.type === 'BookGroupCard' && item.id === id)
+        } else {
+          return state.bookList
+        }
+      }
+    }
+  },
   actions: {
     async addBook(id: string, book: BookData) {
-      this.bookList.push({ type: 'BookCard', id, data: book })
+      this.bookList.unshift({ type: 'BookCard', id, data: book })
       await localforage.setItem('bookshelf', toRaw(this.bookList))
     },
     async init() {

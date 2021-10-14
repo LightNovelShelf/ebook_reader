@@ -8,32 +8,24 @@
         :style="{ width: width + 'px', margin: '0 auto', height: '100vh' }"
       >
       </div>
+      <div ref="viewer" v-viewer v-show="false">
+        <img :src="img.src" :alt="img.alt" />
+      </div>
     </n-spin>
   </v-resize-observer>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue'
+import { defineComponent, ref, onMounted, reactive } from 'vue'
 import { useReadStore } from '@/store/read'
 import { throttle } from 'lodash-es'
 import { VResizeObserver } from 'vueuc'
 import { Contents } from '@/types/epubjs'
 import { useMenu } from '@/composables/readMenu'
 import { getEpubPath } from '@/service'
+import 'viewerjs/dist/viewer.css'
+import { Viewer } from 'v-viewer'
 // import { createBlobUrl } from 'epubjs/src/utils/core'
-// TODO 等vite修#符号的bug
-// import ContinuousViewManager from 'epubjs/src/managers/continuous/index.js'
-// console.log(ContinuousViewManager)
-
-// TODO 这个地方运行没问题，但打包时路径解析的有问题，怀疑也是vite bug
-// 最好是得到一个编译后的css文件的路径，在下面getRendition的stylesheet参数中使用
-// const cssUrl = new URL('/style/read.css', import.meta.url)
-// console.log(cssUrl)
-
-// import cssUrl from '@/assets/style/read.css?url'
-// console.log(cssUrl)
-// import cssRaw from '@/assets/style/read.css?raw'
-// console.log(cssRaw)
 
 function getWidth(width?: number) {
   // 根据文档，在使用显示比例缩放的系统上，scrollLeft可能会为您提供一个十进制值。
@@ -53,6 +45,10 @@ function getIframe(ele: any) {
   }
 }
 
+declare interface DomViewer {
+  $viewer: Viewer
+}
+
 export default defineComponent({
   name: 'EbookReader',
   components: {
@@ -63,15 +59,20 @@ export default defineComponent({
   },
   setup(props) {
     const { menuShow } = useMenu()
+    const viewer = ref<DomViewer>()
 
     const mousewheel = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'mousewheel'
     const readStore = useReadStore()
     let next = throttle(readStore.nextPage, 200)
     let prev = throttle(readStore.prevPage, 200)
 
-    let timeStart = 0 as number
+    let timeStart = 0
     let enableTouch = false
-    let touchDetail = null as TouchEvent | null
+    let touchDetail = null as TouchEvent
+    const img = reactive({
+      src: '',
+      alt: ''
+    })
     // 点击事件处理
     let handleMouseDown = (e: any) => {
       const time = e.timeStamp - timeStart
@@ -91,8 +92,9 @@ export default defineComponent({
         // 这里对Img的两种特殊情况，需要EPUB制作者进行兼容
         if (classList.includes('duokan-image-single') && !isInArea(X)) {
           console.log('previewImg')
-          // TODO
-          // this.previewImg(e)
+          img.src = e.target.src
+          img.alt = e.target.alt
+          viewer.value.$viewer.show()
           return
         }
         if (classList.includes('footnote') || classList.includes('duokan-footnote')) return
@@ -182,7 +184,6 @@ export default defineComponent({
         readStore.getRendition({
           // 预加载
           // manager: 'continuous'
-          // manager: new ContinuousViewManager(),
           // stylesheet: createBlobUrl(`@import url('${cssUrl}')`, 'text/css'),
           // snap: true,
           // flow: 'paginated'
@@ -217,6 +218,8 @@ export default defineComponent({
         right: next,
         left: prev
       },
+      img,
+      viewer,
       readDom: ref(),
       handleResize(entry: ResizeObserverEntry) {
         // 这个Resize每次翻页都会调用，搞不懂

@@ -26,10 +26,22 @@
 
     <div class="content">
       <n-grid x-gap="12" y-gap="8" :cols="3">
-        <n-gi v-for="book in bookList" :key="book.id">
-          <book-group-card :book-list="book.data" :group-name="book.groupName" v-if="book.type === 'BookGroupCard'" />
-          <book-card :book="book.data" v-else />
-        </n-gi>
+        <template v-if="gid">
+          <n-gi v-for="book in bookList?.data" :key="book.id">
+            <book-card :book="book" />
+          </n-gi>
+        </template>
+        <template v-else>
+          <n-gi v-for="book in bookList" :key="book.id">
+            <book-group-card
+              :book-list="book.data"
+              :id="book.id"
+              :group-name="book.groupName"
+              v-if="book.type === 'BookGroupCard'"
+            />
+            <book-card :book="book.data" v-else />
+          </n-gi>
+        </template>
       </n-grid>
     </div>
   </div>
@@ -47,6 +59,9 @@ import { getEpubInfo } from '@/service'
 
 export default defineComponent({
   name: 'BookShelf',
+  props: {
+    gid: String
+  },
   components: {
     NSpace,
     NButtonGroup,
@@ -57,16 +72,16 @@ export default defineComponent({
     BookGroupCard,
     BookCard
   },
-  setup() {
+  setup(props) {
     const theme = useThemeVars()
     const router = useRouter()
     const bookshelfStore = useBookshelfStore()
+    const getBookList = bookshelfStore.getBookList
     bookshelfStore.init()
-    const { bookList } = storeToRefs(bookshelfStore)
     const chooseFile = inject('chooseFile') as any
 
     return {
-      bookList,
+      bookList: computed(() => getBookList(props.gid)),
       icon,
       property: computed(() => ({
         '--border-size': '1px',

@@ -1,10 +1,10 @@
 <template>
   <div class="full-size" :style="property">
-    <aspect-ratio class="box" ar="2:3" v-bind="$attrs">
+    <aspect-ratio class="box" ar="2:3" v-bind="$attrs" @click="openBook">
       <img :src="book.cover" alt="" />
     </aspect-ratio>
     <div class="text-wrapper">
-      <div class="title"> {{ book.title }}</div>
+      <div class="title" :title="book.title"> {{ book.title }}</div>
       <span class="info">已读0%</span>
     </div>
   </div>
@@ -12,8 +12,8 @@
 
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
-import { useThemeVars } from 'naive-ui'
 import { BookData } from '@/types/bookCard'
+import { useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'BookCardGroup',
@@ -27,8 +27,14 @@ export default defineComponent({
       })
     }
   },
-  setup() {
+  setup(props) {
+    const router = useRouter()
+
     return {
+      openBook() {
+        console.log('openBook')
+        router.push({ name: 'Read', params: { path: props.book.path } })
+      },
       property: computed(() => ({
         '--border-size': '0'
       }))

@@ -1,6 +1,6 @@
 <template>
   <div class="full-size">
-    <aspect-ratio class="box" ar="2:3" v-bind="$attrs">
+    <aspect-ratio class="box" ar="2:3" v-bind="$attrs" @click="openDir">
       <div style="padding: 3px; box-sizing: border-box" class="full-size">
         <div class="full-size" style="background-color: #e9e5e5">
           <div class="full-size" style="box-sizing: border-box; padding: 6px 3px">
@@ -16,7 +16,7 @@
       </div>
     </aspect-ratio>
     <div class="text-wrapper">
-      <div class="title"> {{ groupName }} </div>
+      <div class="title" :title="groupName"> {{ groupName }} </div>
       <span class="info">共{{ bookList.length }}本</span>
     </div>
   </div>
@@ -26,6 +26,7 @@
 import { computed, defineComponent, PropType } from 'vue'
 import { useThemeVars } from 'naive-ui'
 import { BookData } from '@/types/bookCard'
+import { useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'BookGroupCard',
@@ -44,10 +45,17 @@ export default defineComponent({
       type: String,
       default: () =>
         '魔弹之王与冻涟的雪姬魔弹之王与冻涟的雪姬魔弹之王与冻涟的雪姬魔弹之王与冻涟的雪姬魔弹之王与冻涟的雪姬魔弹之王与冻涟的雪姬'
-    }
+    },
+    id: String
   },
-  setup() {
-    return {}
+  setup(props) {
+    const router = useRouter()
+
+    return {
+      openDir() {
+        router.push({ name: 'BookShelf', params: { gid: props.id } })
+      }
+    }
   }
 })
 </script>
