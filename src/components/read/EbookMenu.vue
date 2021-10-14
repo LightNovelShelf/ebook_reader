@@ -3,7 +3,7 @@
     <n-layout-content v-if="menuShow" position="absolute" @click="menuShow = false" />
     <transition name="slide-y-transition">
       <n-layout-header key="header" v-show="menuShow" position="absolute" class="header">
-        <n-space justify="space-between" align="center">
+        <n-space justify="space-between" align="center" v-intersect="onIntersectClose">
           <div style="display: flex">
             <n-button text>
               <n-icon size="24">{{ icon.mdiArrowLeft }} </n-icon>
@@ -64,6 +64,7 @@ import { icon } from '@/plugins/naive-ui'
 import { useMenu } from '@/composables/readMenu'
 import { useReadStore } from '@/store/read'
 import { functions, throttle } from 'lodash-es'
+import useIntersectClose from '@/composables/intersectClose'
 
 const themeOverrides: GlobalThemeOverrides = {
   Layout: {
@@ -77,8 +78,11 @@ export default defineComponent({
     const { menuShow } = useMenu()
     const bookStore = useReadStore()
     const close = ref<any>(null)
+    const { onIntersectClose, onClose } = useIntersectClose()
+    onClose(() => (menuShow.value = false))
 
     return {
+      onIntersectClose,
       close,
       icon,
       themeOverrides,

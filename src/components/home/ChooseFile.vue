@@ -1,13 +1,16 @@
 <template>
   <slot v-bind="$attrs"></slot>
 
+  <!--  创建一个始终存在的元素来监听元素变化 -->
+  <div v-show="showModal" v-intersect="onIntersectClose" />
+
   <n-modal
     v-model:show="showModal"
     preset="dialog"
     :title="title"
     :mask-closable="false"
-    positive-text="选择此文件夹"
-    @positive-click="callBack.submit"
+    :positive-text="isChooseDir ? '选择此文件夹' : null"
+    @positive-click="callBack.submit(basePath)"
     @negative-click="callBack.cancel"
     @close="callBack.cancel"
     negative-text="算了"
@@ -29,8 +32,8 @@
         <n-list-item
           v-for="list in fileList"
           :key="list"
-          @click="callBack.submit(`${basePath}/${list}`)"
-          style="cursor: pointer"
+          @click="isChooseDir ? null : callBack.submit(`${basePath}/${list}`)"
+          :style="isChooseDir ? {} : { cursor: 'pointer' }"
         >
           <div>{{ list }}</div>
           <template #prefix>
@@ -47,6 +50,7 @@ import { defineComponent, provide, ref, reactive } from 'vue'
 import { getExternalStorageDirectory, getFiles, getDirectories } from '@/service/index'
 import { icon } from '@/plugins/naive-ui'
 import { useMessage } from 'naive-ui'
+import useIntersectClose from '@/composables/intersectClose'
 
 const path = require('path')
 
@@ -62,9 +66,16 @@ export default defineComponent({
       submit: null,
       cancel: null
     })
-
+    const isChooseDir = ref(false)
     let basePath = ref<string>(null)
     const requestFile = ref(null)
+
+    const { onIntersectClose, onClose } = useIntersectClose()
+    onClose(() => {
+      console.log('close')
+      showModal.value = false
+      callBack.cancel()
+    })
 
     const chooseFile = (suffix: string) => {
       return new Promise<string>((resolve, reject) => {
@@ -73,7 +84,7 @@ export default defineComponent({
           showModal.value = false
           resolve(file)
         }
-
+        isChooseDir.value = false
         title.value = '选择文件'
         showModal.value = true
 
@@ -96,10 +107,39 @@ export default defineComponent({
       })
     }
 
-    provide('chooseFile', { chooseFile })
+    const chooseDir = () => {
+      return new Promise<string>((resolve, reject) => {
+        callBack.cancel = reject
+        callBack.submit = (file) => {
+          showModal.value = false
+          resolve(file)
+        }
+        isChooseDir.value = true
+        title.value = '选择文件夹'
+        showModal.value = true
+
+        requestFile.value = async () => {
+          if (!basePath.value) basePath.value = await getExternalStorageDirectory()
+          try {
+            dirList.value = (await getDirectories(basePath.value)).sort().map((item) => item.split('/').pop())
+            fileList.value = (await getFiles(basePath.value)).sort().map((item) => item.split('/').pop())
+          } catch (err) {
+            showModal.value = false
+            callBack.cancel()
+            message.error(`${err}`)
+            basePath.value = await getExternalStorageDirectory()
+          }
+        }
+        requestFile.value()
+      })
+    }
+
+    provide('chooseFile', { chooseFile, chooseDir })
 
     return {
+      onIntersectClose,
       icon,
+      isChooseDir,
       showModal,
       title,
       callBack,

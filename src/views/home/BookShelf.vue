@@ -98,8 +98,10 @@ export default defineComponent({
           bookshelfStore.addBook(bookInfo.id, { title: bookInfo.title, cover: bookInfo.cover, path: file })
         }
       },
-      chooseDir() {
+      async chooseDir() {
         console.log('chooseDir')
+        let file = await chooseFile.chooseDir()
+        console.log(file)
       }
     }
   }
