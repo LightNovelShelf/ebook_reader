@@ -169,9 +169,9 @@ export default defineComponent({
       let path = ''
       let id = null
       if (!props.path || props.path === '') {
-        if (process.env.NODE_ENV === 'development') path = '/Test2/OEBPS/content.opf'
+        if (process.env.NODE_ENV === 'development') path = './Test2/OEBPS/content.opf'
         // TODO 从原生获取indent路径
-        else path = '/Test2/OEBPS/content.opf'
+        else path = './Test2/OEBPS/content.opf'
       } else {
         // id是文件的md5，每本书唯一
         ;[path, id] = await getEpubPath(props.path)
