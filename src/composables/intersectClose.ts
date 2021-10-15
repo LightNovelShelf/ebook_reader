@@ -8,13 +8,13 @@ export default function useIntersectClose() {
   const parentStateKey = ref(null)
   const router = useRouter()
   const route = useRoute()
-  const hook = []
+  const closeHook = []
 
   const popstate = (event) => {
     console.log(event)
     if (isShow.value && event.state.key === parentStateKey.value) {
       console.log('popstate 1')
-      hook.forEach((item) => item())
+      closeHook.forEach((item) => item())
       isShow.value = false
     }
   }
@@ -46,7 +46,7 @@ export default function useIntersectClose() {
     onIntersectClose,
     isShow,
     onClose(call) {
-      hook.push(call)
+      closeHook.push(call)
     }
   }
 }

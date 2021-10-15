@@ -4,21 +4,35 @@ import { ref } from 'vue'
 /** signalr接入点 */
 const HOST = process.env.VUE_APP_API_SERVER
 
-/** 缓存 HubConnection，当初始化或者链接失效时置为null */
-let connection: null | HubConnection = null
-/** 记录Promise避免多次发起链接 */
+/** signalr 连接中心 */
+const hub: HubConnection = new HubConnectionBuilder()
+  .withUrl(HOST, {
+    accessTokenFactory() {
+      /** @todo 这里会循环引用，虽然能跑但有点丑陋；真要用到这个的话，要想个优雅点的办法 */
+      return ''
+    }
+  })
+  .configureLogging(LogLevel.Information)
+  .build()
+
+/** signalr连接情况标志 */
+export const isConnected = ref<boolean>(false)
+/** 断联时更新连接情况 */
+hub.onclose(() => {
+  isConnected.value = false
+  reConnectLater()
+})
+
+/** 记录Promie避免重复start */
 let connectPromise: null | Promise<HubConnection> = null
 
-/** signalr联通情况监听 */
-export const isConnected = ref<boolean>(false)
-
-/** 失败重连需要相隔10s */
+/** 失败重连等待的时长，ms */
 const RECONNECT_TIMEOUT = 10 * 1000
 
 /** 单例句柄，保险 */
 let lastReConnect = 0
 /** 延时重连 */
-const reConnect = () => {
+const reConnectLater = () => {
   if (lastReConnect) {
     clearTimeout(lastReConnect)
   }
@@ -28,56 +42,36 @@ const reConnect = () => {
   }, RECONNECT_TIMEOUT) as unknown as number
 }
 
-/** 返回一个 signalr 实例 */
+/** 返回一个 signalr 连接中心 */
 export const getSignalr = (): Promise<HubConnection> => {
-  if (connection) {
-    return Promise.resolve(connection)
+  /** 如果实例已连接 */
+  if (isConnected.value) {
+    return Promise.resolve(hub)
   }
 
+  /** 否则检查是否有正在进行的连接 */
   if (!connectPromise) {
-    connectPromise = (async () => {
-      /** 初始化 HubConnection */
-      const hub = new HubConnectionBuilder().withUrl(HOST).configureLogging(LogLevel.Information).build()
+    connectPromise = hub.start().then(() => hub)
 
-      /** 并待其start完成 */
-      try {
-        await hub.start()
-      } catch (e) {
-        reConnect()
-        throw e
-      }
-      isConnected.value = true
-
-      return hub
-    })()
-
-    /** 待start完成后记录 清除Promise，避免掉线重连时发现有Promise就不执行重连操作 */
+    /** 记录已连接标志 */
+    connectPromise.then(() => (isConnected.value = true))
+    /** start抛出错误后，安排重连 */
+    connectPromise.catch(reConnectLater)
+    /** start完成后清除Promise，避免掉线重连时发现有Promise就不执行重连操作 */
     connectPromise.finally(() => {
       connectPromise = null
-    })
-
-    /** 待start完成后记录 HubConnection，不再重复初始化 */
-    connectPromise.then((hub) => {
-      connection = hub
-      /** 意外关闭时清除缓存 */
-      connection.onclose(() => {
-        connection = null
-        isConnected.value = false
-        reConnect()
-      })
     })
   }
 
   return connectPromise
 }
 
+/** 通过 signalr 发送请求 */
 export const requestWithSignalr = async <Res = unknown, Data extends unknown[] = unknown[]>(
   url: string,
   ...data: Data
 ): Promise<Res> => {
-  const hub = await getSignalr()
-
-  const { success, response, status, msg } = await hub.invoke(url, ...data)
+  const { success, response, status, msg } = await (await getSignalr()).invoke(url, ...data)
   if (status === 200 && success) {
     return response
   }

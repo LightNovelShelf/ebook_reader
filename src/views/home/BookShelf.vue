@@ -92,6 +92,7 @@ export default defineComponent({
       async chooseBook() {
         console.log('chooseBook')
         let file = await chooseFile.chooseFile('epub')
+        console.log(file)
         await router.push({ name: 'Read', params: { path: file } })
         let bookInfo = await getEpubInfo(file)
         if (!bookshelfStore.hasBook(file)) {

@@ -63,27 +63,39 @@ export default defineComponent({
     const showModal = ref(false)
     const title = ref('')
     const callBack = reactive({
-      submit: null,
+      submit: (file) => {
+        callInfo.success = true
+        showModal.value = false
+        callInfo.file = file
+      },
       cancel: null
     })
     const isChooseDir = ref(false)
     let basePath = ref<string>(null)
     const requestFile = ref(null)
+    let callInfo = reactive({
+      success: false,
+      file: null,
+      resolve: null
+    })
 
     const { onIntersectClose, onClose } = useIntersectClose()
     onClose(() => {
       console.log('close')
-      showModal.value = false
-      callBack.cancel()
+      if (callInfo.success) {
+        callInfo.resolve(callInfo.file)
+      } else {
+        showModal.value = false
+        callBack.cancel()
+      }
     })
 
     const chooseFile = (suffix: string) => {
       return new Promise<string>((resolve, reject) => {
+        callInfo.resolve = resolve
         callBack.cancel = reject
-        callBack.submit = (file) => {
-          showModal.value = false
-          resolve(file)
-        }
+
+        callInfo.success = false
         isChooseDir.value = false
         title.value = '选择文件'
         showModal.value = true
@@ -109,11 +121,10 @@ export default defineComponent({
 
     const chooseDir = () => {
       return new Promise<string>((resolve, reject) => {
+        callInfo.resolve = resolve
         callBack.cancel = reject
-        callBack.submit = (file) => {
-          showModal.value = false
-          resolve(file)
-        }
+
+        callInfo.success = false
         isChooseDir.value = true
         title.value = '选择文件夹'
         showModal.value = true
