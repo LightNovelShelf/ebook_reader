@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia'
 import { toRaw } from 'vue'
-import { BookCard, BookData } from '@/types/bookCard'
+import { BookCard, BookData, BookGroupCardData } from '@/types/bookCard'
 import bookshelfMockData from '@/assets/data/bookshelf.json'
 import localforage from 'localforage'
+import { Guid } from 'js-guid'
 
 export const useBookshelfStore = defineStore('app.bookshelf', {
   state: () => ({
@@ -20,23 +21,40 @@ export const useBookshelfStore = defineStore('app.bookshelf', {
     }
   },
   actions: {
-    async addBook(id: string, book: BookData) {
-      this.bookList.unshift({ type: 'BookCard', id, data: book })
-      await localforage.setItem('bookshelf', toRaw(this.bookList))
-    },
     async init() {
       this.bookList = (await localforage.getItem('bookshelf')) || (bookshelfMockData as BookCard[])
     },
-    hasBook(path: string) {
-      const index = this.bookList.findIndex((item: BookCard) => {
-        if (item.type === 'BookCard' && item.data.path === path) return true
-        if (item.type === 'BookGroupCard') {
-          const groupIndex = item.data.findIndex((subItem) => subItem.path === path)
-          if (groupIndex !== -1) return true
+    async saveData() {
+      await localforage.setItem('bookshelf', toRaw(this.bookList))
+    },
+    async addBook(id: string, book: BookData) {
+      this.bookList.unshift({ type: 'BookCard', id, data: book })
+      await this.saveData()
+    },
+    async addBookGroup(groupName: string, data: BookData[]) {
+      const group: BookGroupCardData = this.bookList.find(
+        (item: BookCard) => item.type === 'BookGroupCard' && item.groupName === groupName
+      )
+      if (group) {
+        group.data = group.data.concat(data)
+      } else {
+        const id = Guid.newGuid().toString()
+        this.bookList.push({ type: 'BookGroupCard', id, data, groupName })
+      }
+      await this.saveData()
+    },
+    getBookByPath(path: string): BookData {
+      let data = null
+      this.bookList.find((item: BookCard) => {
+        if (item.type === 'BookCard' && item.data.path === path) {
+          data = item.data
         }
-        return false
+        if (item.type === 'BookGroupCard') {
+          data = item.data.find((subItem) => subItem.path === path)
+        }
+        return data
       })
-      return index !== -1
+      return data
     }
   }
 })

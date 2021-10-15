@@ -1,6 +1,6 @@
 <template>
   <div class="full-size">
-    <aspect-ratio class="box" ar="2:3" v-bind="$attrs" @click="openDir">
+    <aspect-ratio class="box" ar="2:3" v-bind="$attrs" @click="openDir" v-intersect="onIntersectChange">
       <div style="padding: 3px; box-sizing: border-box" class="full-size">
         <div class="full-size" style="background-color: #e9e5e5">
           <div class="full-size" style="box-sizing: border-box; padding: 6px 3px">
@@ -24,9 +24,10 @@
 
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
-import { useThemeVars } from 'naive-ui'
 import { BookData } from '@/types/bookCard'
 import { useRouter } from 'vue-router'
+import { getEpubInfo } from '@/service'
+import { useBookshelfStore } from '@/store/bookshelf'
 
 export default defineComponent({
   name: 'BookGroupCard',
@@ -50,10 +51,24 @@ export default defineComponent({
   },
   setup(props) {
     const router = useRouter()
+    const bookshelfStore = useBookshelfStore()
 
     return {
       openDir() {
         router.push({ name: 'BookShelf', params: { gid: props.id } })
+      },
+      onIntersectChange(entries, observer, isIntersecting) {
+        if (entries) {
+          props.bookList.slice(0, 4).forEach(async (item) => {
+            if (!item.title) {
+              const info = await getEpubInfo(item.path)
+              item.title = info.title
+              item.cover = info.cover
+              item.id = info.id
+              bookshelfStore.saveData()
+            }
+          })
+        }
       }
     }
   }

@@ -85,8 +85,10 @@ export default defineComponent({
       if (callInfo.success) {
         callInfo.resolve(callInfo.file)
       } else {
-        showModal.value = false
-        callBack.cancel()
+        if (showModal.value) {
+          showModal.value = false
+          callBack.cancel()
+        }
       }
     })
 

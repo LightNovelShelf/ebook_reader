@@ -49,13 +49,14 @@
 
 <script lang="ts">
 import { computed, defineComponent, inject } from 'vue'
-import { storeToRefs } from 'pinia'
 import { NButtonGroup, NButton, NPopover, NSpace, useThemeVars, NGrid, NGi } from 'naive-ui'
 import { icon } from '@/plugins/naive-ui'
 import { BookGroupCard, BookCard } from '@/components/home/index'
 import { useBookshelfStore } from '@/store/bookshelf'
 import { useRouter } from 'vue-router'
-import { getEpubInfo } from '@/service'
+import { getEpubInfo, getDirectories, getFiles } from '@/service'
+
+const path = require('path')
 
 export default defineComponent({
   name: 'BookShelf',
@@ -95,14 +96,33 @@ export default defineComponent({
         console.log(file)
         await router.push({ name: 'Read', params: { path: file } })
         let bookInfo = await getEpubInfo(file)
-        if (!bookshelfStore.hasBook(file)) {
+        if (!bookshelfStore.getBookByPath(file)) {
           bookshelfStore.addBook(bookInfo.id, { title: bookInfo.title, cover: bookInfo.cover, path: file })
         }
       },
       async chooseDir() {
         console.log('chooseDir')
-        let file = await chooseFile.chooseDir()
-        console.log(file)
+        let choosePath = await chooseFile.chooseDir()
+        let run = async (_path) => {
+          const book: string[] = []
+          let files = await getFiles(_path)
+          let dirs = await getDirectories(_path)
+          files
+            .filter((x) => x.endsWith('epub'))
+            .map((x) => {
+              if (!bookshelfStore.getBookByPath(x)) book.push(x)
+            })
+          if (book.length !== 0) {
+            bookshelfStore.addBookGroup(
+              path.basename(_path),
+              book.map((x) => ({ path: x }))
+            )
+          }
+          dirs.forEach((dir) => {
+            run(dir)
+          })
+        }
+        await run(choosePath)
       }
     }
   }

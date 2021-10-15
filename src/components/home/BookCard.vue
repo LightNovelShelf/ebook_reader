@@ -1,10 +1,10 @@
 <template>
-  <div class="full-size" :style="property">
+  <div class="full-size" :style="property" v-intersect="onIntersectChange">
     <aspect-ratio class="box" ar="2:3" v-bind="$attrs" @click="openBook">
       <img :src="book.cover" alt="" />
     </aspect-ratio>
     <div class="text-wrapper">
-      <div class="title" :title="book.title"> {{ book.title }}</div>
+      <div class="title" :title="title"> {{ title }}</div>
       <span class="info">已读0%</span>
     </div>
   </div>
@@ -14,6 +14,10 @@
 import { computed, defineComponent, PropType } from 'vue'
 import { BookData } from '@/types/bookCard'
 import { useRouter } from 'vue-router'
+import { getEpubInfo } from '@/service'
+import { useBookshelfStore } from '@/store/bookshelf'
+
+const path = require('path')
 
 export default defineComponent({
   name: 'BookCardGroup',
@@ -29,15 +33,29 @@ export default defineComponent({
   },
   setup(props) {
     const router = useRouter()
+    const bookshelfStore = useBookshelfStore()
 
     return {
       openBook() {
         console.log('openBook')
         router.push({ name: 'Read', params: { path: props.book.path } })
       },
+      title: computed(() => props.book.title || path.basename(props.book.path, '.epub')),
       property: computed(() => ({
         '--border-size': '0'
-      }))
+      })),
+      async onIntersectChange(entries, observer, isIntersecting) {
+        if (entries) {
+          if (!props.book.title) {
+            let book = bookshelfStore.getBookByPath(props.book.path)
+            const info = await getEpubInfo(props.book.path)
+            book.title = info.title
+            book.cover = info.cover
+            book.id = info.id
+            bookshelfStore.saveData()
+          }
+        }
+      }
     }
   }
 })

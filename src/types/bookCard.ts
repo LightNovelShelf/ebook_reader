@@ -3,8 +3,8 @@ export type BookCard = BookCardData | BookGroupCardData
 // 书籍的情况不需要id，书籍组时需要
 export interface BookData {
   id?: string
-  title: string
-  cover: string
+  title?: string
+  cover?: string
   path: string
 }
 
