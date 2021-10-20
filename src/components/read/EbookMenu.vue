@@ -37,7 +37,7 @@
         </n-space>
         <n-space justify="space-around" style="padding-top: 20px">
           <div style="display: flex">
-            <n-button text>
+            <n-button text @click="showSlider">
               <n-icon size="24">{{ icon.mdiFormatListBulleted }} </n-icon>
             </n-button>
           </div>
@@ -54,6 +54,8 @@
         </n-space>
       </n-layout-footer>
     </transition>
+
+    <slider />
   </n-config-provider>
 </template>
 
@@ -65,6 +67,7 @@ import { useMenu } from '@/composables/readMenu'
 import { useReadStore } from '@/store/read'
 import { functions, throttle } from 'lodash-es'
 import useIntersectClose from '@/composables/intersectClose'
+import Slider from '@/components/read/menu/Slider.vue'
 
 const themeOverrides: GlobalThemeOverrides = {
   Layout: {
@@ -74,14 +77,16 @@ const themeOverrides: GlobalThemeOverrides = {
 
 export default defineComponent({
   name: 'EbookMenu',
+  components: { Slider },
   setup() {
-    const { menuShow } = useMenu()
+    const { menuShow, sliderShow } = useMenu()
     const bookStore = useReadStore()
     const close = ref<any>(null)
     const { onIntersectClose, onClose } = useIntersectClose()
     onClose(() => (menuShow.value = false))
 
     return {
+      sliderShow,
       onIntersectClose,
       close,
       icon,
@@ -103,7 +108,11 @@ export default defineComponent({
       }),
 
       nextSection: throttle(bookStore.nextSection, 500),
-      prevSection: throttle(bookStore.prevSection, 500)
+      prevSection: throttle(bookStore.prevSection, 500),
+      showSlider() {
+        sliderShow.value = true
+        menuShow.value = false
+      }
     }
   }
 })
