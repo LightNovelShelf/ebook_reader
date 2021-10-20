@@ -1,0 +1,70 @@
+.duokan-image-single img {
+  margin: 5px 0;
+  z-index: 3;
+  cursor: pointer;
+  box-shadow: black 0 0 3px;
+  border: 1px solid white;
+}
+
+p,
+img {
+  //-moz-user-select: none;
+  //-webkit-user-select: none;
+  //user-select: none;
+}
+
+body {
+  color: var(--color);
+  padding-top: var(--read-padding) !important;
+}
+
+.noteCover {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+}
+
+/*注释相关*/
+img.footnote {
+  display: inline-block;
+}
+
+.duokan-footnote-item {
+  color: black;
+a {
+  text-decoration: none;
+}
+}
+
+aside ol {
+  list-style: none;
+  margin: 0;
+  padding: 10px;
+}
+
+a.duokan-footnote{
+  position: relative;
+aside{
+  position: absolute;
+  z-index: 12;
+  background-color: antiquewhite;
+  box-shadow: 0 5px 5px -3px rgba(0,0,0,.2), 0 8px 10px 1px rgba(0,0,0,.14), 0 3px 14px 2px rgba(0,0,0,.12);
+  border-radius: 4px;
+  transform-origin: center center;
+  transition: transform 0.2s;
+  cursor: default;
+// transform: scale(0.2);
+}
+}
+
+a.duokan-footnote img {
+  height: 1em;
+  vertical-align: text-top;
+}
+
+sup {
+  vertical-align: text-top;
+}

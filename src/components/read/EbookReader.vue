@@ -1,13 +1,7 @@
 <template>
   <v-resize-observer :on-resize="handleResize">
     <n-spin :show="loading">
-      <div
-        id="read"
-        ref="readDom"
-        v-hotkey="keymap"
-        :style="{ width: width + 'px', margin: '0 auto', height: '100vh' }"
-      >
-      </div>
+      <div id="read" ref="readDom" v-hotkey="keymap" :style="{ width: width + 'px' }"> </div>
       <div ref="viewer" v-viewer v-show="false">
         <img :src="img.src" :alt="img.alt" />
       </div>
@@ -25,7 +19,8 @@ import { useMenu } from '@/composables/readMenu'
 import { getEpubPath } from '@/service'
 import 'viewerjs/dist/viewer.css'
 import { Viewer } from 'v-viewer'
-// import { createBlobUrl } from 'epubjs/src/utils/core'
+import readCss from '@/assets/style/read.scss'
+console.log(readCss)
 
 function getWidth(width?: number) {
   // 根据文档，在使用显示比例缩放的系统上，scrollLeft可能会为您提供一个十进制值。
@@ -184,7 +179,7 @@ export default defineComponent({
         readStore.getRendition({
           // 预加载
           // manager: 'continuous'
-          // stylesheet: createBlobUrl(`@import url('${cssUrl}')`, 'text/css'),
+          stylesheet: '/' + readCss
           // snap: true,
           // flow: 'paginated'
         })
@@ -231,4 +226,9 @@ export default defineComponent({
 })
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+#read {
+  margin: 0 auto;
+  height: 100vh;
+}
+</style>

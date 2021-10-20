@@ -10,6 +10,11 @@ declare module '*.json' {
   export default value
 }
 
+declare module '*/read.scss' {
+  const value: string
+  export default value
+}
+
 declare module 'v-hotkey'
 declare module 'epubjs/src/utils/core'
 declare module 'epubjs/src/managers/continuous/index.js'
