@@ -36,19 +36,9 @@
           </div>
         </n-space>
         <n-space justify="space-around" style="padding-top: 20px">
-          <div style="display: flex">
-            <n-button text @click="showSlider">
-              <n-icon size="24">{{ icon.mdiFormatListBulleted }} </n-icon>
-            </n-button>
-          </div>
-          <div style="display: flex">
-            <n-button text>
-              <n-icon size="24">{{ icon.mdiWhiteBalanceSunny }} </n-icon>
-            </n-button>
-          </div>
-          <div style="display: flex">
-            <n-button text>
-              <n-icon size="24">{{ icon.mdiFormatSize }} </n-icon>
+          <div style="display: flex" v-for="(item, index) in iconData" :key="index">
+            <n-button text @click="item.action">
+              <n-icon size="24">{{ item.icon }} </n-icon>
             </n-button>
           </div>
         </n-space>
@@ -56,6 +46,7 @@
     </transition>
 
     <slider />
+    <font-setting />
   </n-config-provider>
 </template>
 
@@ -68,6 +59,7 @@ import { useReadStore } from '@/store/read'
 import { throttle } from 'lodash-es'
 import Slider from '@/components/read/menu/Slider.vue'
 import { useRouter } from 'vue-router'
+import FontSetting from '@/components/read/menu/FontSetting.vue'
 
 const themeOverrides: GlobalThemeOverrides = {
   Layout: {
@@ -77,15 +69,35 @@ const themeOverrides: GlobalThemeOverrides = {
 
 export default defineComponent({
   name: 'EbookMenu',
-  components: { Slider },
+  components: { FontSetting, Slider },
   setup() {
-    const { menuShow, sliderShow, $reset } = useMenu()
+    const { menuShow, sliderShow, fontSettingShow, $reset } = useMenu()
     $reset()
     const router = useRouter()
     const bookStore = useReadStore()
     const close = ref<any>(null)
 
     return {
+      iconData: [
+        {
+          icon: icon.mdiFormatListBulleted,
+          action: () => {
+            sliderShow.value = true
+            menuShow.value = false
+          }
+        },
+        {
+          icon: icon.mdiWhiteBalanceSunny,
+          action: () => {}
+        },
+        {
+          icon: icon.mdiFormatSize,
+          action: () => {
+            fontSettingShow.value = true
+            menuShow.value = false
+          }
+        }
+      ],
       sliderShow,
       close,
       icon,
@@ -108,10 +120,6 @@ export default defineComponent({
 
       nextSection: throttle(bookStore.nextSection, 500),
       prevSection: throttle(bookStore.prevSection, 500),
-      showSlider() {
-        sliderShow.value = true
-        menuShow.value = false
-      },
       back() {
         router.back()
       }
