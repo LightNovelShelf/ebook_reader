@@ -41,6 +41,7 @@ export default defineComponent({
       loadingIcon,
       openBook() {
         router.push({ name: 'Read', params: { path: props.book.path } })
+        // TODO 将书移动到首位，有点问题，这样搞必须进行两次操作才能成功把书移过去
         // let book = props.book
         // bookshelfStore.moveFunction = () => {
         //   bookshelfStore.moveToFirst(book)
