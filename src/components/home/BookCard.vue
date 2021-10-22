@@ -1,7 +1,8 @@
 <template>
   <div class="full-size" :style="property" v-intersect="onIntersectChange">
     <aspect-ratio class="box" ar="2:3" v-bind="$attrs" @click="openBook">
-      <img :src="book.cover" alt="" />
+      <img v-if="book.cover" :src="book.cover" alt="" />
+      <img class="loading" v-else :src="loadingIcon" alt="" />
     </aspect-ratio>
     <div class="text-wrapper">
       <div class="title" :title="title"> {{ title }}</div>
@@ -16,6 +17,7 @@ import { BookData } from '@/types/bookCard'
 import { useRouter } from 'vue-router'
 import { getEpubInfo } from '@/service'
 import { useBookshelfStore } from '@/store/bookshelf'
+import loadingIcon from '@/assets/img/loading.svg'
 
 const path = require('path')
 
@@ -36,6 +38,7 @@ export default defineComponent({
     const bookshelfStore = useBookshelfStore()
 
     return {
+      loadingIcon,
       openBook() {
         console.log('openBook')
         router.push({ name: 'Read', params: { path: props.book.path } })
@@ -63,4 +66,15 @@ export default defineComponent({
 
 <style scoped lang="scss">
 @import 'src/assets/style/bookCard';
+
+:deep(.aspect-ratio__content) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .loading {
+    width: auto;
+    height: 15%;
+  }
+}
 </style>

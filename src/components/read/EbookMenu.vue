@@ -3,9 +3,9 @@
     <n-layout-content v-if="menuShow" position="absolute" @click="menuShow = false" />
     <transition name="slide-y-transition">
       <n-layout-header key="header" v-show="menuShow" position="absolute" class="header">
-        <n-space justify="space-between" align="center" v-intersect="onIntersectClose">
+        <n-space justify="space-between" align="center">
           <div style="display: flex">
-            <n-button text>
+            <n-button text @click="back">
               <n-icon size="24">{{ icon.mdiArrowLeft }} </n-icon>
             </n-button>
           </div>
@@ -65,9 +65,9 @@ import { GlobalThemeOverrides } from 'naive-ui'
 import { icon } from '@/plugins/naive-ui'
 import { useMenu } from '@/composables/readMenu'
 import { useReadStore } from '@/store/read'
-import { functions, throttle } from 'lodash-es'
-import useIntersectClose from '@/composables/intersectClose'
+import { throttle } from 'lodash-es'
 import Slider from '@/components/read/menu/Slider.vue'
+import { useRouter } from 'vue-router'
 
 const themeOverrides: GlobalThemeOverrides = {
   Layout: {
@@ -79,15 +79,14 @@ export default defineComponent({
   name: 'EbookMenu',
   components: { Slider },
   setup() {
-    const { menuShow, sliderShow } = useMenu()
+    const { menuShow, sliderShow, $reset } = useMenu()
+    $reset()
+    const router = useRouter()
     const bookStore = useReadStore()
     const close = ref<any>(null)
-    const { onIntersectClose, onClose } = useIntersectClose()
-    onClose(() => (menuShow.value = false))
 
     return {
       sliderShow,
-      onIntersectClose,
       close,
       icon,
       themeOverrides,
@@ -112,6 +111,9 @@ export default defineComponent({
       showSlider() {
         sliderShow.value = true
         menuShow.value = false
+      },
+      back() {
+        router.back()
       }
     }
   }

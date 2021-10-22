@@ -58,6 +58,7 @@ export default defineComponent({
 
     const mousewheel = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'mousewheel'
     const readStore = useReadStore()
+    readStore.$reset()
     let next = throttle(readStore.nextPage, 200)
     let prev = throttle(readStore.prevPage, 200)
 

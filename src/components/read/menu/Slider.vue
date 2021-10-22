@@ -27,6 +27,7 @@ export default defineComponent({
     const themeVar = useThemeVars()
     const readStore = useReadStore()
     const { toc } = storeToRefs(readStore)
+    readStore.$reset()
 
     return {
       toc,

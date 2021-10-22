@@ -32,10 +32,10 @@ export const useReadStore = defineStore('app.read', {
     loadEpub(bookUrlOrData: string | ArrayBuffer, bookId?: string): Promise<Book> {
       // 每本书一个id，不同书但id相同会导致无法找到目录等情况
       if (typeof bookUrlOrData === 'string') {
-        this.bookId = 'book_' + (bookId || bookUrlOrData)
+        this.bookId = 'EbookReader_Book_' + (bookId || bookUrlOrData)
         this.book = EpubLast(bookUrlOrData)
       } else {
-        this.bookId = 'book_' + (bookId || '')
+        this.bookId = 'EbookReader_Book_' + (bookId || '')
         this.book = new BookLast()
         this.book.open(bookUrlOrData)
       }

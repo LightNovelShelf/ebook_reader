@@ -7,7 +7,8 @@
             <n-grid x-gap="6" y-gap="8" cols="2">
               <n-gi v-for="book in bookList?.slice(0, 4)" :key="book.id">
                 <aspect-ratio ar="2:3" class="image-wrapper">
-                  <img :src="book.cover" alt="" />
+                  <img v-if="book.cover" :src="book.cover" alt="" />
+                  <img class="loading" v-else :src="loadingIcon" alt="" />
                 </aspect-ratio>
               </n-gi>
             </n-grid>
@@ -28,6 +29,7 @@ import { BookData } from '@/types/bookCard'
 import { useRouter } from 'vue-router'
 import { getEpubInfo } from '@/service'
 import { useBookshelfStore } from '@/store/bookshelf'
+import loadingIcon from '@/assets/img/loading.svg'
 
 export default defineComponent({
   name: 'BookGroupCard',
@@ -54,6 +56,7 @@ export default defineComponent({
     const bookshelfStore = useBookshelfStore()
 
     return {
+      loadingIcon,
       openDir() {
         router.push({ name: 'BookShelf', params: { gid: props.id } })
       },
@@ -81,5 +84,16 @@ export default defineComponent({
 .image-wrapper {
   background-color: white;
   border-radius: var(--border-radius);
+}
+
+:deep(.aspect-ratio__content) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .loading {
+    width: auto;
+    height: 20%;
+  }
 }
 </style>
