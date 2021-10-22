@@ -150,6 +150,24 @@ export default defineComponent({
   .content {
     padding: var(--padding-x);
     padding-top: 64px;
+
+    .flip-list-move {
+      transition: all 0.5s;
+    }
+    .flip-list-enter-active,
+    .flip-list-leave-active {
+      transition: all 0.5s;
+    }
+    .flip-list-leave-active {
+      position: absolute;
+    }
+    .flip-list-enter,
+    .flip-list-leave-to {
+      opacity: 0;
+      transform: scale(0);
+      max-width: 0;
+      flex-basis: 0;
+    }
   }
 
   .light-green {

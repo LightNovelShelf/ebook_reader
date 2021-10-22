@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, reactive } from 'vue'
+import { defineComponent, ref, onMounted, reactive, onUnmounted } from 'vue'
 import { useReadStore } from '@/store/read'
 import { throttle } from 'lodash-es'
 import { VResizeObserver } from 'vueuc'
@@ -20,7 +20,7 @@ import { getEpubPath } from '@/service'
 import 'viewerjs/dist/viewer.css'
 import { Viewer } from 'v-viewer'
 import readCss from '@/assets/style/read.scss'
-console.log(readCss)
+import { useBookshelfStore } from '@/store/bookshelf'
 
 function getWidth(width?: number) {
   // 根据文档，在使用显示比例缩放的系统上，scrollLeft可能会为您提供一个十进制值。
@@ -200,6 +200,13 @@ export default defineComponent({
         await readStore.display(location)
         loading.value = false
       })
+    })
+    onUnmounted(() => {
+      const bookshelfStore = useBookshelfStore()
+      if (bookshelfStore.moveFunction) {
+        bookshelfStore.moveFunction()
+        bookshelfStore.moveFunction = undefined
+      }
     })
 
     let width = ref(0)

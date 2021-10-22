@@ -7,7 +7,8 @@ import { Guid } from 'js-guid'
 
 export const useBookshelfStore = defineStore('app.bookshelf', {
   state: () => ({
-    bookList: [] as BookCard[]
+    bookList: [] as BookCard[],
+    moveFunction: undefined
   }),
   getters: {
     getBookList: (state) => {
@@ -42,6 +43,41 @@ export const useBookshelfStore = defineStore('app.bookshelf', {
         this.bookList.push({ type: 'BookGroupCard', id, data, groupName })
       }
       await this.saveData()
+    },
+    async moveToFirst(book: BookData) {
+      let index = this.bookList.findIndex((item: BookCard) => {
+        return item.type === 'BookCard' && item.data === book
+      })
+      if (index > 0) {
+        // 单本
+        const temp = this.bookList[index]
+        this.bookList.splice(index, 1)
+        this.bookList.splice(0, 0, temp)
+        await this.saveData()
+        return
+      }
+
+      let subIndex = -1
+      index = this.bookList.findIndex((item: BookCard) => {
+        if (item.type === 'BookGroupCard') {
+          subIndex = item.data.findIndex((subItem) => subItem === book)
+          if (subIndex !== -1) return true
+        }
+        return false
+      })
+
+      if (index > 0) {
+        const temp = this.bookList[index]
+        this.bookList.splice(index, 1)
+        this.bookList.splice(0, 0, temp)
+      }
+      if (subIndex > 0) {
+        const temp = this.bookList[0].data[subIndex]
+        this.bookList[0].data.splice(subIndex, 1)
+        this.bookList[0].data.splice(0, 0, temp)
+      }
+
+      if (index > 0 || subIndex > 0) await this.saveData()
     },
     getBookByPath(path: string): BookData {
       let data = null
