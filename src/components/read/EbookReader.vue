@@ -205,7 +205,6 @@ export default defineComponent({
       const bookshelfStore = useBookshelfStore()
       if (bookshelfStore.moveFunction) {
         bookshelfStore.moveFunction()
-        bookshelfStore.moveFunction = undefined
       }
     })
 

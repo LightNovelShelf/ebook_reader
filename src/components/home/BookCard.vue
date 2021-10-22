@@ -41,7 +41,11 @@ export default defineComponent({
       loadingIcon,
       openBook() {
         router.push({ name: 'Read', params: { path: props.book.path } })
-        bookshelfStore.moveFunction = () => bookshelfStore.moveToFirst(props.book)
+        // let book = props.book
+        // bookshelfStore.moveFunction = () => {
+        //   bookshelfStore.moveToFirst(book)
+        //   bookshelfStore.moveFunction = undefined
+        // }
         // bookshelfStore.moveToFirst(props.book)
       },
       title: computed(() => props.book.title || path.basename(props.book.path, '.epub')),
