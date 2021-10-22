@@ -26,22 +26,24 @@
 
     <div class="content">
       <n-grid x-gap="12" y-gap="8" :cols="3">
-        <template v-if="gid">
-          <n-gi v-for="book in bookList?.data" :key="book.id">
-            <book-card :book="book" />
-          </n-gi>
-        </template>
-        <template v-else>
-          <n-gi v-for="book in bookList" :key="book.id">
-            <book-group-card
-              :book-list="book.data"
-              :id="book.id"
-              :group-name="book.groupName"
-              v-if="book.type === 'BookGroupCard'"
-            />
-            <book-card :book="book.data" v-else />
-          </n-gi>
-        </template>
+        <transition-group name="flip-list">
+          <template v-if="gid">
+            <n-gi v-for="book in bookList?.data" :key="book.id">
+              <book-card :book="book" />
+            </n-gi>
+          </template>
+          <template v-else>
+            <n-gi v-for="book in bookList" :key="book.id">
+              <book-group-card
+                :book-list="book.data"
+                :id="book.id"
+                :group-name="book.groupName"
+                v-if="book.type === 'BookGroupCard'"
+              />
+              <book-card :book="book.data" v-else />
+            </n-gi>
+          </template>
+        </transition-group>
       </n-grid>
     </div>
   </div>
