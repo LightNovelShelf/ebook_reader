@@ -133,7 +133,7 @@ export const useReadStore = defineStore('app.read', {
       return this.rendition
     },
     display(cfi?: string | number) {
-      return this.rendition!.display(cfi)
+      return this.rendition!.display(`${cfi}`)
     },
     // 保存进度并刷新当前章节位置,一般来说无需手动调用
     async saveLocation(location?: any) {

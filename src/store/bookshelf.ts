@@ -34,7 +34,7 @@ export const useBookshelfStore = defineStore('app.bookshelf', {
     },
     async addBookGroup(groupName: string, data: BookData[]) {
       const group: BookGroupCardData = this.bookList.find(
-        (item: BookCard) => item.type === 'BookGroupCard' && item.groupName === groupName
+        (item: BookCard): item is BookGroupCardData => item.type === 'BookGroupCard' && item.groupName === groupName
       )
       if (group) {
         group.data = group.data.concat(data)
@@ -73,7 +73,9 @@ export const useBookshelfStore = defineStore('app.bookshelf', {
       }
       if (subIndex > 0) {
         const temp = this.bookList[0].data[subIndex]
+        // @ts-expect-error
         this.bookList[0].data.splice(subIndex, 1)
+        // @ts-expect-error
         this.bookList[0].data.splice(0, 0, temp)
       }
 
