@@ -1,10 +1,9 @@
 import { defineStore } from 'pinia'
 import { toRaw } from 'vue'
 // import { default as Epub85 } from 'epubjs85'
-import EpubCFI from 'epubjs/src/epubcfi'
+import EpubCFI from 'epubjs/lib/epubcfi'
 // 后续让用户选择时需要
-import { default as EpubLast } from 'epubjs'
-import { Book as BookLast } from 'epubjs'
+import EpubLast, { Book as BookLast } from 'epubjs'
 import { Book, Rendition, RenditionOptions, PackagingMetadataObject, NavItem, Contents } from '@/types/epubjs'
 import localforage from 'localforage'
 import { getCache, setCache } from '@/utils/localforage'

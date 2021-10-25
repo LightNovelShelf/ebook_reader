@@ -11,7 +11,7 @@
   "dependencies": {
     "@microsoft/signalr": "^5.0.10",
     "core-js": "^3.18.2",
-    "epubjs": "https://cdn.jsdelivr.net/gh/LightNovelShelf/epub.js@release-b78896/epubjs.tgz",
+    "epubjs": "0.3.90",
     "epubjs85": "https://cdn.jsdelivr.net/gh/LightNovelShelf/epub.js@release-85-dd84b8/epubjs.tgz",
     "js-guid": "^1.0.0",
     "localforage": "^1.10.0",
