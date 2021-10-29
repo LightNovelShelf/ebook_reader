@@ -7,8 +7,8 @@ pinia.use(({ store }) => {
     // react to store changes
     if (mutation.storeId === 'app.read' && mutation.type === 'direct') {
       if (
-        mutation.events.type === 'set' &&
-        mutation.events.key === 'fontSize' &&
+        mutation.events?.type === 'set' &&
+        mutation.events?.key === 'fontSize' &&
         mutation.events.newValue !== mutation.events.oldValue
       ) {
         store.setFontSize(mutation.events.newValue)
