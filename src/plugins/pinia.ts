@@ -6,7 +6,6 @@ pinia.use(({ store }) => {
   store.$subscribe((mutation) => {
     // react to store changes
     if (mutation.storeId === 'app.read' && mutation.type === 'direct') {
-      console.log({ store, mutation })
       if (
         mutation.events.type === 'set' &&
         mutation.events.key === 'fontSize' &&

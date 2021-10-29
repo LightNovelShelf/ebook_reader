@@ -4,7 +4,6 @@ import { BookCard, BookData, BookGroupCardData } from '@/types/bookCard'
 import bookshelfMockData from '@/assets/data/bookshelf.json'
 import localforage from 'localforage'
 import { Guid } from 'js-guid'
-import { shuffle } from 'lodash'
 
 export const useBookshelfStore = defineStore('app.bookshelf', {
   state: () => ({
@@ -94,9 +93,6 @@ export const useBookshelfStore = defineStore('app.bookshelf', {
         return data
       })
       return data
-    },
-    shuffleItem() {
-      this.bookList = shuffle(this.bookList)
     }
   }
 })
