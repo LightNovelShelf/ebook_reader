@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { toRaw } from 'vue'
 // import { default as Epub85 } from 'epubjs85'
 import EpubCFI from 'epubjs/lib/epubcfi'
+import { createBlobUrl } from 'epubjs/lib/utils/core'
 // 后续让用户选择时需要
 import EpubLast, { Book as BookLast } from 'epubjs'
 import { Book, Rendition, RenditionOptions, PackagingMetadataObject, NavItem, Contents } from '@/types/epubjs'
@@ -103,6 +104,12 @@ export const useReadStore = defineStore('app.read', {
       })
     },
     getRendition(option?: RenditionOptions) {
+      const insertRules = `@import url('${option.stylesheet}');
+body{
+font-size: ${this.setting.fontSize}px;
+}
+`
+      option.stylesheet = createBlobUrl(insertRules, 'text/css')
       this.rendition = this.book!.renderTo('read', option)
       this.rendition.on('locationChanged', (location: any) => {
         // console.log(location)
