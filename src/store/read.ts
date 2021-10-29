@@ -9,6 +9,8 @@ import { Book, Rendition, RenditionOptions, PackagingMetadataObject, NavItem, Co
 import localforage from 'localforage'
 import { getCache, setCache } from '@/utils/localforage'
 
+const FontSizeKey = 'app.read.setting.fontSize'
+
 export const useReadStore = defineStore('app.read', {
   state: () => ({
     book: undefined as undefined | Book,
@@ -25,6 +27,9 @@ export const useReadStore = defineStore('app.read', {
       pageTotal: 0,
       // 现在阅读的页数
       pageIndex: 0
+    },
+    setting: {
+      fontSize: ~~localStorage.getItem(FontSizeKey) || 16
     },
     changeSection: false
   }),
@@ -206,6 +211,11 @@ export const useReadStore = defineStore('app.read', {
           this.display(this.toc[this.section.index].href)
         }
       }
+    },
+    setFontSize(size: number) {
+      this.setting.fontSize = size
+      this.rendition?.themes.fontSize(size + 'px')
+      localStorage.setItem(FontSizeKey, String(size))
     }
   }
 })

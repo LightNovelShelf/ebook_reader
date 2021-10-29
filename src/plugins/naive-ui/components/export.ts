@@ -39,5 +39,6 @@ export {
   NDrawer,
   NDrawerContent,
   NModal,
-  NScrollbar
+  NScrollbar,
+  NSlider
 } from 'naive-ui'

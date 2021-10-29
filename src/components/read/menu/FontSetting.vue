@@ -4,34 +4,32 @@
     v-model:show="fontSettingShow"
     preset="card"
     :style="bodyStyle"
-    title="卡片预设"
+    title="字体设置"
     size="huge"
     :bordered="false"
-    :segmented="segmented"
   >
-    <template #header-extra> 噢! </template>
-    内容
-    <template #footer> 尾部 </template>
+    <n-slider v-model:value="fontSize" :min="12" :max="24" />
   </n-modal>
 </template>
 
-<script>
-import { defineComponent } from 'vue'
+<script lang="ts">
+import { defineComponent, toRef } from 'vue'
 import { useMenu } from '@/composables/readMenu'
+import { useReadStore } from '@/store/read'
 
 export default defineComponent({
   name: 'FontSetting',
   setup() {
     const { fontSettingShow } = useMenu()
+    const readStore = useReadStore()
+    const fontSize = toRef(readStore.setting, 'fontSize')
+
     return {
       fontSettingShow,
       bodyStyle: {
         maxWidth: '90%'
       },
-      segmented: {
-        content: 'soft',
-        footer: 'soft'
-      }
+      fontSize
     }
   }
 })
