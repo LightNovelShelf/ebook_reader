@@ -25,31 +25,35 @@
     </div>
 
     <div class="content">
-      <n-grid x-gap="12" y-gap="8" :cols="3">
-        <template v-if="gid">
-          <n-gi v-for="book in bookList?.data" :key="book.id">
-            <book-card :book="book" />
-          </n-gi>
-        </template>
-        <template v-else>
-          <n-gi v-for="book in bookList" :key="book.id">
-            <book-group-card
-              :book-list="book.data"
-              :id="book.id"
-              :group-name="book.groupName"
-              v-if="book.type === 'BookGroupCard'"
-            />
-            <book-card :book="book.data" v-else />
-          </n-gi>
-        </template>
-      </n-grid>
+      <div class="grid">
+        <!-- <n-grid x-gap="12" y-gap="8" :cols="3"> -->
+        <transition-group name="flip-list">
+          <template v-if="gid">
+            <div class="grid-item" v-for="book in bookList.data" :key="book.id" @click.capture.stop="shuffleHandle">
+              <book-card :book="book" />
+            </div>
+          </template>
+          <template v-else>
+            <div class="grid-item" v-for="book in bookList" :key="book.id" @click.capture.stop="shuffleHandle">
+              <book-group-card
+                :book-list="book.data"
+                :id="book.id"
+                :group-name="book.groupName"
+                v-if="book.type === 'BookGroupCard'"
+              />
+              <book-card :book="book.data" v-else />
+            </div>
+          </template>
+        </transition-group>
+        <!-- </n-grid> -->
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, inject } from 'vue'
-import { NButtonGroup, NButton, NPopover, NSpace, useThemeVars, NGrid, NGi } from 'naive-ui'
+import { NButtonGroup, NButton, NPopover, NSpace, useThemeVars } from 'naive-ui'
 import { icon } from '@/plugins/naive-ui'
 import { BookGroupCard, BookCard } from '@/components/home/index'
 import { useBookshelfStore } from '@/store/bookshelf'
@@ -68,8 +72,8 @@ export default defineComponent({
     NButtonGroup,
     NButton,
     NPopover,
-    NGrid,
-    NGi,
+    // NGrid,
+    // NGi,
     BookGroupCard,
     BookCard
   },
@@ -99,6 +103,11 @@ export default defineComponent({
         if (!bookshelfStore.getBookByPath(file)) {
           bookshelfStore.addBook(bookInfo.id, { title: bookInfo.title, cover: bookInfo.cover, path: file })
         }
+      },
+      shuffleHandle() {
+        // evt.preventDefault()
+        // console.log('switchItem', evt)
+        bookshelfStore.shuffleItem()
       },
       async chooseDir() {
         console.log('chooseDir')
@@ -145,6 +154,15 @@ export default defineComponent({
     .icon {
       opacity: var(--opacity-2);
     }
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0px, 1fr));
+    gap: 8px 12px;
+  }
+  .grid-item {
+    grid-column: span 1 / span 1;
   }
 
   .content {

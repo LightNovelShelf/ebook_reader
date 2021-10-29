@@ -11,8 +11,8 @@
   "dependencies": {
     "@microsoft/signalr": "^5.0.10",
     "core-js": "^3.18.2",
-    "epubjs": "git+https://github.com/LightNovelShelf/epub.js.git",
-    "epubjs85": "git+https://github.com/LightNovelShelf/epub.js.git#85",
+    "epubjs": "https://cdn.jsdelivr.net/gh/LightNovelShelf/epub.js@release-b78896/epubjs.tgz",
+    "epubjs85": "https://cdn.jsdelivr.net/gh/LightNovelShelf/epub.js@release-85-dd84b8/epubjs.tgz",
     "js-guid": "^1.0.0",
     "localforage": "^1.10.0",
     "lodash-es": "^4.17.21",
