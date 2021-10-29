@@ -143,8 +143,8 @@ font-size: ${this.setting.fontSize}px;
       })
       return this.rendition
     },
-    display(cfi?: string | number) {
-      return this.rendition!.display(`${cfi}`)
+    display(cfi?: string) {
+      return this.rendition!.display(cfi)
     },
     // 保存进度并刷新当前章节位置,一般来说无需手动调用
     async saveLocation(location?: any) {
