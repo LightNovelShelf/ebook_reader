@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, toRef } from 'vue'
+import { computed, defineComponent, toRef } from 'vue'
 import { useMenu } from '@/composables/readMenu'
 import { useReadStore } from '@/store/read'
 
@@ -22,7 +22,10 @@ export default defineComponent({
   setup() {
     const { fontSettingShow } = useMenu()
     const readStore = useReadStore()
-    const fontSize = toRef(readStore.setting, 'fontSize')
+    const fontSize = computed({
+      get: () => readStore.setting.fontSize,
+      set: (size) => readStore.setFontSize(size)
+    })
 
     return {
       fontSettingShow,
