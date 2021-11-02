@@ -27,24 +27,24 @@
     <div class="content">
       <div class="grid">
         <!-- <n-grid x-gap="12" y-gap="8" :cols="3"> -->
-        <transition-group>
-          <template v-if="gid">
-            <div class="grid-item" v-for="book in bookList?.data" :key="book.id">
-              <book-card :book="book" />
-            </div>
-          </template>
-          <template v-else>
-            <div class="grid-item" v-for="book in bookList" :key="book.id">
-              <book-group-card
-                :book-list="book.data"
-                :id="book.id"
-                :group-name="book.groupName"
-                v-if="book.type === 'BookGroupCard'"
-              />
-              <book-card :book="book.data" v-else />
-            </div>
-          </template>
-        </transition-group>
+        <!--<transition-group>-->
+        <template v-if="gid">
+          <div class="grid-item" v-for="book in bookList?.data" :key="book.id">
+            <book-card :book="book" />
+          </div>
+        </template>
+        <template v-else>
+          <div class="grid-item" v-for="book in bookList" :key="book.id">
+            <book-group-card
+              :book-list="book.data"
+              :id="book.id"
+              :group-name="book.groupName"
+              v-if="book.type === 'BookGroupCard'"
+            />
+            <book-card :book="book.data" v-else />
+          </div>
+        </template>
+        <!--</transition-group>-->
         <!-- </n-grid> -->
       </div>
     </div>
