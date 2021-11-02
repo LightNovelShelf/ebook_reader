@@ -1,5 +1,5 @@
-import 'vfonts/Lato.css'
-import 'vfonts/FiraCode.css'
+// import 'vfonts/Lato.css'
+// import 'vfonts/FiraCode.css'
 // import { icon } from './icon/index'
 
 export { naive } from './components'

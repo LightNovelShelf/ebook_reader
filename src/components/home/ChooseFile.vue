@@ -1,9 +1,6 @@
 <template>
   <slot v-bind="$attrs"></slot>
 
-  <!--  创建一个始终存在的元素来监听元素变化 -->
-  <div v-show="showModal" v-intersect="onIntersectClose" />
-
   <n-modal
     v-model:show="showModal"
     preset="dialog"
@@ -63,41 +60,21 @@ export default defineComponent({
     const showModal = ref(false)
     const title = ref('')
     const callBack = reactive({
-      submit: (file) => {
-        callInfo.success = true
-        showModal.value = false
-        callInfo.file = file
-      },
+      submit: null,
       cancel: null
     })
     const isChooseDir = ref(false)
     let basePath = ref<string>(null)
     const requestFile = ref(null)
-    let callInfo = reactive({
-      success: false,
-      file: null,
-      resolve: null
-    })
-
-    const { onIntersectClose, onClose } = useIntersectClose()
-    onClose(() => {
-      console.log('close')
-      if (callInfo.success) {
-        callInfo.resolve(callInfo.file)
-      } else {
-        if (showModal.value) {
-          showModal.value = false
-          callBack.cancel()
-        }
-      }
-    })
 
     const chooseFile = (suffix: string) => {
       return new Promise<string>((resolve, reject) => {
-        callInfo.resolve = resolve
+        callBack.submit = (file) => {
+          showModal.value = false
+          resolve(file)
+        }
         callBack.cancel = reject
 
-        callInfo.success = false
         isChooseDir.value = false
         title.value = '选择文件'
         showModal.value = true
@@ -123,10 +100,12 @@ export default defineComponent({
 
     const chooseDir = () => {
       return new Promise<string>((resolve, reject) => {
-        callInfo.resolve = resolve
+        callBack.submit = (file) => {
+          showModal.value = false
+          resolve(file)
+        }
         callBack.cancel = reject
 
-        callInfo.success = false
         isChooseDir.value = true
         title.value = '选择文件夹'
         showModal.value = true
@@ -150,7 +129,6 @@ export default defineComponent({
     provide('chooseFile', { chooseFile, chooseDir })
 
     return {
-      onIntersectClose,
       icon,
       isChooseDir,
       showModal,

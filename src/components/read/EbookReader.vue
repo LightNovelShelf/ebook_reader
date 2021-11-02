@@ -173,6 +173,9 @@ export default defineComponent({
         ;[path, id] = await getEpubPath(props.path)
       }
 
+      let cssUrl = window.location.href.split('#')[0].split('/')
+      cssUrl[cssUrl.length - 1] = readCss
+
       // 原生实现解压，这里再读取，可以加快读取速度
       // 仅限于本地文件，网络文件的跨章节翻页有点问题
       readStore.loadEpub(path, id || path).then(async (book) => {
@@ -180,7 +183,7 @@ export default defineComponent({
         readStore.getRendition({
           // 预加载
           // manager: 'continuous'
-          stylesheet: '/' + readCss
+          stylesheet: cssUrl.join('/')
           // snap: true,
           // flow: 'paginated'
         })

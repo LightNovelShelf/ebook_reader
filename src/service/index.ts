@@ -37,6 +37,7 @@ export function deleteFile(path: string) {
 }
 
 /** 取epub信息 */
+// 虽然是异步函数，但Asp.Net Core 2下的Signalr无法并发调用，有空可以尝试改用立刻返回并服务端返回事件来处理信息
 export function getEpubInfo(path: string) {
   return requestWithSignalr<BookInfo>('GetEpubInfo', path, process.env.NODE_ENV === 'development')
 }

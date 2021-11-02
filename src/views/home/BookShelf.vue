@@ -15,8 +15,8 @@
                 </n-button>
               </template>
               <n-button-group vertical size="large">
-                <n-button @click="chooseBook"> 打开书籍 </n-button>
-                <n-button @click="chooseDir"> 打开文件夹 </n-button>
+                <n-button @click="chooseBook"> 打开书籍</n-button>
+                <n-button @click="chooseDir"> 打开文件夹</n-button>
               </n-button-group>
             </n-popover>
           </n-space>
@@ -27,9 +27,9 @@
     <div class="content">
       <div class="grid">
         <!-- <n-grid x-gap="12" y-gap="8" :cols="3"> -->
-        <transition-group name="flip-list">
+        <transition-group>
           <template v-if="gid">
-            <div class="grid-item" v-for="book in bookList.data" :key="book.id">
+            <div class="grid-item" v-for="book in bookList?.data" :key="book.id">
               <book-card :book="book" />
             </div>
           </template>
@@ -59,6 +59,7 @@ import { BookGroupCard, BookCard } from '@/components/home/index'
 import { useBookshelfStore } from '@/store/bookshelf'
 import { useRouter } from 'vue-router'
 import { getEpubInfo, getDirectories, getFiles } from '@/service'
+import { Guid } from 'js-guid'
 
 const path = require('path')
 
@@ -119,7 +120,7 @@ export default defineComponent({
           if (book.length !== 0) {
             bookshelfStore.addBookGroup(
               path.basename(_path),
-              book.map((x) => ({ path: x }))
+              book.map((x) => ({ path: x, id: Guid.newGuid().toString() }))
             )
           }
           dirs.forEach((dir) => {
@@ -156,6 +157,7 @@ export default defineComponent({
     grid-template-columns: repeat(3, minmax(0px, 1fr));
     gap: 8px 12px;
   }
+
   .grid-item {
     grid-column: span 1 / span 1;
   }
@@ -167,13 +169,16 @@ export default defineComponent({
     .flip-list-move {
       transition: all 0.5s;
     }
+
     .flip-list-enter-active,
     .flip-list-leave-active {
       transition: all 0.5s;
     }
+
     .flip-list-leave-active {
       position: absolute;
     }
+
     .flip-list-enter,
     .flip-list-leave-to {
       opacity: 0;
@@ -181,13 +186,6 @@ export default defineComponent({
       max-width: 0;
       flex-basis: 0;
     }
-  }
-
-  .light-green {
-    background-color: rgba(0, 128, 0, 0.12);
-  }
-  .green {
-    background-color: rgba(0, 128, 0, 0.24);
   }
 }
 </style>
