@@ -16,11 +16,12 @@ import { throttle } from 'lodash-es'
 import { VResizeObserver } from 'vueuc'
 import { Contents } from '@/types/epubjs'
 import { useMenu } from '@/composables/readMenu'
-import { getEpubPath } from '@/service'
+import { getEpubPath, getIndentFile } from '@/service'
 import 'viewerjs/dist/viewer.css'
 import { Viewer } from 'v-viewer'
 import readCss from '@/assets/style/read.scss'
 import { useBookshelfStore } from '@/store/bookshelf'
+import { useMessage } from 'naive-ui'
 
 function getWidth(width?: number) {
   // 根据文档，在使用显示比例缩放的系统上，scrollLeft可能会为您提供一个十进制值。
@@ -54,6 +55,7 @@ export default defineComponent({
   },
   setup(props) {
     const { menuShow } = useMenu()
+    const message = useMessage()
     const viewer = ref<DomViewer>()
 
     const mousewheel = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'mousewheel'
@@ -164,10 +166,15 @@ export default defineComponent({
       // eslint-disable-next-line vue/no-setup-props-destructure
       let path = ''
       let id = null
-      if (!props.path || props.path === '') {
-        if (process.env.NODE_ENV === 'development') path = './Test2/OEBPS/content.opf'
-        // TODO 从原生获取indent路径
-        else path = './Test2/OEBPS/content.opf'
+      if (!props.path || props.path === '' || props.path === 'indent') {
+        if (props.path === 'indent') {
+          try {
+            ;[path, id] = await getIndentFile()
+          } catch (e) {
+            message.error(`${e}`)
+          }
+        } else if (process.env.NODE_ENV === 'development') path = './Test2/OEBPS/content.opf'
+        else message.error('no data')
       } else {
         // id是文件的md5，每本书唯一
         ;[path, id] = await getEpubPath(props.path)

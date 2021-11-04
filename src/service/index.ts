@@ -41,3 +41,7 @@ export function deleteFile(path: string) {
 export function getEpubInfo(path: string) {
   return requestWithSignalr<BookInfo>('GetEpubInfo', path, process.env.NODE_ENV === 'development')
 }
+
+export function getIndentFile() {
+  return requestWithSignalr<string[]>('GetIndentFile', process.env.NODE_ENV === 'development')
+}
