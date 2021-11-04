@@ -173,8 +173,7 @@ export default defineComponent({
           } catch (e) {
             message.error(`${e}`)
           }
-        } else if (process.env.NODE_ENV === 'development') path = './Test2/OEBPS/content.opf'
-        else message.error('no data')
+        } else path = './Test2/OEBPS/content.opf'
       } else {
         // id是文件的md5，每本书唯一
         ;[path, id] = await getEpubPath(props.path)
