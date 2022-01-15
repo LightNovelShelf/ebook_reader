@@ -3,11 +3,13 @@ import { ref } from 'vue'
 const menuShow = ref(false)
 const sliderShow = ref(false)
 const fontSettingShow = ref(false)
+const bgSettingShow = ref(false)
 
 const $reset = () => {
   menuShow.value = false
   sliderShow.value = false
   fontSettingShow.value = false
+  bgSettingShow.value = false
 }
 
 export function useMenu() {
@@ -15,6 +17,7 @@ export function useMenu() {
     menuShow,
     sliderShow,
     fontSettingShow,
+    bgSettingShow,
     $reset
   }
 }

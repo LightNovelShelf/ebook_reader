@@ -47,6 +47,7 @@
 
     <slider />
     <font-setting />
+    <bg-setting />
   </n-config-provider>
 </template>
 
@@ -60,6 +61,7 @@ import { throttle } from 'lodash-es'
 import Slider from '@/components/read/menu/Slider.vue'
 import { useRouter } from 'vue-router'
 import FontSetting from '@/components/read/menu/FontSetting.vue'
+import BgSetting from '@/components/read/menu/BgSetting.vue'
 
 const themeOverrides: GlobalThemeOverrides = {
   Layout: {
@@ -69,9 +71,9 @@ const themeOverrides: GlobalThemeOverrides = {
 
 export default defineComponent({
   name: 'EbookMenu',
-  components: { FontSetting, Slider },
+  components: { FontSetting, Slider, BgSetting },
   setup() {
-    const { menuShow, sliderShow, fontSettingShow, $reset } = useMenu()
+    const { menuShow, sliderShow, fontSettingShow, bgSettingShow, $reset } = useMenu()
     $reset()
     const router = useRouter()
     const bookStore = useReadStore()
@@ -88,7 +90,10 @@ export default defineComponent({
         },
         {
           icon: icon.mdiWhiteBalanceSunny,
-          action: () => {}
+          action: () => {
+            menuShow.value = false
+            bgSettingShow.value = true
+          }
         },
         {
           icon: icon.mdiFormatSize,
