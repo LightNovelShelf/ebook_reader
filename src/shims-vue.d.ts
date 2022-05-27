@@ -20,5 +20,9 @@ declare module '*/read.scss' {
   export default value
 }
 
-declare module 'v-hotkey'
+declare module '*.jpg' {
+  const value: any
+  export default value
+}
 
+declare module 'v-hotkey'

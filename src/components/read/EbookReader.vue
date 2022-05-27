@@ -1,7 +1,13 @@
 <template>
   <v-resize-observer :on-resize="handleResize">
     <n-spin :show="loading">
-      <div id="read" ref="readDom" v-hotkey="keymap" :style="{ width: width + 'px' }"> </div>
+      <div
+        id="read"
+        ref="readDom"
+        v-hotkey="keymap"
+        :style="{ width: width + 'px', paddingRight: `calc(100% - ${width}px)`, background: 'var(--background)' }"
+      >
+      </div>
       <div ref="viewer" v-viewer v-show="false">
         <img :src="img.src" :alt="img.alt" />
       </div>
@@ -12,7 +18,7 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted, reactive, onUnmounted } from 'vue'
 import { useReadStore } from '@/store/read'
-import { throttle } from 'lodash-es'
+import { throttle, find } from 'lodash-es'
 import { VResizeObserver } from 'vueuc'
 import { Contents } from '@/types/epubjs'
 import { useMenu } from '@/composables/readMenu'
@@ -32,13 +38,9 @@ function getWidth(width?: number) {
   return screenWidth - remainder
 }
 
-function getIframe(ele: any) {
-  while (ele.parentNode) {
-    ele = ele.parentNode
-  }
-  for (let iframe of window.document.querySelectorAll('iframe')) {
-    if (iframe.contentDocument === ele) return iframe
-  }
+function getIframe(ele: Node) {
+  const contentDocument = ele.ownerDocument
+  return find(document.querySelectorAll('iframe'), { contentDocument })
 }
 
 declare interface DomViewer {
@@ -244,7 +246,6 @@ export default defineComponent({
 
 <style scoped lang="scss">
 #read {
-  margin: 0 auto;
   height: 100vh;
 }
 </style>

@@ -9,7 +9,11 @@ import { Book, Rendition, RenditionOptions, PackagingMetadataObject, NavItem, Co
 import localforage from 'localforage'
 import { getCache, setCache } from '@/utils/localforage'
 
+import bg_paper from '@/assets/img/bg-paper.jpg'
+
 const FontSizeKey = 'app.read.setting.fontSize'
+const BackgroundTypeKey = 'app.read.setting.backgroundType'
+const BackgroundKey = 'app.read.setting.background'
 
 export const useReadStore = defineStore('app.read', {
   state: () => ({
@@ -29,7 +33,9 @@ export const useReadStore = defineStore('app.read', {
       pageIndex: 0
     },
     setting: {
-      fontSize: ~~localStorage.getItem(FontSizeKey) || 16
+      fontSize: ~~localStorage.getItem(FontSizeKey) || 16,
+      backgroundType: localStorage.getItem(BackgroundTypeKey) || 'none',
+      background: localStorage.getItem(BackgroundKey) || 'rgba(255, 255, 255, 1)'
     },
     changeSection: false
   }),
@@ -141,6 +147,7 @@ font-size: ${this.setting.fontSize}px;
           await setCache(this.bookId, 'toc', toRaw(this.toc))
         }
       })
+      setBg(this)
       return this.rendition
     },
     display(cfi?: string) {
@@ -222,6 +229,47 @@ font-size: ${this.setting.fontSize}px;
       this.setting.fontSize = size
       this.rendition?.themes.fontSize(size + 'px')
       localStorage.setItem(FontSizeKey, String(size))
+    },
+    setBackgroundType(setting: string) {
+      this.setting.backgroundType = setting
+      setBg(this)
+      localStorage.setItem(BackgroundTypeKey, setting)
+    },
+    setBackground(bg: string) {
+      this.setting.background = bg
+      setBg(this)
+      localStorage.setItem(BackgroundKey, bg)
     }
   }
 })
+
+function computeFontColor(r: number, g: number, b: number) {
+  const contrast = (r * 299 + g * 587 + b * 114) / 1000
+  if (contrast >= 125) {
+    return 'black' // 'dark'
+  }
+  return 'rgba(255,255,255,0.7)' // 'light'
+}
+
+function setBg(this_) {
+  const { backgroundType, background } = this_.setting
+  switch (backgroundType) {
+    case 'custom': {
+      const regex = /rgba\((\d+), (\d+), (\d+), (1|0\.\d+)\)/
+      if (!regex.test(background)) return
+      const [, r, g, b] = regex.exec(background)
+      const color = computeFontColor(+r, +g, +b)
+      this_.rendition.themes.override('--color', color)
+      document.documentElement.style.setProperty('--background', background)
+      break
+    }
+    case 'paper': {
+      this_.rendition.themes.override('--color', 'black')
+      document.documentElement.style.setProperty('--background', `url(${bg_paper}) repeat`)
+      break
+    }
+    default:
+      this_.rendition.themes.override('--color', 'black')
+      document.documentElement.style.setProperty('--background', 'unset')
+  }
+}

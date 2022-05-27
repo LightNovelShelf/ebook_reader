@@ -40,5 +40,8 @@ export {
   NDrawerContent,
   NModal,
   NScrollbar,
-  NSlider
+  NSlider,
+  NRadioGroup,
+  NRadio,
+  NColorPicker
 } from 'naive-ui'
