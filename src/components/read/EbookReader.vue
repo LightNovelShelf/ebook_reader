@@ -1,7 +1,13 @@
 <template>
   <v-resize-observer :on-resize="handleResize">
     <n-spin :show="loading">
-      <div id="read" ref="readDom" v-hotkey="keymap" :style="{ width: width + 'px' }"> </div>
+      <div
+        id="read"
+        ref="readDom"
+        v-hotkey="keymap"
+        :style="{ width: width + 'px', paddingRight: `calc(100% - ${width}px)`, background: 'var(--background)' }"
+      >
+      </div>
       <div ref="viewer" v-viewer v-show="false">
         <img :src="img.src" :alt="img.alt" />
       </div>
@@ -240,8 +246,6 @@ export default defineComponent({
 
 <style scoped lang="scss">
 #read {
-  background: var(--background);
-  padding-right: 8px;
   height: 100vh;
 }
 </style>
